@@ -1,0 +1,35 @@
+{
+  "schema_version": "2.1",
+  "reading_units": [
+    {
+      "id": "unit_demo_1",
+      "type": "text",
+      "page": 1,
+      "bbox": [
+        10,
+        10,
+        500,
+        200
+      ],
+      "text": "【虛構測試資料】我參加校內程式專題，擔任組員，負責撰寫待辦清單功能。為了方便同學分工，我先訪談需求，再用 Python 開發並測試。最後完成原型。我發現自己測試不足，後來補上錯誤輸入的測試案例。",
+      "block_ids": [
+        "block_demo_1"
+      ],
+      "review_required": true
+    }
+  ],
+  "events": [
+    {
+      "id": "event_demo_1",
+      "title": "虛構：待辦清單程式專題",
+      "type": "project",
+      "source_unit_ids": [
+        "unit_demo_1"
+      ],
+      "parent_event_id": null,
+      "child_event_ids": [],
+      "text": "【虛構測試資料】我參加校內程式專題，擔任組員，負責撰寫待辦清單功能。為了方便同學分工，我先訪談需求，再用 Python 開發並測試。最後完成原型。我發現自己測試不足，後來補上錯誤輸入的測試案例。",
+      "status": "candidate_needs_review"
+    }
+  ]
+}

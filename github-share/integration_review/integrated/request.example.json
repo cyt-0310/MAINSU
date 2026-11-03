@@ -1,0 +1,9 @@
+{
+  "details": {
+    "star": {"why_score": 1, "how_score": 0.5, "what_score": 0.5, "role_score": 1, "action_score": 0.5},
+    "ask": {"skill_score": 0.5, "attitude_score": 0.5, "knowledge_score": 0},
+    "gibbs": {"reflection_score": 0.5, "challenge_score": 0}
+  },
+  "previous_details": null,
+  "state": {"followup_count": 0, "max_followups": 2, "total_questions": 1, "interview_elapsed": 60, "topic_elapsed": 60}
+}

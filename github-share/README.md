@@ -2,6 +2,8 @@
 
 Python 3.12 專案。以備審候選事件建立個人化題庫，透過 Gemini 評分、檢索原文證據及動態追問。只使用文字回答，不含語音、面部偵測、科系常見問題或第十三步報告。
 
+本次 MVP 整合新增 student.profile.json → question.plan.json 的明確介面，以及正常面試結束自動顯示逐主題完整度摘要。可用 `run_text_interview.py summary <session.json>` 離線查看舊紀錄。完整操作與驗證狀態請看 [MVP.md](../MVP.md)。摘要不是綜合等第評分報告。
+
 ## 功能與狀態
 
 - Docling／EasyOCR PDF 解析、異常編碼局部補救、閱讀順序整理及候選事件切分。
@@ -47,37 +49,29 @@ $env:GEMINI_MODEL = "gemini-3.5-flash-lite"
 .\.venv\Scripts\python.exe integration_review\integrated\run_text_interview.py check --timeout 60
 ```
 
-API 模式會把備審與問答傳給服務。請先使用下方虛構範例；免費方案的資料使用條款請查看 [Google 官方價格說明](https://ai.google.dev/gemini-api/docs/pricing)。
+API 模式會把備審與問答傳給服務。測試請使用可提供給 Gemini 處理的備審副本。免費方案的資料使用條款請查看 [Google 官方價格說明](https://ai.google.dev/gemini-api/docs/pricing)。
 
-## 3. 先用虛構資料跑題庫與面試
+## 3. 使用自己的 PDF 跑題庫與面試
 
-examples/fictional.events.json 是手寫的虛構解析格式範例，不是真實 PDF 的解析結果。它能測試第 5～12 步的接線，不驗證第 2～4 步 PDF 解析品質。
-
-```powershell
-New-Item -ItemType Directory -Force outputs | Out-Null
-.\.venv\Scripts\python.exe integration_review\integrated\run_text_interview.py prepare examples\fictional.events.json --output outputs\demo-01
-.\.venv\Scripts\python.exe integration_review\integrated\run_text_interview.py interview outputs\demo-01 --output outputs\session-01.json
-```
-
-題庫在 outputs/demo-01/topics.json；請先核對，再開始面試。面試時輸入完成即可按 Enter，畫面會顯示「回答已送出，正在分析」。下一次請換新輸出名稱；目前沒有中斷續答功能。
-
-## 4. 使用自己的 PDF
-
-將個人檔案放進 data/，解析到 outputs/，這兩個目錄都排除於 Git 追蹤之外：
+先把備審副本放入 `data/portfolio.pdf`。這個資料夾與 `outputs/` 都排除於 Git 追蹤之外。
 
 ```powershell
-.\.venv\Scripts\python.exe integration_review\integrated\run_text_interview.py parse data\自己的備審.pdf --output outputs\parsed-01
+.\.venv\Scripts\python.exe integration_review\integrated\run_text_interview.py parse data\portfolio.pdf --output outputs\parsed-01
+.\.venv\Scripts\python.exe integration_review\integrated\run_text_interview.py prepare outputs\parsed-01\portfolio.events.json --output outputs\prepared-01
+.\.venv\Scripts\python.exe integration_review\integrated\run_text_interview.py interview outputs\prepared-01 --output outputs\session-01.json
 ```
 
-接著把 prepare 的輸入改為上一步產出的 .events.json。多份備審可依序列出多個 .events.json，但必須屬於同一學生。此倉庫不提供真實學生 PDF、解析結果、索引或問答紀錄。
+題庫在 `outputs/prepared-01/topics.json`。面試時輸入完成即可按 Enter，畫面會顯示「回答已送出，正在分析」。下一次請換新輸出名稱。
 
-## 5. 執行測試
+多份備審可依序列出多個 .events.json，但必須屬於同一學生。
+
+## 4. 執行測試
 
 ```powershell
 .\.venv\Scripts\python.exe -m unittest discover -s integration_review\integrated -p "test_*.py"
 ```
 
-不需要真實金鑰、不會發出付費 API 請求。兩個私人 PDF 回歸測試在共用版會跳過，公開虛構資料測試仍會執行。
+自動測試不需要真實金鑰，也不會發出付費 API 請求。缺少本機測試資料時，相關測試會跳過。
 
 ## 團隊協作
 

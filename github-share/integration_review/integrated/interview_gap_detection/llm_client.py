@@ -8,6 +8,19 @@ _gemini_client = None
 _gemini_rest_client = None
 
 
+def read_gemini_key():
+    key = os.environ.get('GEMINI_API_KEY', '').strip()
+    if not key:
+        raise RuntimeError('請先在本機設定 GEMINI_API_KEY；OpenAI 金鑰不能用於 Gemini')
+    if len(key) < 20:
+        raise RuntimeError('Gemini 金鑰內容過短，可能沒有貼完整，或只輸入了金鑰名稱。請重新複製完整金鑰；不要把內容傳給我。')
+    if any(c.isspace() for c in key) or not key.isascii() or key[0] in ('"', "'") or key[-1] in ('"', "'"):
+        raise RuntimeError('Gemini 金鑰含空白、換行、引號或非英文符號；請只貼完整金鑰字串，不要附上指令。')
+    if key.startswith('sk-'):
+        raise RuntimeError('這看起來是 OpenAI 金鑰；請改用 Google AI Studio 建立的 Gemini 金鑰。')
+    return key
+
+
 def get_gemini_transport():
     transport = os.environ.get('GEMINI_TRANSPORT', SETTINGS['llm']['gemini_transport']).strip().lower()
     if transport not in ('rest', 'sdk'):
@@ -46,16 +59,12 @@ def get_client():
     if get_provider() == 'gemini':
         if get_gemini_transport() == 'rest':
             if _gemini_rest_client is None:
-                api_key = os.environ.get('GEMINI_API_KEY', '').strip()
-                if not api_key:
-                    raise RuntimeError('請先在本機設定 GEMINI_API_KEY；OpenAI 金鑰不能用於 Gemini')
+                api_key = read_gemini_key()
                 from .gemini_rest import GeminiRESTClient
                 _gemini_rest_client = GeminiRESTClient(api_key)
             return _gemini_rest_client
         if _gemini_client is None:
-            api_key = os.environ.get('GEMINI_API_KEY', '').strip()
-            if not api_key:
-                raise RuntimeError('請先在本機設定 GEMINI_API_KEY；OpenAI 金鑰不能用於 Gemini')
+            api_key = read_gemini_key()
             from google import genai
             _gemini_client = genai.Client(api_key=api_key,
                                           http_options={'timeout': int(get_gemini_timeout() * 1000)})

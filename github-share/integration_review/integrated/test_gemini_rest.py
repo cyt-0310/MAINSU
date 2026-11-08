@@ -5,7 +5,7 @@ import unittest
 import urllib.error
 from unittest.mock import patch
 from pydantic import BaseModel, ValidationError
-from interview_gap_detection.gemini_rest import GeminiRESTClient
+from interview_gap_detection.gemini_rest import GeminiRESTClient, error_diagnostic
 from interview_gap_detection import llm_client
 
 
@@ -60,13 +60,34 @@ class RESTTests(unittest.TestCase):
 
     def test_rest_dispatch_does_not_touch_sdk_or_openai(self):
         with patch.dict(os.environ, {'LLM_PROVIDER': 'gemini', 'GEMINI_TRANSPORT': 'rest',
-                                    'GEMINI_API_KEY': 'fake-key', 'GEMINI_TIMEOUT_SECONDS': '15'}):
+                                    'GEMINI_API_KEY': 'fake-gemini-key-for-testing-only', 'GEMINI_TIMEOUT_SECONDS': '15'}):
             with patch.object(llm_client, '_gemini_rest_client', None):
                 with patch.object(llm_client, '_gemini_client') as sdk, patch.object(llm_client, '_client') as openai:
                     with patch('urllib.request.urlopen', return_value=reply()):
                         self.assertEqual(llm_client.call_llm('text', Result).message, '正常')
                     sdk.interactions.create.assert_not_called()
                     openai.responses.parse.assert_not_called()
+
+    def test_google_key_error_code_is_specific_and_redacted(self):
+        body = {'error': {'message': 'private key or student text', 'status': 'INVALID_ARGUMENT',
+                          'details': [{'reason': 'API_KEY_INVALID', 'metadata': {'key': 'secret'}}]}}
+        error = urllib.error.HTTPError('https://example.test', 400, 'Bad Request', {}, io.BytesIO(json.dumps(body).encode()))
+        with patch('urllib.request.urlopen', side_effect=error):
+            with self.assertRaisesRegex(RuntimeError, 'API_KEY_INVALID') as caught:
+                GeminiRESTClient('fake-key').generate('text', Result, 'test', 5)
+        for private in ('private', 'secret', 'student'):
+            self.assertNotIn(private, str(caught.exception))
+
+    def test_schema_error_and_unknown_message_do_not_expose_raw_input(self):
+        self.assertIn('格式', error_diagnostic({'error': {'message': 'Invalid JSON payload received: secret'}}))
+        self.assertEqual(error_diagnostic({'error': {'message': 'secret input text'}}), '')
+
+    def test_local_key_mistakes_are_caught_without_network(self):
+        for key in ('*', 'MAINSU-test', 'a'*20 + '\n' + 'b', 'sk-' + 'a'*30, '"' + 'a'*30 + '"'):
+            with patch.dict(os.environ, {'GEMINI_API_KEY': key}):
+                with self.assertRaises(RuntimeError) as caught:
+                    llm_client.read_gemini_key()
+            self.assertNotIn(key, str(caught.exception))
 
 
 if __name__ == '__main__':

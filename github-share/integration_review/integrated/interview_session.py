@@ -139,6 +139,9 @@ class InterviewSession:
         return self._ask(followup['follow_up_question'], 'followup')
 
     def snapshot(self):
-        return {'schema_version': 1, 'scope': 'steps_2_to_12_text_only',
+        from results_summary import build_summary
+        snapshot = {'schema_version': 1, 'scope': 'steps_2_to_12_text_only',
                 'finished': self.finished, 'elapsed': round(self.elapsed(), 3),
                 'total_questions': self.total_questions, 'topics': self.topics, 'log': self.log}
+        snapshot['summary'] = build_summary(snapshot)
+        return snapshot

@@ -491,14 +491,14 @@ def build_units(raw, events):
 def export_md(units, segmented=None):
     out, page, navigation = [], object(), False
     if segmented is not None:
-        out.extend(["# 事件切分索引","> 以下為規則式事件候選，需人工確認；不是已驗證的經歷。",
-                    "| 事件 | 所屬課程 | 類型 | PDF 頁碼 | 狀態 |","| --- | --- | --- | --- | --- |"])
+        out.extend(["# 事件切分索引","> 以下為系統依備審內容切分的候選事件。",
+                    "| 事件 | 所屬課程 | 類型 | PDF 頁碼 |","| --- | --- | --- | --- |"])
         event_lookup={e['id']:e for e in segmented}
         for event in segmented:
             title=event["title"].replace("|","\\|").replace("\n"," ")
             parent=event_lookup.get(event.get('parent_event_id'),{}).get('title','—').replace('|','\\|')
             label=('↳ ' if event.get('parent_event_id') else '')+title
-            out.append(f"| {event['id']}：{label} | {parent} | {event['type']} | {', '.join(map(str,event.get('all_pages',event['pages'])))} | 待確認 |")
+            out.append(f"| {event['id']}：{label} | {parent} | {event['type']} | {', '.join(map(str,event.get('all_pages',event['pages'])))} |")
         if not segmented:
             out.append("尚無足夠依據建立事件；原文保留如下。")
         out.append("# 原文解析")

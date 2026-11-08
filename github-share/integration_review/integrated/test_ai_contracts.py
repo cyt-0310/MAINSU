@@ -4,7 +4,7 @@ from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
-from ai_services import Claim, EventExtraction, EventPlan, EventQuestion, LiveServices, prepare
+from ai_services import Claim, EventExtraction, EventPlan, EventQuestion, LiveServices, prepare, plan_from_profile
 from test_text_pipeline import FakeEmbedder, details
 
 
@@ -34,6 +34,20 @@ class AIContractTests(unittest.TestCase):
             self.assertEqual(records[0]['aspects']['能力'], [])
             self.assertEqual(len(records[0]['rejected_claims']), 1)
             self.assertTrue((target/'skills.candidate.json').exists())
+            profile = json.loads((target/'student.profile.json').read_text(encoding='utf-8'))
+            plan = json.loads((target/'question.plan.json').read_text(encoding='utf-8'))
+            self.assertEqual(plan['questions'], bank)
+            self.assertEqual(len(profile['events']), 2)
+            self.assertEqual(profile['target_department'], plan['target_department'])
+            from evidence import EvidenceIndex
+            index = EvidenceIndex.load(target/'evidence.index.json', FakeEmbedder())
+            with patch('ai_services.call_llm', side_effect=fake_call):
+                regenerated = plan_from_profile(profile, index, Path(folder)/'replanned', create_dir=True)
+            self.assertEqual(regenerated, bank)
+            profile['events'][0]['evidence'][0]['text'] = '另一位學生的內容'
+            with self.assertRaisesRegex(ValueError, 'source text'):
+                plan_from_profile(profile, index, Path(folder)/'badplan', create_dir=True)
+            self.assertFalse((Path(folder)/'badplan').exists())
 
     def test_consistency_keeps_both_sources_and_flags_unverified(self):
         class Index:

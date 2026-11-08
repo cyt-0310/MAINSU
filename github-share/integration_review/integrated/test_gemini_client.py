@@ -64,7 +64,7 @@ class GeminiClientTests(unittest.TestCase):
                 llm_client.get_client()
         factory = Mock(return_value=self.client)
         with patch.dict(sys.modules, {'google': SimpleNamespace(genai=SimpleNamespace(Client=factory))}):
-            with patch.dict(os.environ, {'GEMINI_API_KEY': 'fake-gemini-key'}):
+            with patch.dict(os.environ, {'GEMINI_API_KEY': 'fake-gemini-key-for-testing-only'}):
                 self.assertIs(llm_client.get_client(), self.client)
         self.assertEqual(factory.call_args.kwargs['http_options']['timeout'], 60000)
 

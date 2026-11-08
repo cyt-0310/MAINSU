@@ -73,6 +73,13 @@ def main():
     commands = parser.add_subparsers(dest='command', required=True)
     check = commands.add_parser('check', help='Send one short structured request without PDF or model downloads')
     check.add_argument('--timeout', type=float, help='Gemini request timeout in seconds (maximum 300)')
+    summary = commands.add_parser('summary', help='Display saved interview analysis without API calls')
+    summary.add_argument('session_json')
+    summary.add_argument('--output', help='Optional new text/Markdown output file')
+    plan = commands.add_parser('plan', help='Student Profile to Question Plan')
+    plan.add_argument('profile_json')
+    plan.add_argument('--index', required=True)
+    plan.add_argument('--output', required=True)
     pdf = commands.add_parser('parse')
     pdf.add_argument('pdf')
     pdf.add_argument('--output', required=True)
@@ -97,6 +104,24 @@ def main():
             print(f'Gemini 連線方式：{get_gemini_transport()}')
         result = call_llm('這是連線測試，請在 message 回傳「連線成功」。', ConnectionCheck)
         print('API 結構化回覆已驗證：', result.message)
+    elif args.command == 'summary':
+        from results_summary import render_summary
+        snapshot = json.loads(Path(args.session_json).read_text(encoding='utf-8-sig'))
+        text = render_summary(snapshot)
+        print(text)
+        if args.output:
+            with Path(args.output).open('x', encoding='utf-8') as stream:
+                stream.write(text + '\n')
+    elif args.command == 'plan':
+        from ai_services import plan_from_profile
+        from interview_gap_detection.llm_client import get_model, get_client
+        get_model()
+        get_client()
+        profile = json.loads(Path(args.profile_json).read_text(encoding='utf-8-sig'))
+        index_data = json.loads(Path(args.index).read_text(encoding='utf-8'))
+        index = EvidenceIndex.load(args.index, SentenceEmbedder(index_data['model']))
+        plan_from_profile(profile, index, args.output, create_dir=True)
+        print('Student Profile → Question Plan 已完成。')
     elif args.command == 'parse':
         source = Path(__file__).resolve().parents[2] / 'docling_pdf' / 'parse_pdf.py'
         destination = Path(args.output).resolve()
@@ -146,6 +171,8 @@ def main():
                 event = session.submit(answer, timed_out=expired)
                 save_session(session, args.output)
             print(event['reason'])
+            from results_summary import render_summary
+            print('\n' + render_summary(session.snapshot()))
         except BaseException as error:
             session._log('interrupted', reason=type(error).__name__)
             save_session(session, args.output)

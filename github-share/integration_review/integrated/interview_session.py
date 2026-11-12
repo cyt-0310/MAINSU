@@ -3,6 +3,7 @@ import math
 import time
 from bridge import validate_details
 from interview_gap_detection.gap_detection import detect_gap
+from interview_gap_detection.config import MIN_FOLLOWUP_REMAINING_SECONDS
 
 
 class InterviewSession:
@@ -74,6 +75,18 @@ class InterviewSession:
         return max(0, min(limit - (self.clock()-self.pending['asked_at']),
                           240-self.topic_elapsed(), 1200-self.elapsed()))
 
+    def _followup_time_guard(self):
+        """Reserve an answer window before generation and again before asking."""
+        minimum = MIN_FOLLOWUP_REMAINING_SECONDS
+        if 1200 - self.elapsed() < minimum:
+            reason = f'全場剩餘時間不足 {minimum} 秒，不再追問'
+            self._log('topic_end', topic_index=self.index, reason=reason,
+                      followups=self.active['followups'], details=self.active['details'])
+            return self._finish(reason)
+        if 240 - self.topic_elapsed() < minimum:
+            return self._end_topic(f'本主題剩餘時間不足 {minimum} 秒，不再追問')
+        return None
+
     def submit(self, answer, timed_out=False):
         if self.finished or self.pending is None:
             raise RuntimeError('No pending question')
@@ -124,6 +137,9 @@ class InterviewSession:
         allow_outside = self.outside_followups < 1
         if self.index == 0 and (not assessment.get('mentions_outside_portfolio') or not allow_outside):
             return self._end_topic('自介沒有可追問的備審外重要內容')
+        time_end = self._followup_time_guard()
+        if time_end is not None:
+            return time_end
         followup = self.services.followup(topic, self.active['qa_history'], gap, allow_outside)
         outside = followup['targets_outside_portfolio']
         if (outside and not allow_outside) or (self.index == 0 and not outside):
@@ -133,6 +149,9 @@ class InterviewSession:
             return self._finish('全場時間達 20 分鐘')
         if self.topic_elapsed() >= 240:
             return self._end_topic('本主題時間達 4 分鐘')
+        time_end = self._followup_time_guard()
+        if time_end is not None:
+            return time_end
         self.active['followups'] += 1
         self.outside_followups += int(outside)
         self._log('followup_reason', topic_index=self.index, **followup)

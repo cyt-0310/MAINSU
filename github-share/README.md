@@ -11,6 +11,7 @@ Python 3.12 專案。以備審候選事件建立個人化題庫，透過 Gemini 
 - 自介＋1～2 個備審事件；完整度門檻 55%，相關度低於 0.4 最多重述一次，仍離題就換題。
 - 輸入文字後按 **Enter 立即結束本題回答並送出**，不必等待時間到。空白 Enter 會提醒補上文字；到時會提交目前已輸入文字。Ctrl+C 中斷面試。
 - 一般單題 120 秒、自介 90 秒、主題 4 分鐘、全場 20 分鐘／15 題上限。模型等待時間計入面試時間。
+- 新增追問前，主題及全場都須至少剩餘 60 秒；生成後再次檢查。主題不足則換題，全場不足則結束，不增加未實際提出的追問計數。離題重述仍依原有規則執行。門檻可在 `interview_gap_detection/config/settings.json` 的 `followup.min_remaining_seconds` 調整（路徑位於 `integration_review/integrated/` 下）。此設定為語音使用情境預留回答時間，目前介面仍為文字回答。
 
 使用者已在本機確認 Gemini REST 的 gemini-3.5-flash-lite 連線及 prepare 成功。自動測試以假模型回應檢查流程，並不代表評分準確率或所有終端中文輸入法已驗收。
 
@@ -62,6 +63,8 @@ API 模式會把備審與問答傳給服務。測試請使用可提供給 Gemini
 ```
 
 題庫在 `outputs/prepared-01/topics.json`。面試時輸入完成即可按 Enter，畫面會顯示「回答已送出，正在分析」。下一次請換新輸出名稱。
+
+PDF 解析完成會同時輸出 `portfolio.md`、`portfolio.events.json` 與 `portfolio.docling.json`。閱讀 `outputs/parsed-01/portfolio.md` 即可核對結果：最上方是事件切分總表及各事件完整內容（含來源頁碼、所屬課程與子事件），後面是逐頁解析原文。在 VS Code 開啟 MD 後按 `Ctrl+Shift+V` 可預覽表格與標題。事件內容依現有切分結果呈現，仍需對照 PDF 確認。
 
 多份備審可依序列出多個 .events.json，但必須屬於同一學生。
 

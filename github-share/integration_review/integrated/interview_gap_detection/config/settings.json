@@ -14,6 +14,7 @@
   },
 
   "followup": {
+    "min_remaining_seconds": 60,
     "max_general": 2,
     "max_intro": 1,
     "max_outside_portfolio": 1

@@ -491,14 +491,46 @@ def build_units(raw, events):
 def export_md(units, segmented=None):
     out, page, navigation = [], object(), False
     if segmented is not None:
-        out.extend(["# 事件切分索引","> 以下為系統依備審內容切分的候選事件。",
-                    "| 事件 | 所屬課程 | 類型 | PDF 頁碼 |","| --- | --- | --- | --- |"])
+        out.extend(["# 事件切分索引","> 以下為系統切分的候選事件，請對照原 PDF 確認。"])
+        rows = ["| 事件 | 所屬課程 | 類型 | PDF 頁碼 |",
+                "| --- | --- | --- | --- |"]
         event_lookup={e['id']:e for e in segmented}
         for event in segmented:
             title=event["title"].replace("|","\\|").replace("\n"," ")
             parent=event_lookup.get(event.get('parent_event_id'),{}).get('title','—').replace('|','\\|')
             label=('↳ ' if event.get('parent_event_id') else '')+title
-            out.append(f"| {event['id']}：{label} | {parent} | {event['type']} | {', '.join(map(str,event.get('all_pages',event['pages'])))} |")
+            rows.append(f"| {event['id']}：{label} | {parent} | {event['type']} | {', '.join(map(str,event.get('all_pages',event['pages'])))} |")
+        if segmented:
+            out.append("\n".join(rows))
+        unit_lookup = {u['id']: u for u in units}
+        for event in segmented:
+            title = event['title'].replace('\r', ' ').replace('\n', ' ')
+            out.append(f"## {event['id']}：{title}")
+            out.append("來源 PDF 頁碼：" + ', '.join(map(str, event['pages'])))
+            parent = event_lookup.get(event.get('parent_event_id'))
+            if parent:
+                out.append(f"所屬課程：{parent['id']}：{parent['title']}")
+            children = [event_lookup[cid] for cid in event.get('child_event_ids', [])
+                        if cid in event_lookup]
+            if children:
+                out.append("子事件：" + '、'.join(f"{e['id']}：{e['title']}" for e in children))
+            if event.get('quality_flags'):
+                out.append("> 此事件含需核對的來源或切分邊界。標記：" + '、'.join(event['quality_flags']))
+            # Use exactly this event's assigned units; child content stays with
+            # its own event, and excluded page furniture is not pulled back in.
+            evidence = [unit_lookup[uid] for uid in event.get('source_unit_ids', [])
+                        if uid in unit_lookup]
+            if evidence:
+                event_page = object()
+                for unit in evidence:
+                    if unit['page'] != event_page:
+                        event_page = unit['page']
+                        out.append(f"### PDF 第 {event_page} 頁" if event_page is not None else "### 未定位文字")
+                    if unit.get('text_method') == 'encoding_fallback_ocr':
+                        out.append("> 以下為局部 OCR 補救文字，請核對原圖。")
+                    out.append(unit['text'])
+            else:
+                out.append(event.get('text') or '〔此事件尚無可顯示的內容〕')
         if not segmented:
             out.append("尚無足夠依據建立事件；原文保留如下。")
         out.append("# 原文解析")
@@ -517,7 +549,6 @@ def export_md(units, segmented=None):
                        + ("含未辨識儲存格。" if u.get("ocr_cell_coverage",1) < 1 else ""))
         out.append(prefix+u["text"])
     return "\n\n".join(out)+"\n"
-
 
 def refine_events(raw, events=None):
     """Document-independent postprocessing. Never supplies replacement words."""
@@ -607,6 +638,69 @@ def event_kind(title):
     if re.search(r"課程|資料分析|繪圖|政策|名片|觀光|地理",title,re.I): return "course_project"
     if re.search(r"程式|專案|設計|製作|網站|系統|project",title,re.I): return "project_or_contribution"
     return "experience"
+
+
+def merge_resume_details(events, units, assignments):
+    """Join a brief role entry to one unambiguous, explicitly introduced detail.
+
+    Matching requires the same role and a shared school year/calendar year or
+    an explicit organization name. Ambiguous candidates remain separate.
+    """
+    roles = r'副社長|副會長|總務|社長|會長|班長|副班長|股長|組長|隊長|幹部|社員'
+    order = {u['id']: i for i, u in enumerate(units)}
+    briefs = [e for e in events if 'brief_resume_item' in e.get('quality_flags', [])]
+    consumed = set()
+
+    def periods(text):
+        text = unicodedata.normalize('NFKC', text)
+        return [set(re.findall(pattern, text)) for pattern in
+                (r'(?:高|國|大)[一二三四]', r'(?:19|20)\d{2}')]
+
+    for detail in events:
+        if not any(b['rule'] == 'narrative_excerpt_candidate' for b in detail['boundary_evidence']):
+            continue
+        introduction = re.search(r'(?:擔任|身為)([^，。；\n]{0,30}?)(' + roles + r')', detail['title'])
+        if not introduction:
+            continue
+        organization, role = introduction.groups()
+        organization = re.sub(r'^(?:了|過|一名|一位)', '', organization).strip()
+        explicit_org = organization not in ('', '社團', '班級', '班上', '學校', '校內', '本社', '我們社團')
+        detail_periods = periods(detail['title'])
+        matches = []
+        for brief in briefs:
+            brief_roles = set(re.findall(roles, brief['title']))
+            if role not in brief_roles:
+                continue
+            if explicit_org and normalized(organization) not in normalized(brief['title']):
+                continue
+            brief_periods = periods(brief['title'])
+            comparable = [(a, b) for a, b in zip(detail_periods, brief_periods) if a and b]
+            if any(a.isdisjoint(b) for a, b in comparable):
+                continue
+            if not explicit_org and not comparable:
+                continue
+            matches.append(brief)
+        if len(matches) != 1:
+            continue
+        target = matches[0]
+        evidence = {
+            'rule': 'unique_resume_role_and_period_or_organization',
+            'resume_title': target['title'], 'detail_title': detail['title'],
+            'matched_role': role, 'organization_mention': organization,
+            'source_unit_ids': list(detail['source_unit_ids']),
+            'confirmation_required': True,
+        }
+        target.setdefault('merge_evidence', []).append(evidence)
+        target['source_unit_ids'] = sorted(set(target['source_unit_ids'] + detail['source_unit_ids']), key=order.get)
+        target['boundary_evidence'].extend(detail['boundary_evidence'])
+        target['subsections'].extend(detail['subsections'])
+        target['quality_flags'] = sorted((set(target['quality_flags']) | set(detail['quality_flags']) |
+                                          {'resume_detail_merge_needs_review'}) -
+                                         {'brief_resume_item', 'narrative_boundary_uncertain'})
+        for uid in detail['source_unit_ids']:
+            assignments[uid] = {'event_id': target['id']}
+        consumed.add(detail['id'])
+    return [e for e in events if e['id'] not in consumed]
 
 
 def segment_events(document):
@@ -783,6 +877,7 @@ def segment_events(document):
             current=None
 
     lookup={u["id"]:u for u in units}
+    events = merge_resume_details(events, units, assignments)
     # A title with no body is not promoted into an event.
     events=[e for e in events if e["source_unit_ids"]]
     remap={e["id"]:f"event_{i:04d}" for i,e in enumerate(events,1)}

@@ -55,6 +55,19 @@ class FakeEmbedder:
         return [[float('角色' in text), float('反思' in text), 1.] for text in texts]
 
 
+class TimedServices(Services):
+    def __init__(self):
+        super().__init__()
+        self.followup_calls = 0
+        self.latency = 0
+        self.clock = None
+
+    def followup(self, *args):
+        self.followup_calls += 1
+        self.clock.advance(self.latency)
+        return super().followup(*args)
+
+
 class SessionTests(unittest.TestCase):
     def make(self, services):
         clock = Clock()
@@ -108,6 +121,60 @@ class SessionTests(unittest.TestCase):
         self.assertEqual(s.submit('追問一回答')['question_kind'], 'followup')
         self.assertEqual(s.submit('追問二回答')['topic_index'], 2)
         self.assertTrue(all(q == '問題1' for q in services.questions[1:]))
+
+    def timed_general(self):
+        services = TimedServices()
+        session, clock = self.make(services)
+        services.clock = clock
+        session.submit('自介')
+        return session, clock, services
+
+    def test_under_sixty_seconds_skips_generation_without_using_followup(self):
+        s, clock, services = self.timed_general()
+        clock.advance(181)
+        event = s.submit('回答')
+        self.assertEqual(event['topic_index'], 2)
+        self.assertEqual(services.followup_calls, 0)
+        end = [e for e in s.log if e['kind'] == 'topic_end' and e['topic_index'] == 1][-1]
+        self.assertIn('不足 60 秒', end['reason'])
+        self.assertEqual(end['followups'], 0)
+        self.assertEqual(s.total_questions, 3)  # intro, event 1 main, event 2 main
+
+    def test_exactly_sixty_seconds_allows_followup(self):
+        s, clock, services = self.timed_general()
+        clock.advance(180)
+        self.assertEqual(s.submit('回答')['question_kind'], 'followup')
+        self.assertEqual(services.followup_calls, 1)
+        self.assertEqual(s.remaining_answer_seconds(), 60)
+
+    def test_generation_latency_can_cancel_followup_before_it_is_counted(self):
+        s, clock, services = self.timed_general()
+        clock.advance(170)
+        services.latency = 11
+        event = s.submit('回答')
+        self.assertEqual(event['topic_index'], 2)
+        self.assertEqual(services.followup_calls, 1)
+        self.assertEqual(s.total_questions, 3)
+        self.assertFalse(any(e['kind'] == 'question' and e['question_kind'] == 'followup' for e in s.log))
+
+    def test_stops_after_one_followup_when_remaining_time_is_short(self):
+        s, clock, services = self.timed_general()
+        clock.advance(110)
+        self.assertEqual(s.submit('主問題回答')['question_kind'], 'followup')
+        clock.advance(71)
+        self.assertEqual(s.submit('第一次追問回答')['topic_index'], 2)
+        self.assertEqual(services.followup_calls, 1)
+        end = [e for e in s.log if e['kind'] == 'topic_end' and e['topic_index'] == 1][-1]
+        self.assertEqual(end['followups'], 1)
+
+    def test_insufficient_overall_time_ends_interview_before_generation(self):
+        s, clock, services = self.timed_general()
+        clock.advance(1141)
+        s.active['started'] = clock()
+        s.pending['asked_at'] = clock()
+        self.assertEqual(s.submit('回答')['kind'], 'finished')
+        self.assertEqual(services.followup_calls, 0)
+        self.assertIn('全場剩餘時間不足 60 秒', s.log[-1]['reason'])
 
     def test_complete_topic_switches_not_followup(self):
         s, _ = self.make(Services(value=1))

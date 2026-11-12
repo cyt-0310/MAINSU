@@ -34,6 +34,7 @@ GENERAL_ANSWER_LIMIT = SETTINGS["answer_time"]["general_limit_seconds"]
 
 # 六、追問次數
 MAX_FOLLOWUPS_GENERAL = SETTINGS["followup"]["max_general"]
+MIN_FOLLOWUP_REMAINING_SECONDS = SETTINGS["followup"].get("min_remaining_seconds", 60)
 MAX_FOLLOWUPS_INTRO = SETTINGS["followup"]["max_intro"]
 MAX_OUTSIDE_PORTFOLIO_FOLLOWUPS = SETTINGS["followup"]["max_outside_portfolio"]
 

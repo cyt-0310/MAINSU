@@ -3,6 +3,7 @@ import json
 import urllib.error
 import urllib.parse
 import urllib.request
+from .api_retry import TemporaryServiceError
 
 
 def error_diagnostic(data):
@@ -72,7 +73,11 @@ class GeminiRESTClient:
                 504: 'Google 服務處理逾時',
             }
             description = diagnostic or descriptions.get(code, 'API 請求失敗')
-            raise RuntimeError(f'Gemini HTTP {code}：{description}。未切換其他服務。') from None
+            error_type = TemporaryServiceError if code in (500, 502, 503, 504) else RuntimeError
+            message = f'Gemini HTTP {code}：{description}。未切換其他服務。'
+            if error_type is TemporaryServiceError:
+                raise error_type(message, code) from None
+            raise error_type(message) from None
         except urllib.error.URLError as error:
             if isinstance(error.reason, TimeoutError):
                 raise RuntimeError(f'Gemini REST 連線逾時（單次等待 {timeout:g} 秒）；這不代表金鑰無效。') from None

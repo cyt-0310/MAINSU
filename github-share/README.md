@@ -62,7 +62,23 @@ API 模式會把備審與問答傳給服務。測試請使用可提供給 Gemini
 .\.venv\Scripts\python.exe integration_review\integrated\run_text_interview.py interview outputs\prepared-01 --output outputs\session-01.json
 ```
 
-題庫在 `outputs/prepared-01/topics.json`。面試時輸入完成即可按 Enter，畫面會顯示「回答已送出，正在分析」。下一次請換新輸出名稱。
+題庫在 `outputs/prepared-01/topics.json`。回答會先保存再分析。重新練習請換新輸出名稱；接續原面試則使用下方的 `--resume`。
+
+### 服務忙碌與中斷續答
+
+相關度計算前，先以本機規則排除空白、純符號、單獨的「測試回答範例：」「以下是我的回答：」「待補」等佔位文字。這些嘗試保留於紀錄，但不進入語意相關度、完整度評估或模型對話內容；畫面提醒未實質作答後重問原題，不增加題數，與離題共用每主題一次重述機會。再次未實質作答就換題，並遵守既有時間／題數上限。短回答、「不知道」或真正的離題敘述仍交由既有流程判斷，不以字數判定內容不足。
+
+Gemini HTTP 500、502、503 或 504 會額外自動重試最多 3 次，等待約 2、4、8 秒並加少量隨機延遲。400／403／429 不自動重試；不會自動改用其他模型或服務。正常分析時間仍計入面試，但失敗請求、自動重試等待與失敗後等待使用者選擇的時間不計入。
+
+按 Enter 送出的回答會先存入 session JSON，再開始分析。重試仍失敗時，按 Enter 可重新分析同一份回答；輸入 `q` 可保存離開。失敗回合不採用部分評分、不增加追問題數。尚未送出的輸入不保證能在中斷後恢復。
+
+在新的終端機設定好 API 金鑰後，用原本的題庫資料夾與 session 檔案繼續：
+
+```powershell
+.\.venv\Scripts\python.exe integration_review\integrated\run_text_interview.py interview outputs\prepared-01 --output outputs\session-01.json --resume
+```
+
+離線期間不計入面試時間；程式會核對題庫與備審索引。只有新版包含 `runtime` 恢復狀態的紀錄支援續答，舊版紀錄仍可查看摘要。
 
 PDF 解析完成會同時輸出 `portfolio.md`、`portfolio.events.json` 與 `portfolio.docling.json`。閱讀 `outputs/parsed-01/portfolio.md` 即可核對結果：最上方是事件切分總表及各事件完整內容（含來源頁碼、所屬課程與子事件），後面是逐頁解析原文。在 VS Code 開啟 MD 後按 `Ctrl+Shift+V` 可預覽表格與標題。事件內容依現有切分結果呈現，仍需對照 PDF 確認。
 

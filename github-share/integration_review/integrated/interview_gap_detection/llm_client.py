@@ -2,6 +2,7 @@
 import os
 import math
 from .config import SETTINGS
+from .api_retry import TemporaryServiceError, retry_transient
 
 _client = None
 _gemini_client = None
@@ -102,6 +103,10 @@ def call_llm(prompt: str, schema):
 
 
 def _call_gemini(prompt, schema, model):
+    return retry_transient(lambda: _call_gemini_once(prompt, schema, model))
+
+
+def _call_gemini_once(prompt, schema, model):
     client = get_client()
     if get_gemini_transport() == 'rest':
         return client.generate(prompt, schema, model, timeout=get_gemini_timeout())
@@ -116,6 +121,9 @@ def _call_gemini(prompt, schema, model):
             timeout=get_gemini_timeout(),
         )
     except Exception as error:
+        code = getattr(error, 'code', None) or getattr(error, 'status_code', None)
+        if code in (500, 502, 503, 504):
+            raise TemporaryServiceError(f'Gemini HTTP {code}：服務暫時無法使用。', code) from None
         names = {cls.__name__ for cls in type(error).__mro__}
         if isinstance(error, TimeoutError) or names.intersection({'APITimeoutError', 'TimeoutException'}):
             raise RuntimeError(

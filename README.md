@@ -59,7 +59,9 @@ New-Item -ItemType Directory -Force outputs | Out-Null
 .\.venv\Scripts\python.exe integration_review\integrated\run_text_interview.py interview outputs\demo-01 --output outputs\session-01.json
 ```
 
-題庫在 outputs/demo-01/topics.json；請先核對，再開始面試。面試時輸入完成即可按 Enter，畫面會顯示「回答已送出，正在分析」。下一次請換新輸出名稱；目前沒有中斷續答功能。
+題庫在 outputs/demo-01/topics.json；請先核對，再開始面試。回答會先保存再分析。重新練習請換新輸出名稱；接續原面試則在原本的 interview 指令最後加 `--resume`，保留相同題庫資料夾與 `--output` 紀錄路徑。
+
+Gemini HTTP 500／502／503／504 會額外重試最多 3 次，等待約 2、4、8 秒並加隨機延遲；失敗請求及重試等待不計入面試時間。重試仍失敗時，按 Enter 重新分析已保存的回答，或輸入 `q` 保存離開。失敗回合不採用部分評分、不增加追問題數；只有新版包含 `runtime` 的紀錄支援續答。正常分析時間仍照原規則計算，尚未送出的輸入不保證能恢復。完整操作見 [面試程式說明](github-share/README.md#服務忙碌與中斷續答)。
 
 ## 4. 使用自己的 PDF
 

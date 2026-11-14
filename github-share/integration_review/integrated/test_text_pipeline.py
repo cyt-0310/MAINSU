@@ -195,6 +195,7 @@ class SessionTests(unittest.TestCase):
         s, clock = self.make(Services())
         clock.advance(240)
         self.assertEqual(s.submit('已超時回答')['topic_index'], 1)
+        self.assertEqual(s.submit('', timed_out=True)['question_kind'], 'restate')
         self.assertEqual(s.submit('', timed_out=True)['topic_index'], 2)
 
     def test_restate_does_not_reset_topic_clock(self):

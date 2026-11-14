@@ -1,6 +1,9 @@
 """Text interview state machine for steps 6-12. Services are injected for testing."""
 import math
 import time
+import copy
+from interview_gap_detection.api_retry import retry_clock
+from interview_gap_detection.answer_content import no_content_reason
 from bridge import validate_details
 from interview_gap_detection.gap_detection import detect_gap
 from interview_gap_detection.config import MIN_FOLLOWUP_REMAINING_SECONDS
@@ -21,6 +24,79 @@ class InterviewSession:
         self.log = []
         self.active = None
         self.pending = None
+        self.pending_answer = None
+        self._queued_at = None
+
+    def exclude_time(self, seconds):
+        self.started += seconds
+        if self.active is not None:
+            self.active['started'] += seconds
+        if self.pending is not None:
+            self.pending['asked_at'] += seconds
+
+    def queue_answer(self, answer, timed_out=False):
+        """Persist this buffer before doing any model work."""
+        if self.pending_answer is not None:
+            raise RuntimeError('上一份回答尚待分析，請先重試或保存離開')
+        if self.finished or self.pending is None:
+            raise RuntimeError('No pending question')
+        if not isinstance(answer, str) or (not answer.strip() and not timed_out):
+            raise ValueError('請輸入文字回答')
+        age = self.clock() - self.pending['asked_at']
+        self.pending_answer = {'answer': answer, 'timed_out': timed_out or age >= (90 if self.index == 0 else 120),
+                               'answer_elapsed': age}
+        self._queued_at = self.clock()
+
+    def process_answer(self):
+        """Commit a whole turn, or restore it with the submitted answer intact."""
+        if self.pending_answer is None:
+            raise RuntimeError('No submitted answer to process')
+        self.exclude_time(self.clock() - self._queued_at)
+        self._queued_at = None
+        fields = ('started', 'index', 'total_questions', 'outside_followups', 'finished',
+                  'active', 'pending', 'log', 'pending_answer')
+        before = {name: copy.deepcopy(getattr(self, name)) for name in fields}
+        started = self.clock()
+        try:
+            with retry_clock(self.exclude_time):
+                result = self._submit_queued()
+        except BaseException:
+            for name, value in before.items():
+                setattr(self, name, value)
+            self.exclude_time(self.clock() - started)
+            self._queued_at = self.clock()
+            raise
+        self.pending_answer = None
+        return result
+
+    def runtime_state(self):
+        now = self.clock() if self._queued_at is None else self._queued_at
+        state = {name: copy.deepcopy(getattr(self, name)) for name in
+                 ('index', 'total_questions', 'outside_followups', 'finished', 'active', 'pending', 'pending_answer')}
+        state.update(version=1, elapsed=max(0, now - self.started))
+        if state['active'] is not None:
+            state['active']['elapsed'] = max(0, now - state['active'].pop('started'))
+        if state['pending'] is not None:
+            state['pending']['elapsed'] = max(0, now - state['pending'].pop('asked_at'))
+        return state
+
+    @classmethod
+    def restore(cls, snapshot, services, clock=time.monotonic):
+        state = copy.deepcopy(snapshot.get('runtime'))
+        if not state or state.get('version') != 1:
+            raise RuntimeError('這份舊紀錄沒有恢復狀態，無法接續；請使用新版重新開始一次面試')
+        session = cls(snapshot['topics'], services, clock)
+        now = clock()
+        session.started = now - state['elapsed']
+        for name in ('index', 'total_questions', 'outside_followups', 'finished', 'active', 'pending', 'pending_answer'):
+            setattr(session, name, state[name])
+        if session.active is not None:
+            session.active['started'] = now - session.active.pop('elapsed')
+        if session.pending is not None:
+            session.pending['asked_at'] = now - session.pending.pop('elapsed')
+        session.log = copy.deepcopy(snapshot['log'])
+        session._queued_at = now if session.pending_answer is not None else None
+        return session
 
     def elapsed(self):
         return max(0, self.clock() - self.started)
@@ -88,25 +164,37 @@ class InterviewSession:
         return None
 
     def submit(self, answer, timed_out=False):
-        if self.finished or self.pending is None:
-            raise RuntimeError('No pending question')
-        if not isinstance(answer, str) or (not answer.strip() and not timed_out):
-            raise ValueError('請輸入文字回答')
+        self.queue_answer(answer, timed_out)
+        return self.process_answer()
+
+    def _submit_queued(self):
+        answer = self.pending_answer['answer']
+        timed_out = self.pending_answer['timed_out']
         topic = self.topics[self.index]
-        answer_elapsed = self.clock() - self.pending['asked_at']
-        limit = 90 if self.index == 0 else 120
-        timed_out = timed_out or answer_elapsed >= limit
+        answer_elapsed = self.pending_answer['answer_elapsed']
         self._log('answer', topic_index=self.index, question=self.pending['text'],
                   answer=answer, answer_elapsed=round(answer_elapsed, 3), timed_out=timed_out,
                   submitted_by='timeout' if timed_out else 'enter')
-        self.active['qa_history'].append((self.pending['text'], answer))
         if self.elapsed() >= 1200:
             self._log('topic_end', topic_index=self.index, reason='全場時間達上限')
             return self._finish('全場時間達 20 分鐘')
         if self.topic_elapsed() >= 240:
             return self._end_topic('本主題時間達 4 分鐘')
-        if timed_out and not answer.strip():
-            return self._end_topic('單題超時且未提交文字')
+        no_content = no_content_reason(answer)
+        if no_content:
+            self._log('answer_check', topic_index=self.index, has_content=False,
+                      reason=no_content, relevance_computed=False)
+            if self.total_questions >= 15:
+                return self._finish('全場題數達 15 題')
+            if self.active['rephrased']:
+                return self._end_topic('重述一次後仍未實質作答')
+            time_end = self._followup_time_guard()
+            if time_end is not None:
+                return time_end
+            self.active['rephrased'] = True
+            return self._ask(self.pending['text'], 'restate')
+        # Placeholder attempts stay in the raw log but never enter model context.
+        self.active['qa_history'].append((self.pending['text'], answer))
         # Relevance is against the main topic question, using every answer in this topic.
         relevance = self.services.relevance(topic['question'], '\n'.join(a for _, a in self.active['qa_history']))
         score = relevance['relevance_score']
@@ -159,8 +247,10 @@ class InterviewSession:
 
     def snapshot(self):
         from results_summary import build_summary
+        runtime = self.runtime_state()
         snapshot = {'schema_version': 1, 'scope': 'steps_2_to_12_text_only',
-                'finished': self.finished, 'elapsed': round(self.elapsed(), 3),
+                'finished': self.finished, 'elapsed': round(runtime['elapsed'], 3),
+                'runtime': runtime,
                 'total_questions': self.total_questions, 'topics': self.topics, 'log': self.log}
         snapshot['summary'] = build_summary(snapshot)
         return snapshot

@@ -8,6 +8,8 @@ from interview_gap_detection.relevance import combine_with_llm
 TOPIC_SECONDS = 240
 # Fewer seconds than this left in a topic: skip restate/follow-up and move on.
 MIN_TOPIC_SECONDS_TO_CONTINUE = 60
+MIN_INTERVIEW_SECONDS_TO_CONTINUE = 60
+LOW_INTERVIEW_TIME_REASON = '全場剩餘不足 60 秒，停止提問'
 
 
 class InterviewSession:
@@ -23,7 +25,6 @@ class InterviewSession:
         self.paused_total = 0.0
         self.index = -1
         self.total_questions = 0
-        self.outside_followups = 0
         self.finished = False
         self.log = []
         self.active = None
@@ -62,6 +63,9 @@ class InterviewSession:
     def _topic_time_low(self):
         return TOPIC_SECONDS - self.topic_elapsed() < MIN_TOPIC_SECONDS_TO_CONTINUE
 
+    def _interview_time_low(self):
+        return 1200 - self.elapsed() < MIN_INTERVIEW_SECONDS_TO_CONTINUE
+
     def _log(self, kind, **values):
         self.log.append({'kind': kind, 'elapsed': round(self.elapsed(), 3), **values})
 
@@ -84,6 +88,8 @@ class InterviewSession:
     def _next_topic(self):
         if self.elapsed() >= 1200 or self.total_questions >= 15:
             return self._finish('全場時間或題數達上限')
+        if self._interview_time_low():
+            return self._finish(LOW_INTERVIEW_TIME_REASON)
         self.index += 1
         if self.index >= len(self.topics):
             return self._finish('所有主題已完成')
@@ -140,6 +146,8 @@ class InterviewSession:
             # No answer counts as relevance 0: same once-per-topic restatement as an off-topic answer.
             self._log('no_answer', topic_index=self.index, question=self.pending['text'],
                       question_kind=self.pending['question_kind'], relevance_score=0)
+            if self._interview_time_low():
+                return self._end_topic(LOW_INTERVIEW_TIME_REASON)
             if self._topic_time_low():
                 return self._end_topic(f'本主題剩餘不足 {MIN_TOPIC_SECONDS_TO_CONTINUE} 秒，直接換題')
             if self.active['rephrased']:
@@ -169,6 +177,8 @@ class InterviewSession:
         if gap['decision'] == 'end_interview':
             self._log('topic_end', topic_index=self.index, reason=gap['reason'])
             return self._finish(gap['reason'])
+        if self._interview_time_low():
+            return self._end_topic(LOW_INTERVIEW_TIME_REASON)
         if self._topic_time_low():
             return self._end_topic(f'本主題剩餘不足 {MIN_TOPIC_SECONDS_TO_CONTINUE} 秒，直接換題')
         if score < .4:
@@ -178,20 +188,20 @@ class InterviewSession:
             return self._ask(self.pending['text'], 'restate')
         if gap['decision'] == 'switch_topic':
             return self._end_topic(gap['reason'])
-        allow_outside = self.outside_followups < 1
-        if self.index == 0 and (not assessment.get('mentions_outside_portfolio') or not allow_outside):
+        is_intro = self.index == 0
+        if is_intro and not assessment.get('mentions_outside_portfolio'):
             return self._end_topic('自介沒有可追問的備審外重要內容')
-        followup = self.services.followup(topic, self.active['qa_history'], gap, allow_outside)
-        outside = followup['targets_outside_portfolio']
-        if (outside and not allow_outside) or (self.index == 0 and not outside):
-            return self._end_topic('生成追問不符合備審外內容限制')
+        followup = self.services.followup(topic, self.active['qa_history'], gap, True)
+        if is_intro and not followup['targets_outside_portfolio']:
+            return self._end_topic('自介追問未針對備審外重要內容')
         # Model latency is excluded from both the topic clock and the 20-minute overall clock (both paused).
         if self.elapsed() >= 1200:
             return self._finish('全場時間達 20 分鐘')
+        if self._interview_time_low():
+            return self._end_topic(LOW_INTERVIEW_TIME_REASON)
         if self._topic_time_low():
             return self._end_topic(f'本主題剩餘不足 {MIN_TOPIC_SECONDS_TO_CONTINUE} 秒，直接換題')
         self.active['followups'] += 1
-        self.outside_followups += int(outside)
         self._log('followup_reason', topic_index=self.index, **followup)
         return self._ask(followup['follow_up_question'], 'followup')
 

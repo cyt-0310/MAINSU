@@ -92,9 +92,17 @@ class SessionTests(unittest.TestCase):
         s.submit('重要備審外內容')
         event = s.submit('追問回答')
         self.assertEqual(event['topic_index'], 1)
-        self.assertEqual(s.outside_followups, 1)
         self.assertIsNone(s.active['details'])
         self.assertEqual(s.active['qa_history'], [])
+
+    def test_intro_outside_followup_does_not_limit_learning_history(self):
+        s, _ = self.make(Services(outside=True))
+        s.submit('自介提到新經歷')
+        s.submit('補充自介')
+        for answer in ('學習歷程提到新經歷', '補充另一個新細節'):
+            self.assertEqual(s.submit(answer)['question_kind'], 'followup')
+            self.assertTrue(s.log[-2]['targets_outside_portfolio'])
+        self.assertEqual(s.submit('第二次追問的回答')['topic_index'], 2)
 
     def test_intro_without_outside_moves_on(self):
         s, _ = self.make(Services())
@@ -119,6 +127,26 @@ class SessionTests(unittest.TestCase):
         clock.advance(1200)
         self.assertEqual(s.submit('回答')['kind'], 'finished')
         self.assertEqual(s.total_questions, 1)
+
+    def test_under_sixty_seconds_globally_stops_all_question_paths(self):
+        for answer, score, value in (('', .7, 0), ('離題', .1, 0),
+                                     ('可追問', .7, 0), ('已完整', .7, 1)):
+            with self.subTest(answer=answer):
+                s, clock = self.make(Services([.7, score], value=value))
+                clock.advance(1100)
+                s.submit('自介')
+                clock.advance(41)
+                event = s.submit(answer, timed_out=not answer)
+                self.assertEqual(event['kind'], 'finished')
+                self.assertIn('全場剩餘不足 60 秒', event['reason'])
+                self.assertEqual(s.total_questions, 2)
+
+    def test_exactly_sixty_seconds_globally_allows_another_question(self):
+        s, clock = self.make(Services())
+        clock.advance(1100)
+        s.submit('自介')
+        clock.advance(40)
+        self.assertEqual(s.submit('可以追問的回答')['question_kind'], 'followup')
 
     def test_fifteenth_question_has_no_restatement(self):
         s, _ = self.make(Services([.1]))

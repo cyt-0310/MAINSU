@@ -31,6 +31,9 @@ def generate_followup(
         "備審外內容的追問次數已用完，追問必須以備審中有記載的內容為依據。"
     )
 
+    if topic["type"] == "自我介紹" and allow_outside_portfolio:
+        outside_rule = "自我介紹的追問必須針對學生主動提到、但備審未記載且與面試有關的重要內容。"
+
     prompt = load_prompt("followup.txt").format(
         topic_type=topic["type"],
         topic_event=topic["event"],

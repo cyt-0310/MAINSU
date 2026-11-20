@@ -35,7 +35,6 @@ GENERAL_ANSWER_LIMIT = SETTINGS["answer_time"]["general_limit_seconds"]
 # 六、追問次數
 MAX_FOLLOWUPS_GENERAL = SETTINGS["followup"]["max_general"]
 MAX_FOLLOWUPS_INTRO = SETTINGS["followup"]["max_intro"]
-MAX_OUTSIDE_PORTFOLIO_FOLLOWUPS = SETTINGS["followup"]["max_outside_portfolio"]
 # 十二、一個追問中暗藏的缺口細項數上限
 MAX_HIDDEN_ITEMS = SETTINGS["followup"].get("max_hidden_items", 3)
 

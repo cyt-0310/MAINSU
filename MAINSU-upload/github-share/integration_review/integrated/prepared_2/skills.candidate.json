@@ -1,0 +1,179 @@
+[
+  {
+    "event_id": "doc1:event_0001",
+    "title": "壹、高中學習歷程反思",
+    "parent_event_id": null,
+    "child_event_ids": [],
+    "candidate_skills": [],
+    "status": "candidate_needs_review"
+  },
+  {
+    "event_id": "doc1:event_0002",
+    "title": "修課選擇",
+    "parent_event_id": null,
+    "child_event_ids": [],
+    "candidate_skills": [],
+    "status": "candidate_needs_review"
+  },
+  {
+    "event_id": "doc1:event_0003",
+    "title": "多元表現",
+    "parent_event_id": null,
+    "child_event_ids": [],
+    "candidate_skills": [],
+    "status": "candidate_needs_review"
+  },
+  {
+    "event_id": "doc1:event_0004",
+    "title": "結語",
+    "parent_event_id": null,
+    "child_event_ids": [],
+    "candidate_skills": [],
+    "status": "candidate_needs_review"
+  },
+  {
+    "event_id": "doc1:event_0005",
+    "title": "貳、就讀動機",
+    "parent_event_id": null,
+    "child_event_ids": [],
+    "candidate_skills": [],
+    "status": "candidate_needs_review"
+  },
+  {
+    "event_id": "doc1:event_0006",
+    "title": "選校動機",
+    "parent_event_id": null,
+    "child_event_ids": [],
+    "candidate_skills": [],
+    "status": "candidate_needs_review"
+  },
+  {
+    "event_id": "doc1:event_0007",
+    "title": "SWOT 分析",
+    "parent_event_id": null,
+    "child_event_ids": [],
+    "candidate_skills": [
+      {
+        "aspect": "能力",
+        "text": "自律",
+        "quote": "自律",
+        "source_unit_id": "unit_000047",
+        "page": 9,
+        "bbox": [
+          187.2955429310187,
+          209.52550879756848,
+          251.30680260683687,
+          238.81152676482452
+        ],
+        "status": "candidate_needs_review"
+      },
+      {
+        "aspect": "能力",
+        "text": "樂觀",
+        "quote": "樂觀",
+        "source_unit_id": "unit_000048",
+        "page": 9,
+        "bbox": [
+          187.2955429310187,
+          253.79218743312344,
+          251.30680260683687,
+          283.0782054003795
+        ],
+        "status": "candidate_needs_review"
+      },
+      {
+        "aspect": "能力",
+        "text": "企圖心強",
+        "quote": "企圖心強",
+        "source_unit_id": "unit_000049",
+        "page": 9,
+        "bbox": [
+          187.2955429310187,
+          298.0588660686785,
+          315.31520295532823,
+          327.34488403593446
+        ],
+        "status": "candidate_needs_review"
+      }
+    ],
+    "status": "candidate_needs_review"
+  },
+  {
+    "event_id": "doc1:event_0008",
+    "title": "特質",
+    "parent_event_id": null,
+    "child_event_ids": [],
+    "candidate_skills": [
+      {
+        "aspect": "能力",
+        "text": "具備清晰的思路與細心處理事情的冷靜特質",
+        "quote": "一、清晰的思路細心處理事情的冷靜",
+        "source_unit_id": "unit_000062",
+        "page": 10,
+        "bbox": [
+          36.58482639563217,
+          176.36341369932245,
+          548.6548885108898,
+          205.6494316665785
+        ],
+        "status": "candidate_needs_review"
+      }
+    ],
+    "status": "candidate_needs_review"
+  },
+  {
+    "event_id": "doc1:event_0009",
+    "title": "二、策劃與組織的能力",
+    "parent_event_id": null,
+    "child_event_ids": [],
+    "candidate_skills": [
+      {
+        "aspect": "能力",
+        "text": "具備了解每個人的個性與溝通方式的能力",
+        "quote": "要慢慢了解每個人的個性與溝通方式，像是有人比較愛表現，就可以幫他設計一些只屬於他的特別動作。",
+        "source_unit_id": "unit_000066",
+        "page": 11,
+        "bbox": [
+          50.3955675001846,
+          110.35466564652927,
+          535.9688457551586,
+          576.542812793457
+        ],
+        "status": "candidate_needs_review"
+      }
+    ],
+    "status": "candidate_needs_review"
+  },
+  {
+    "event_id": "doc1:event_0010",
+    "title": "参、未來學習計畫與生涯規劃",
+    "parent_event_id": null,
+    "child_event_ids": [],
+    "candidate_skills": [],
+    "status": "candidate_needs_review"
+  },
+  {
+    "event_id": "doc1:event_0011",
+    "title": "資訊",
+    "parent_event_id": null,
+    "child_event_ids": [],
+    "candidate_skills": [],
+    "status": "candidate_needs_review"
+  },
+  {
+    "event_id": "doc1:event_0012",
+    "title": "研究所",
+    "parent_event_id": null,
+    "child_event_ids": [],
+    "candidate_skills": [],
+    "status": "candidate_needs_review"
+  },
+  {
+    "event_id": "doc1:event_0013",
+    "title": "THANK YOU",
+    "parent_event_id": null,
+    "child_event_ids": [],
+    "candidate_skills": [],
+    "status": "candidate_needs_review"
+  }
+]

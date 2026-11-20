@@ -1,0 +1,1169 @@
+{
+  "schema_version": 1,
+  "scope": "steps_2_to_12_text_only",
+  "finished": true,
+  "elapsed": 511.813,
+  "total_questions": 5,
+  "topics": [
+    {
+      "type": "自我介紹",
+      "event": "自我介紹",
+      "source": "固定題",
+      "portfolio_role": "未提及",
+      "check_aspects": [
+        "動機",
+        "個人特質",
+        "經歷亮點"
+      ],
+      "question": "請用大約 1 分鐘做個自我介紹，並說明你為什麼想就讀資訊管理學系。",
+      "answer_limit": 90,
+      "max_followups": 1,
+      "event_id": null
+    },
+    {
+      "type": "學習歷程",
+      "event": "修課選擇",
+      "event_id": "doc1:event_0002",
+      "source": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+      "portfolio_role": "未提及",
+      "question": "你在高中時原本選擇了第三類組，後來經過探索發現自己更喜歡偏數理與管理的內容，請問這個轉變過程中，你認為三類組的學習經驗對你探索資訊管理領域有什麼具體的幫助或影響嗎？",
+      "check_aspects": [
+        "學科轉向動機",
+        "跨領域學習認知",
+        "生涯規劃思考"
+      ],
+      "max_followups": 2,
+      "answer_limit": 120
+    },
+    {
+      "type": "學習歷程",
+      "event": "貳、就讀動機",
+      "event_id": "doc1:event_0005",
+      "source": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+      "portfolio_role": "未提及",
+      "question": "你在就讀動機中提到，國小接觸過資訊課程，高中時也發現資訊課程能應用在國防安全與人工智能等領域，同時你也喜歡接觸不同群體的人。請問你覺得資訊管理結合「資訊技術」與「人群溝通」的特質，最吸引你的地方是什麼？",
+      "check_aspects": [
+        "資訊管理科系理解",
+        "個人興趣與學系契合度",
+        "就讀動機清晰度"
+      ],
+      "max_followups": 2,
+      "answer_limit": 120
+    }
+  ],
+  "log": [
+    {
+      "kind": "question",
+      "elapsed": 0,
+      "question_kind": "main",
+      "text": "請用大約 1 分鐘做個自我介紹，並說明你為什麼想就讀資訊管理學系。",
+      "topic_index": 0,
+      "total_questions": 1
+    },
+    {
+      "kind": "answer",
+      "elapsed": 14.297,
+      "topic_index": 0,
+      "question": "請用大約 1 分鐘做個自我介紹，並說明你為什麼想就讀資訊管理學系。",
+      "answer": "我是徐苙媗 就讀於南湖高中 想讀資管系的原因是因為高二的時候有上過python的初階課程 而有了興趣 我自己認為字的個性適合管理 曾經擔任過熱舞社的幹部",
+      "answer_elapsed": 14.297,
+      "timed_out": false,
+      "submitted_by": "enter"
+    },
+    {
+      "kind": "analysis",
+      "elapsed": 79.578,
+      "topic_index": 0,
+      "relevance": {
+        "vector_score": 0.5373,
+        "cross_score": 0.7107,
+        "relevance_score": 0.5893,
+        "level": "partial",
+        "relevance_status": "⚠️ 部分離題 (0.4 ~ 0.6)"
+      },
+      "relevance_status": "可能離題",
+      "assessment": {
+        "details": {
+          "star": {
+            "why_score": 0.5,
+            "how_score": 0.0,
+            "what_score": 0.0,
+            "role_score": 0.5,
+            "action_score": 0.0
+          },
+          "ask": {
+            "skill_score": 0.5,
+            "attitude_score": 0.0,
+            "knowledge_score": 0.0
+          },
+          "gibbs": {
+            "reflection_score": 0.0,
+            "challenge_score": 0.0
+          }
+        },
+        "reasoning": "動機why給0.5是因為學生僅概括提及是因為高二上過Python初階課程而對資管系產生興趣；角色role給0.5是因為僅提及擔任過熱舞社幹部，但未說明具體職稱與細節；能力skill給0.5是因為提及接觸過Python初階課程，但缺乏技術實例；其餘維度因自我介紹篇幅簡短而未提及，給予0.0。",
+        "consistency_issues": [],
+        "mentions_outside_portfolio": false,
+        "retrieved_evidence": [
+          {
+            "chunk_id": "doc1:event_0005:unit_000035:0",
+            "event_id": "doc1:event_0005",
+            "title": "貳、就讀動機",
+            "unit_id": "unit_000035",
+            "page": 7,
+            "bbox": [
+              82.73391015275361,
+              331.78599602338124,
+              533.5257073198447,
+              670.9387644395222
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "在國小的時候有上過資訊的課程，就覺得還滿適合自己的，很有條理，上課高中之後，發現資訊課程可以做很多有意義的事情，例如：國防安全和人工智能等，而我又是一個滿喜歡接觸人得覺就，人的係關同不﻿群，了解資訊管理更適合我。",
+            "similarity": 0.78312
+          },
+          {
+            "chunk_id": "doc1:event_0002:unit_000016:0",
+            "event_id": "doc1:event_0002",
+            "title": "修課選擇",
+            "unit_id": "unit_000016",
+            "page": 4,
+            "bbox": [
+              57.931370386192796,
+              582.5439873086111,
+              533.162183345321,
+              780.6186171355013
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "我經過高二和高三的探索後， 發現第三類組的課程和未來方向， 與我所喜愛的有所差距，而我更喜歡偏數理、管理的內容，對資訊以及人工智能更感興趣。",
+            "similarity": 0.76127
+          },
+          {
+            "chunk_id": "doc1:event_0006:unit_000039:0",
+            "event_id": "doc1:event_0006",
+            "title": "選校動機",
+            "unit_id": "unit_000039",
+            "page": 8,
+            "bbox": [
+              60.7257022697623,
+              216.69113455248066,
+              535.9586445311612,
+              456.7815949487111
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "有透過查詢網站和網路資訊了解到貴系建立跨領域學習，有分好幾大類，我對企業領導中的大數據跨領域微學程，可以使我無論在資訊上，或是未來在企業中，有更好的決策和更穩重的處理方式。",
+            "similarity": 0.71065
+          },
+          {
+            "chunk_id": "doc1:event_0001:unit_000010:0",
+            "event_id": "doc1:event_0001",
+            "title": "壹、高中學習歷程反思",
+            "unit_id": "unit_000010",
+            "page": 3,
+            "bbox": [
+              81.2912150128659,
+              302.9442304503418,
+              534.9866046848086,
+              689.0922203626762
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "我認為我是一個尋寶家，對未來有所目標以及憧憬，在在不懈的堅持與努力下，在找尋寶藏的路途中，不斷學習和反思改進，有時也會有意外之喜。多數時間在團體中找尋方向，學習在解決問題時仍保持樂觀，與人合作。「高中學習歷程反思」成為我高中三年的尋寶圖。",
+            "similarity": 0.69048
+          },
+          {
+            "chunk_id": "doc1:event_0008:unit_000063:0",
+            "event_id": "doc1:event_0008",
+            "title": "特質",
+            "unit_id": "unit_000063",
+            "page": 10,
+            "bbox": [
+              78.7952679168637,
+              220.0342530765463,
+              539.0983852240009,
+              566.927452714097
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "高二上下學期和高三上學期在班上有擔任風紀股長，高二擔任熱舞社成發總召，面對突如其來的事情以及困難都需冷靜的思考後，進行新的動作和處理方法。例如：當時因為有人的家長不同意他參加成發，我就要幫助他說服他家長，盡量的滿足大家的需求。在成發當天音樂有出現一些問題，我也努力現場解決。",
+            "similarity": 0.68935
+          },
+          {
+            "chunk_id": "doc1:event_0009:unit_000066:0",
+            "event_id": "doc1:event_0009",
+            "title": "二、策劃與組織的能力",
+            "unit_id": "unit_000066",
+            "page": 11,
+            "bbox": [
+              50.3955675001846,
+              110.35466564652927,
+              535.9688457551586,
+              576.542812793457
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "高二班級的有氧舞蹈比賽是負責人，不僅要負責動作以及隊形，還有各個細項的進度，督促同學要來練習，與他們溝通。有些人會只願意在上課時間練習，可這些時間遠遠不足夠，我就會嘗試與他們交換條件，例如：原本應該要練一小時，有些人可能需要補習或是家裡住比較遠，就會讓他們提早走等等。要慢慢了解每個人的個性與溝通方式，像是有人比較愛表現，就可以幫他設計一些只屬於他的特別動作。",
+            "similarity": 0.68748
+          }
+        ],
+        "context_scope": "retrieved_evidence_only_not_entire_portfolio"
+      },
+      "gap": {
+        "details": {
+          "star": {
+            "why_score": 0.5,
+            "how_score": 0.0,
+            "what_score": 0.0,
+            "role_score": 0.5,
+            "action_score": 0.0
+          },
+          "ask": {
+            "skill_score": 0.5,
+            "attitude_score": 0.0,
+            "knowledge_score": 0.0
+          },
+          "gibbs": {
+            "reflection_score": 0.0,
+            "challenge_score": 0.0
+          }
+        },
+        "scores": {
+          "exp": 20.0,
+          "trait": 16.7,
+          "depth": 0.0
+        },
+        "is_all_passed": false,
+        "gaps": [
+          "depth",
+          "trait",
+          "exp"
+        ],
+        "target_gap": "depth",
+        "decision": "follow_up",
+        "reason": "深度邏輯 0.0% 最低，優先追問"
+      }
+    },
+    {
+      "kind": "topic_end",
+      "elapsed": 79.578,
+      "topic_index": 0,
+      "reason": "自介沒有可追問的備審外重要內容",
+      "followups": 0,
+      "topic_elapsed": 79.578,
+      "details": {
+        "star": {
+          "why_score": 0.5,
+          "how_score": 0.0,
+          "what_score": 0.0,
+          "role_score": 0.5,
+          "action_score": 0.0
+        },
+        "ask": {
+          "skill_score": 0.5,
+          "attitude_score": 0.0,
+          "knowledge_score": 0.0
+        },
+        "gibbs": {
+          "reflection_score": 0.0,
+          "challenge_score": 0.0
+        }
+      }
+    },
+    {
+      "kind": "question",
+      "elapsed": 79.578,
+      "question_kind": "main",
+      "text": "你在高中時原本選擇了第三類組，後來經過探索發現自己更喜歡偏數理與管理的內容，請問這個轉變過程中，你認為三類組的學習經驗對你探索資訊管理領域有什麼具體的幫助或影響嗎？",
+      "topic_index": 1,
+      "total_questions": 2
+    },
+    {
+      "kind": "answer",
+      "elapsed": 96.703,
+      "topic_index": 1,
+      "question": "你在高中時原本選擇了第三類組，後來經過探索發現自己更喜歡偏數理與管理的內容，請問這個轉變過程中，你認為三類組的學習經驗對你探索資訊管理領域有什麼具體的幫助或影響嗎？",
+      "answer": "我認為經歷過三類的學習讓我更了解自己喜歡甚麼 也會因為高三要學很多東西需要分配時間所以也讓我知道如何更好的善用時間",
+      "answer_elapsed": 17.125,
+      "timed_out": false,
+      "submitted_by": "enter"
+    },
+    {
+      "kind": "analysis",
+      "elapsed": 99.141,
+      "topic_index": 1,
+      "relevance": {
+        "vector_score": 0.8194,
+        "cross_score": 0.7306,
+        "relevance_score": 0.7928,
+        "level": "relevant",
+        "relevance_status": "✅ 切題 (>= 0.6)"
+      },
+      "relevance_status": "切題",
+      "assessment": {
+        "details": {
+          "star": {
+            "why_score": 1.0,
+            "how_score": 0.5,
+            "what_score": 0.5,
+            "role_score": 0.0,
+            "action_score": 0.5
+          },
+          "ask": {
+            "skill_score": 0.0,
+            "attitude_score": 1.0,
+            "knowledge_score": 0.0
+          },
+          "gibbs": {
+            "reflection_score": 1.0,
+            "challenge_score": 0.0
+          }
+        },
+        "reasoning": "在動機(Why)方面，學生明確表達了透過三類組的探索過程來了解自己喜好的轉變；在過程與行動(How/Action)方面，提到高三面對繁重學業時需要分配時間，屬於概括性的原則而非具體執行步驟；在結果(What)方面，概括提及學會如何更好地善用時間；在角色(Role)方面，未提及具體職責；在能力與知識(ASK)方面，未提及具體技術或專業知識，但展現了善用時間與自我覺察的正向態度(Attitude)；在反思(Gibbs)方面，學生對自身學習經驗有明確的自我反思與心態調整。",
+        "consistency_issues": [],
+        "mentions_outside_portfolio": false,
+        "retrieved_evidence": [
+          {
+            "chunk_id": "doc1:event_0002:unit_000016:0",
+            "event_id": "doc1:event_0002",
+            "title": "修課選擇",
+            "unit_id": "unit_000016",
+            "page": 4,
+            "bbox": [
+              57.931370386192796,
+              582.5439873086111,
+              533.162183345321,
+              780.6186171355013
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "我經過高二和高三的探索後， 發現第三類組的課程和未來方向， 與我所喜愛的有所差距，而我更喜歡偏數理、管理的內容，對資訊以及人工智能更感興趣。",
+            "similarity": 0.88709
+          },
+          {
+            "chunk_id": "doc1:event_0002:unit_000014:0",
+            "event_id": "doc1:event_0002",
+            "title": "修課選擇",
+            "unit_id": "unit_000014",
+            "page": 4,
+            "bbox": [
+              59.54999751875,
+              204.8366806464162,
+              534.7808104778782,
+              528.9588021813272
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "會選擇三類組的原因，第一個是還未確定好未來的志向，想要先多學一些學業上的課程，第二個是因為自己的生物成績在高一算中上階層，很有成就感，想要繼續堅持、維持，第三個是身邊多數人建議若是還未確定好未來目標，便選擇三類組，有更多的選擇權。",
+            "similarity": 0.84637
+          },
+          {
+            "chunk_id": "doc1:event_0002:unit_000013:0",
+            "event_id": "doc1:event_0002",
+            "title": "修課選擇",
+            "unit_id": "unit_000013",
+            "page": 4,
+            "bbox": [
+              38.97087365621353,
+              166.50479615604456,
+              345.05254022518477,
+              197.62376598791866
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "為何選擇第三類群？",
+            "similarity": 0.66479
+          },
+          {
+            "chunk_id": "doc1:event_0001:unit_000010:0",
+            "event_id": "doc1:event_0001",
+            "title": "壹、高中學習歷程反思",
+            "unit_id": "unit_000010",
+            "page": 3,
+            "bbox": [
+              81.2912150128659,
+              302.9442304503418,
+              534.9866046848086,
+              689.0922203626762
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "我認為我是一個尋寶家，對未來有所目標以及憧憬，在在不懈的堅持與努力下，在找尋寶藏的路途中，不斷學習和反思改進，有時也會有意外之喜。多數時間在團體中找尋方向，學習在解決問題時仍保持樂觀，與人合作。「高中學習歷程反思」成為我高中三年的尋寶圖。",
+            "similarity": 0.81765
+          },
+          {
+            "chunk_id": "doc1:event_0004:unit_000031:0",
+            "event_id": "doc1:event_0004",
+            "title": "結語",
+            "unit_id": "unit_000031",
+            "page": 6,
+            "bbox": [
+              42.1924230419823,
+              192.49471830671462,
+              551.8237025317368,
+              484.89488851205635
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "在這高中三年的嘗試與摸索下， 確定了自己的目標以及未來的方向。 我了解到多元的學習也是極為重要的，可以使我們的眼界更加開闊，更加了解自己，在自己的目標上不斷強化自身，從不同的角度看待周遭，獲取新的進步與成長。",
+            "similarity": 0.81358
+          },
+          {
+            "chunk_id": "doc1:event_0005:unit_000035:0",
+            "event_id": "doc1:event_0005",
+            "title": "貳、就讀動機",
+            "unit_id": "unit_000035",
+            "page": 7,
+            "bbox": [
+              82.73391015275361,
+              331.78599602338124,
+              533.5257073198447,
+              670.9387644395222
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "在國小的時候有上過資訊的課程，就覺得還滿適合自己的，很有條理，上課高中之後，發現資訊課程可以做很多有意義的事情，例如：國防安全和人工智能等，而我又是一個滿喜歡接觸人得覺就，人的係關同不﻿群，了解資訊管理更適合我。",
+            "similarity": 0.78637
+          }
+        ],
+        "context_scope": "retrieved_evidence_only_not_entire_portfolio"
+      },
+      "gap": {
+        "details": {
+          "star": {
+            "why_score": 1.0,
+            "how_score": 0.5,
+            "what_score": 0.5,
+            "role_score": 0.0,
+            "action_score": 0.5
+          },
+          "ask": {
+            "skill_score": 0.0,
+            "attitude_score": 1.0,
+            "knowledge_score": 0.0
+          },
+          "gibbs": {
+            "reflection_score": 1.0,
+            "challenge_score": 0.0
+          }
+        },
+        "scores": {
+          "exp": 50.0,
+          "trait": 33.3,
+          "depth": 50.0
+        },
+        "is_all_passed": false,
+        "gaps": [
+          "trait",
+          "depth",
+          "exp"
+        ],
+        "target_gap": "trait",
+        "decision": "follow_up",
+        "reason": "個人特質 33.3% 最低，優先追問"
+      }
+    },
+    {
+      "kind": "followup_reason",
+      "elapsed": 100.953,
+      "topic_index": 1,
+      "follow_up_reason": "根據個人特質分數中的細項分析，態度分數已有表現，但能力與知識分數尚有缺口。備審資料中學生提到自己像個『尋寶家』，在尋找方向時會保持樂觀並與人合作，且提到喜歡接觸不同群體的人；因此想進一步了解學生在面對資訊與管理領域的挑戰時，具體展現了什麼樣的個人特質與解決問題的能力。",
+      "follow_up_question": "你在備審資料中提到自己像是個「尋寶家」，在面對不確定的目標時會保持樂觀並與人合作，能否舉一個具體的例子，說明你如何在團隊合作中發揮這樣的特質來克服挑戰？",
+      "targets_outside_portfolio": false,
+      "retrieved_evidence": [
+        {
+          "chunk_id": "doc1:event_0002:unit_000016:0",
+          "event_id": "doc1:event_0002",
+          "title": "修課選擇",
+          "unit_id": "unit_000016",
+          "page": 4,
+          "bbox": [
+            57.931370386192796,
+            582.5439873086111,
+            533.162183345321,
+            780.6186171355013
+          ],
+          "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+          "char_start": 0,
+          "text": "我經過高二和高三的探索後， 發現第三類組的課程和未來方向， 與我所喜愛的有所差距，而我更喜歡偏數理、管理的內容，對資訊以及人工智能更感興趣。",
+          "similarity": 0.88709
+        },
+        {
+          "chunk_id": "doc1:event_0002:unit_000014:0",
+          "event_id": "doc1:event_0002",
+          "title": "修課選擇",
+          "unit_id": "unit_000014",
+          "page": 4,
+          "bbox": [
+            59.54999751875,
+            204.8366806464162,
+            534.7808104778782,
+            528.9588021813272
+          ],
+          "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+          "char_start": 0,
+          "text": "會選擇三類組的原因，第一個是還未確定好未來的志向，想要先多學一些學業上的課程，第二個是因為自己的生物成績在高一算中上階層，很有成就感，想要繼續堅持、維持，第三個是身邊多數人建議若是還未確定好未來目標，便選擇三類組，有更多的選擇權。",
+          "similarity": 0.84637
+        },
+        {
+          "chunk_id": "doc1:event_0002:unit_000013:0",
+          "event_id": "doc1:event_0002",
+          "title": "修課選擇",
+          "unit_id": "unit_000013",
+          "page": 4,
+          "bbox": [
+            38.97087365621353,
+            166.50479615604456,
+            345.05254022518477,
+            197.62376598791866
+          ],
+          "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+          "char_start": 0,
+          "text": "為何選擇第三類群？",
+          "similarity": 0.66479
+        },
+        {
+          "chunk_id": "doc1:event_0001:unit_000010:0",
+          "event_id": "doc1:event_0001",
+          "title": "壹、高中學習歷程反思",
+          "unit_id": "unit_000010",
+          "page": 3,
+          "bbox": [
+            81.2912150128659,
+            302.9442304503418,
+            534.9866046848086,
+            689.0922203626762
+          ],
+          "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+          "char_start": 0,
+          "text": "我認為我是一個尋寶家，對未來有所目標以及憧憬，在在不懈的堅持與努力下，在找尋寶藏的路途中，不斷學習和反思改進，有時也會有意外之喜。多數時間在團體中找尋方向，學習在解決問題時仍保持樂觀，與人合作。「高中學習歷程反思」成為我高中三年的尋寶圖。",
+          "similarity": 0.81765
+        },
+        {
+          "chunk_id": "doc1:event_0004:unit_000031:0",
+          "event_id": "doc1:event_0004",
+          "title": "結語",
+          "unit_id": "unit_000031",
+          "page": 6,
+          "bbox": [
+            42.1924230419823,
+            192.49471830671462,
+            551.8237025317368,
+            484.89488851205635
+          ],
+          "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+          "char_start": 0,
+          "text": "在這高中三年的嘗試與摸索下， 確定了自己的目標以及未來的方向。 我了解到多元的學習也是極為重要的，可以使我們的眼界更加開闊，更加了解自己，在自己的目標上不斷強化自身，從不同的角度看待周遭，獲取新的進步與成長。",
+          "similarity": 0.81358
+        },
+        {
+          "chunk_id": "doc1:event_0005:unit_000035:0",
+          "event_id": "doc1:event_0005",
+          "title": "貳、就讀動機",
+          "unit_id": "unit_000035",
+          "page": 7,
+          "bbox": [
+            82.73391015275361,
+            331.78599602338124,
+            533.5257073198447,
+            670.9387644395222
+          ],
+          "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+          "char_start": 0,
+          "text": "在國小的時候有上過資訊的課程，就覺得還滿適合自己的，很有條理，上課高中之後，發現資訊課程可以做很多有意義的事情，例如：國防安全和人工智能等，而我又是一個滿喜歡接觸人得覺就，人的係關同不﻿群，了解資訊管理更適合我。",
+          "similarity": 0.78637
+        }
+      ]
+    },
+    {
+      "kind": "question",
+      "elapsed": 100.953,
+      "question_kind": "followup",
+      "text": "你在備審資料中提到自己像是個「尋寶家」，在面對不確定的目標時會保持樂觀並與人合作，能否舉一個具體的例子，說明你如何在團隊合作中發揮這樣的特質來克服挑戰？",
+      "topic_index": 1,
+      "total_questions": 3
+    },
+    {
+      "kind": "answer",
+      "elapsed": 220.969,
+      "topic_index": 1,
+      "question": "你在備審資料中提到自己像是個「尋寶家」，在面對不確定的目標時會保持樂觀並與人合作，能否舉一個具體的例子，說明你如何在團隊合作中發揮這樣的特質來克服挑戰？",
+      "answer": "在社團活動中很常會遇到沒有基礎的同學 一直學不會會讓人比較低落一點 但我因為是幹部所以需要鼓舞大家的士氣 讓大家知道我們是很棒的常常會在群組裡傳訊息鼓舞大家精神喊話",
+      "answer_elapsed": 120.016,
+      "timed_out": true,
+      "submitted_by": "timeout"
+    },
+    {
+      "kind": "analysis",
+      "elapsed": 272.75,
+      "topic_index": 1,
+      "relevance": {
+        "vector_score": 0.8152,
+        "cross_score": 0.7296,
+        "relevance_score": 0.7896,
+        "level": "relevant",
+        "relevance_status": "✅ 切題 (>= 0.6)"
+      },
+      "relevance_status": "切題",
+      "assessment": {
+        "details": {
+          "star": {
+            "why_score": 1.0,
+            "how_score": 0.5,
+            "what_score": 0.5,
+            "role_score": 1.0,
+            "action_score": 0.5
+          },
+          "ask": {
+            "skill_score": 0.0,
+            "attitude_score": 1.0,
+            "knowledge_score": 0.0
+          },
+          "gibbs": {
+            "reflection_score": 0.5,
+            "challenge_score": 0.5
+          }
+        },
+        "reasoning": "學生在動機(Why)上明確說明了從三類組轉向資管的探索過程（給分1.0）；在角色(Role)上明確提到自己是幹部，符合備審中尋寶家的團隊定位（給分1.0）；在態度(Attitude)上展現了樂觀與鼓舞團隊的積極態度（給分1.0）。然而，在過程(How)、行動(Action)、成效(What)、反思(Gibbs)及挑戰等維度上，學生的回答偏向概括描述（如在群組傳訊息精神喊話），缺乏具體的步驟細節、量化成效或深刻反思（均給分0.5）。專業技能與知識(ASK-S/K)則未在回答中提及（給分0.0）。",
+        "consistency_issues": [
+          {
+            "issue_type": "角色差異",
+            "portfolio_evidence": "備審未提及具體幹部職稱，僅自述為『尋寶家』並在團體中找尋方向。",
+            "answer_evidence": "但我因為是幹部所以需要鼓舞大家的士氣",
+            "note": "學生在口述中主動提及自己是『幹部』來支持領導特質，備審原文僅提及尋寶家與團隊合作概念，屬於補充說明的新細節。",
+            "portfolio_sources": [],
+            "answer_sources": [
+              {
+                "turn": 2,
+                "question": "你在備審資料中提到自己像是個「尋寶家」，在面對不確定的目標時會保持樂觀並與人合作，能否舉一個具體的例子，說明你如何在團隊合作中發揮這樣的特質來克服挑戰？",
+                "answer": "在社團活動中很常會遇到沒有基礎的同學 一直學不會會讓人比較低落一點 但我因為是幹部所以需要鼓舞大家的士氣 讓大家知道我們是很棒的常常會在群組裡傳訊息鼓舞大家精神喊話"
+              }
+            ],
+            "source_verified": false,
+            "status": "difference_needs_review"
+          }
+        ],
+        "mentions_outside_portfolio": true,
+        "retrieved_evidence": [
+          {
+            "chunk_id": "doc1:event_0002:unit_000016:0",
+            "event_id": "doc1:event_0002",
+            "title": "修課選擇",
+            "unit_id": "unit_000016",
+            "page": 4,
+            "bbox": [
+              57.931370386192796,
+              582.5439873086111,
+              533.162183345321,
+              780.6186171355013
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "我經過高二和高三的探索後， 發現第三類組的課程和未來方向， 與我所喜愛的有所差距，而我更喜歡偏數理、管理的內容，對資訊以及人工智能更感興趣。",
+            "similarity": 0.88709
+          },
+          {
+            "chunk_id": "doc1:event_0002:unit_000014:0",
+            "event_id": "doc1:event_0002",
+            "title": "修課選擇",
+            "unit_id": "unit_000014",
+            "page": 4,
+            "bbox": [
+              59.54999751875,
+              204.8366806464162,
+              534.7808104778782,
+              528.9588021813272
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "會選擇三類組的原因，第一個是還未確定好未來的志向，想要先多學一些學業上的課程，第二個是因為自己的生物成績在高一算中上階層，很有成就感，想要繼續堅持、維持，第三個是身邊多數人建議若是還未確定好未來目標，便選擇三類組，有更多的選擇權。",
+            "similarity": 0.84637
+          },
+          {
+            "chunk_id": "doc1:event_0002:unit_000013:0",
+            "event_id": "doc1:event_0002",
+            "title": "修課選擇",
+            "unit_id": "unit_000013",
+            "page": 4,
+            "bbox": [
+              38.97087365621353,
+              166.50479615604456,
+              345.05254022518477,
+              197.62376598791866
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "為何選擇第三類群？",
+            "similarity": 0.66479
+          },
+          {
+            "chunk_id": "doc1:event_0001:unit_000010:0",
+            "event_id": "doc1:event_0001",
+            "title": "壹、高中學習歷程反思",
+            "unit_id": "unit_000010",
+            "page": 3,
+            "bbox": [
+              81.2912150128659,
+              302.9442304503418,
+              534.9866046848086,
+              689.0922203626762
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "我認為我是一個尋寶家，對未來有所目標以及憧憬，在在不懈的堅持與努力下，在找尋寶藏的路途中，不斷學習和反思改進，有時也會有意外之喜。多數時間在團體中找尋方向，學習在解決問題時仍保持樂觀，與人合作。「高中學習歷程反思」成為我高中三年的尋寶圖。",
+            "similarity": 0.81765
+          },
+          {
+            "chunk_id": "doc1:event_0004:unit_000031:0",
+            "event_id": "doc1:event_0004",
+            "title": "結語",
+            "unit_id": "unit_000031",
+            "page": 6,
+            "bbox": [
+              42.1924230419823,
+              192.49471830671462,
+              551.8237025317368,
+              484.89488851205635
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "在這高中三年的嘗試與摸索下， 確定了自己的目標以及未來的方向。 我了解到多元的學習也是極為重要的，可以使我們的眼界更加開闊，更加了解自己，在自己的目標上不斷強化自身，從不同的角度看待周遭，獲取新的進步與成長。",
+            "similarity": 0.81358
+          },
+          {
+            "chunk_id": "doc1:event_0005:unit_000035:0",
+            "event_id": "doc1:event_0005",
+            "title": "貳、就讀動機",
+            "unit_id": "unit_000035",
+            "page": 7,
+            "bbox": [
+              82.73391015275361,
+              331.78599602338124,
+              533.5257073198447,
+              670.9387644395222
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "在國小的時候有上過資訊的課程，就覺得還滿適合自己的，很有條理，上課高中之後，發現資訊課程可以做很多有意義的事情，例如：國防安全和人工智能等，而我又是一個滿喜歡接觸人得覺就，人的係關同不﻿群，了解資訊管理更適合我。",
+            "similarity": 0.78637
+          }
+        ],
+        "context_scope": "retrieved_evidence_only_not_entire_portfolio"
+      },
+      "gap": {
+        "details": {
+          "star": {
+            "why_score": 1.0,
+            "how_score": 0.5,
+            "what_score": 0.5,
+            "role_score": 1.0,
+            "action_score": 0.5
+          },
+          "ask": {
+            "skill_score": 0.0,
+            "attitude_score": 1.0,
+            "knowledge_score": 0.0
+          },
+          "gibbs": {
+            "reflection_score": 1.0,
+            "challenge_score": 0.5
+          }
+        },
+        "scores": {
+          "exp": 70.0,
+          "trait": 33.3,
+          "depth": 75.0
+        },
+        "is_all_passed": false,
+        "gaps": [
+          "trait"
+        ],
+        "target_gap": "trait",
+        "decision": "follow_up",
+        "reason": "個人特質 33.3% 最低，優先追問"
+      }
+    },
+    {
+      "kind": "topic_end",
+      "elapsed": 272.75,
+      "topic_index": 1,
+      "reason": "本主題剩餘不足 60 秒，直接換題",
+      "followups": 1,
+      "topic_elapsed": 193.172,
+      "details": {
+        "star": {
+          "why_score": 1.0,
+          "how_score": 0.5,
+          "what_score": 0.5,
+          "role_score": 1.0,
+          "action_score": 0.5
+        },
+        "ask": {
+          "skill_score": 0.0,
+          "attitude_score": 1.0,
+          "knowledge_score": 0.0
+        },
+        "gibbs": {
+          "reflection_score": 1.0,
+          "challenge_score": 0.5
+        }
+      }
+    },
+    {
+      "kind": "question",
+      "elapsed": 272.75,
+      "question_kind": "main",
+      "text": "你在就讀動機中提到，國小接觸過資訊課程，高中時也發現資訊課程能應用在國防安全與人工智能等領域，同時你也喜歡接觸不同群體的人。請問你覺得資訊管理結合「資訊技術」與「人群溝通」的特質，最吸引你的地方是什麼？",
+      "topic_index": 2,
+      "total_questions": 4
+    },
+    {
+      "kind": "answer",
+      "elapsed": 323.625,
+      "topic_index": 2,
+      "question": "你在就讀動機中提到，國小接觸過資訊課程，高中時也發現資訊課程能應用在國防安全與人工智能等領域，同時你也喜歡接觸不同群體的人。請問你覺得資訊管理結合「資訊技術」與「人群溝通」的特質，最吸引你的地方是什麼？",
+      "answer": "我覺得資訊室協助人民有更好的生活和更便利的生活而存在的 而最重要的是如何把我們想要達成的目的給資訊知道使他們能幫我們完成 我覺得我們就是個媒介點",
+      "answer_elapsed": 50.875,
+      "timed_out": false,
+      "submitted_by": "enter"
+    },
+    {
+      "kind": "analysis",
+      "elapsed": 446.125,
+      "topic_index": 2,
+      "relevance": {
+        "vector_score": 0.7427,
+        "cross_score": 0.7055,
+        "relevance_score": 0.7315,
+        "level": "relevant",
+        "relevance_status": "✅ 切題 (>= 0.6)"
+      },
+      "relevance_status": "切題",
+      "assessment": {
+        "details": {
+          "star": {
+            "why_score": 0.5,
+            "how_score": 0.0,
+            "what_score": 0.0,
+            "role_score": 0.0,
+            "action_score": 0.0
+          },
+          "ask": {
+            "skill_score": 0.0,
+            "attitude_score": 0.5,
+            "knowledge_score": 0.5
+          },
+          "gibbs": {
+            "reflection_score": 0.5,
+            "challenge_score": 0.0
+          }
+        },
+        "reasoning": "學生在回答中提及資管是協助人民生活更便利、作為人與資訊間的媒介點，展現了對於資管領域的初步理解（知識0.5），並帶有積極的態度（態度0.5），但在動機與過程上偏向概念性的概括說明（Why 0.5，其餘執行步驟、成效、具體行動均未提及給0.0）。",
+        "consistency_issues": [],
+        "mentions_outside_portfolio": false,
+        "retrieved_evidence": [
+          {
+            "chunk_id": "doc1:event_0005:unit_000035:0",
+            "event_id": "doc1:event_0005",
+            "title": "貳、就讀動機",
+            "unit_id": "unit_000035",
+            "page": 7,
+            "bbox": [
+              82.73391015275361,
+              331.78599602338124,
+              533.5257073198447,
+              670.9387644395222
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "在國小的時候有上過資訊的課程，就覺得還滿適合自己的，很有條理，上課高中之後，發現資訊課程可以做很多有意義的事情，例如：國防安全和人工智能等，而我又是一個滿喜歡接觸人得覺就，人的係關同不﻿群，了解資訊管理更適合我。",
+            "similarity": 0.87965
+          },
+          {
+            "chunk_id": "doc1:event_0005:unit_000033:0",
+            "event_id": "doc1:event_0005",
+            "title": "貳、就讀動機",
+            "unit_id": "unit_000033",
+            "page": 7,
+            "bbox": [
+              73.90075531830173,
+              73.27323902525313,
+              349.9827467205504,
+              119.28807782613353
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "貳、就讀動機",
+            "similarity": 0.54836
+          },
+          {
+            "chunk_id": "doc1:event_0005:unit_000034:0",
+            "event_id": "doc1:event_0005",
+            "title": "貳、就讀動機",
+            "unit_id": "unit_000034",
+            "page": 7,
+            "bbox": [
+              111.54535092122684,
+              197.51181509932144,
+              211.93371892185695,
+              243.44085264458022
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "主因",
+            "similarity": 0.33597
+          },
+          {
+            "chunk_id": "doc1:event_0006:unit_000039:0",
+            "event_id": "doc1:event_0006",
+            "title": "選校動機",
+            "unit_id": "unit_000039",
+            "page": 8,
+            "bbox": [
+              60.7257022697623,
+              216.69113455248066,
+              535.9586445311612,
+              456.7815949487111
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "有透過查詢網站和網路資訊了解到貴系建立跨領域學習，有分好幾大類，我對企業領導中的大數據跨領域微學程，可以使我無論在資訊上，或是未來在企業中，有更好的決策和更穩重的處理方式。",
+            "similarity": 0.83017
+          },
+          {
+            "chunk_id": "doc1:event_0002:unit_000016:0",
+            "event_id": "doc1:event_0002",
+            "title": "修課選擇",
+            "unit_id": "unit_000016",
+            "page": 4,
+            "bbox": [
+              57.931370386192796,
+              582.5439873086111,
+              533.162183345321,
+              780.6186171355013
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "我經過高二和高三的探索後， 發現第三類組的課程和未來方向， 與我所喜愛的有所差距，而我更喜歡偏數理、管理的內容，對資訊以及人工智能更感興趣。",
+            "similarity": 0.80313
+          },
+          {
+            "chunk_id": "doc1:event_0001:unit_000010:0",
+            "event_id": "doc1:event_0001",
+            "title": "壹、高中學習歷程反思",
+            "unit_id": "unit_000010",
+            "page": 3,
+            "bbox": [
+              81.2912150128659,
+              302.9442304503418,
+              534.9866046848086,
+              689.0922203626762
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "我認為我是一個尋寶家，對未來有所目標以及憧憬，在在不懈的堅持與努力下，在找尋寶藏的路途中，不斷學習和反思改進，有時也會有意外之喜。多數時間在團體中找尋方向，學習在解決問題時仍保持樂觀，與人合作。「高中學習歷程反思」成為我高中三年的尋寶圖。",
+            "similarity": 0.74981
+          }
+        ],
+        "context_scope": "retrieved_evidence_only_not_entire_portfolio"
+      },
+      "gap": {
+        "details": {
+          "star": {
+            "why_score": 0.5,
+            "how_score": 0.0,
+            "what_score": 0.0,
+            "role_score": 0.0,
+            "action_score": 0.0
+          },
+          "ask": {
+            "skill_score": 0.0,
+            "attitude_score": 0.5,
+            "knowledge_score": 0.5
+          },
+          "gibbs": {
+            "reflection_score": 0.5,
+            "challenge_score": 0.0
+          }
+        },
+        "scores": {
+          "exp": 10.0,
+          "trait": 33.3,
+          "depth": 25.0
+        },
+        "is_all_passed": false,
+        "gaps": [
+          "exp",
+          "depth",
+          "trait"
+        ],
+        "target_gap": "exp",
+        "decision": "follow_up",
+        "reason": "經驗內容 10.0% 最低，優先追問"
+      }
+    },
+    {
+      "kind": "followup_reason",
+      "elapsed": 448.516,
+      "topic_index": 2,
+      "follow_up_reason": "根據目前評分，經驗內容中的how、what、role與action分數偏低（皆為0.0），為了補足具體行動與做法的資訊缺口，依據備審中提到對企業領導與大數據微學程的興趣，追問學生在實際學習或探索時具體採取了哪些行動。",
+      "follow_up_question": "你在備審資料中提到曾查詢過貴系的大數據跨領域微學程，請問在高中階段，你為了探索這類結合資訊與企業管理的領域，曾經採取過哪些具體的行動或參與過相關的學習活動嗎？",
+      "targets_outside_portfolio": false,
+      "retrieved_evidence": [
+        {
+          "chunk_id": "doc1:event_0005:unit_000035:0",
+          "event_id": "doc1:event_0005",
+          "title": "貳、就讀動機",
+          "unit_id": "unit_000035",
+          "page": 7,
+          "bbox": [
+            82.73391015275361,
+            331.78599602338124,
+            533.5257073198447,
+            670.9387644395222
+          ],
+          "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+          "char_start": 0,
+          "text": "在國小的時候有上過資訊的課程，就覺得還滿適合自己的，很有條理，上課高中之後，發現資訊課程可以做很多有意義的事情，例如：國防安全和人工智能等，而我又是一個滿喜歡接觸人得覺就，人的係關同不﻿群，了解資訊管理更適合我。",
+          "similarity": 0.87965
+        },
+        {
+          "chunk_id": "doc1:event_0005:unit_000033:0",
+          "event_id": "doc1:event_0005",
+          "title": "貳、就讀動機",
+          "unit_id": "unit_000033",
+          "page": 7,
+          "bbox": [
+            73.90075531830173,
+            73.27323902525313,
+            349.9827467205504,
+            119.28807782613353
+          ],
+          "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+          "char_start": 0,
+          "text": "貳、就讀動機",
+          "similarity": 0.54836
+        },
+        {
+          "chunk_id": "doc1:event_0005:unit_000034:0",
+          "event_id": "doc1:event_0005",
+          "title": "貳、就讀動機",
+          "unit_id": "unit_000034",
+          "page": 7,
+          "bbox": [
+            111.54535092122684,
+            197.51181509932144,
+            211.93371892185695,
+            243.44085264458022
+          ],
+          "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+          "char_start": 0,
+          "text": "主因",
+          "similarity": 0.33597
+        },
+        {
+          "chunk_id": "doc1:event_0006:unit_000039:0",
+          "event_id": "doc1:event_0006",
+          "title": "選校動機",
+          "unit_id": "unit_000039",
+          "page": 8,
+          "bbox": [
+            60.7257022697623,
+            216.69113455248066,
+            535.9586445311612,
+            456.7815949487111
+          ],
+          "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+          "char_start": 0,
+          "text": "有透過查詢網站和網路資訊了解到貴系建立跨領域學習，有分好幾大類，我對企業領導中的大數據跨領域微學程，可以使我無論在資訊上，或是未來在企業中，有更好的決策和更穩重的處理方式。",
+          "similarity": 0.83017
+        },
+        {
+          "chunk_id": "doc1:event_0002:unit_000016:0",
+          "event_id": "doc1:event_0002",
+          "title": "修課選擇",
+          "unit_id": "unit_000016",
+          "page": 4,
+          "bbox": [
+            57.931370386192796,
+            582.5439873086111,
+            533.162183345321,
+            780.6186171355013
+          ],
+          "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+          "char_start": 0,
+          "text": "我經過高二和高三的探索後， 發現第三類組的課程和未來方向， 與我所喜愛的有所差距，而我更喜歡偏數理、管理的內容，對資訊以及人工智能更感興趣。",
+          "similarity": 0.80313
+        },
+        {
+          "chunk_id": "doc1:event_0001:unit_000010:0",
+          "event_id": "doc1:event_0001",
+          "title": "壹、高中學習歷程反思",
+          "unit_id": "unit_000010",
+          "page": 3,
+          "bbox": [
+            81.2912150128659,
+            302.9442304503418,
+            534.9866046848086,
+            689.0922203626762
+          ],
+          "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+          "char_start": 0,
+          "text": "我認為我是一個尋寶家，對未來有所目標以及憧憬，在在不懈的堅持與努力下，在找尋寶藏的路途中，不斷學習和反思改進，有時也會有意外之喜。多數時間在團體中找尋方向，學習在解決問題時仍保持樂觀，與人合作。「高中學習歷程反思」成為我高中三年的尋寶圖。",
+          "similarity": 0.74981
+        }
+      ]
+    },
+    {
+      "kind": "question",
+      "elapsed": 448.516,
+      "question_kind": "followup",
+      "text": "你在備審資料中提到曾查詢過貴系的大數據跨領域微學程，請問在高中階段，你為了探索這類結合資訊與企業管理的領域，曾經採取過哪些具體的行動或參與過相關的學習活動嗎？",
+      "topic_index": 2,
+      "total_questions": 5
+    },
+    {
+      "kind": "answer",
+      "elapsed": 511.813,
+      "topic_index": 2,
+      "question": "你在備審資料中提到曾查詢過貴系的大數據跨領域微學程，請問在高中階段，你為了探索這類結合資訊與企業管理的領域，曾經採取過哪些具體的行動或參與過相關的學習活動嗎？",
+      "answer": "我有在暑假的時間利用線上的免費挽站學醫些比較基礎的知識來彌補我是三類組的缺陷",
+      "answer_elapsed": 63.297,
+      "timed_out": false,
+      "submitted_by": "enter"
+    },
+    {
+      "kind": "topic_end",
+      "elapsed": 511.813,
+      "topic_index": 2,
+      "reason": "本主題剩餘不足 60 秒，直接換題",
+      "followups": 1,
+      "topic_elapsed": 239.063,
+      "details": {
+        "star": {
+          "why_score": 0.5,
+          "how_score": 0.0,
+          "what_score": 0.0,
+          "role_score": 0.0,
+          "action_score": 0.0
+        },
+        "ask": {
+          "skill_score": 0.0,
+          "attitude_score": 0.5,
+          "knowledge_score": 0.5
+        },
+        "gibbs": {
+          "reflection_score": 0.5,
+          "challenge_score": 0.0
+        }
+      }
+    },
+    {
+      "kind": "interview_end",
+      "elapsed": 511.813,
+      "reason": "所有主題已完成",
+      "total_questions": 5
+    }
+  ]
+}

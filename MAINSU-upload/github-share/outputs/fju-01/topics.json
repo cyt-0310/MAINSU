@@ -1,0 +1,47 @@
+[
+  {
+    "type": "自我介紹",
+    "event": "自我介紹",
+    "source": "固定題",
+    "portfolio_role": "未提及",
+    "check_aspects": [
+      "動機",
+      "個人特質",
+      "經歷亮點"
+    ],
+    "question": "請用大約 1 分鐘做個自我介紹，並說明你為什麼想就讀資訊管理學系。",
+    "answer_limit": 90,
+    "max_followups": 1,
+    "event_id": null
+  },
+  {
+    "type": "學習歷程",
+    "event": "修課選擇",
+    "event_id": "doc1:event_0002",
+    "source": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+    "portfolio_role": "未提及",
+    "question": "你在高中時原本選擇了第三類組，後來經過探索發現自己更喜歡偏數理與管理的內容，請問這個轉變過程中，你認為三類組的學習經驗對你探索資訊管理領域有什麼具體的幫助或影響嗎？",
+    "check_aspects": [
+      "學科轉向動機",
+      "跨領域學習認知",
+      "生涯規劃思考"
+    ],
+    "max_followups": 2,
+    "answer_limit": 120
+  },
+  {
+    "type": "學習歷程",
+    "event": "貳、就讀動機",
+    "event_id": "doc1:event_0005",
+    "source": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\outputs\\parsed-01\\輔大資管.events.json",
+    "portfolio_role": "未提及",
+    "question": "你在就讀動機中提到，國小接觸過資訊課程，高中時也發現資訊課程能應用在國防安全與人工智能等領域，同時你也喜歡接觸不同群體的人。請問你覺得資訊管理結合「資訊技術」與「人群溝通」的特質，最吸引你的地方是什麼？",
+    "check_aspects": [
+      "資訊管理科系理解",
+      "個人興趣與學系契合度",
+      "就讀動機清晰度"
+    ],
+    "max_followups": 2,
+    "answer_limit": 120
+  }
+]

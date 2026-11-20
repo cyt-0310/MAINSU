@@ -1,0 +1,102 @@
+[
+  {
+    "event_id": "doc1:event_demo_1",
+    "title": "虛構：待辦清單程式專題",
+    "parent_event_id": null,
+    "child_event_ids": [],
+    "status": "candidate_needs_review",
+    "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\examples\\fictional.events.json",
+    "text": "【虛構測試資料】我參加校內程式專題，擔任組員，負責撰寫待辦清單功能。為了方便同學分工，我先訪談需求，再用 Python 開發並測試。最後完成原型。我發現自己測試不足，後來補上錯誤輸入的測試案例。",
+    "evidence": [
+      {
+        "id": "unit_demo_1",
+        "page": 1,
+        "bbox": [
+          10,
+          10,
+          500,
+          200
+        ],
+        "locations": null,
+        "text": "【虛構測試資料】我參加校內程式專題，擔任組員，負責撰寫待辦清單功能。為了方便同學分工，我先訪談需求，再用 Python 開發並測試。最後完成原型。我發現自己測試不足，後來補上錯誤輸入的測試案例。",
+        "block_ids": [
+          "block_demo_1"
+        ],
+        "review_required": true
+      }
+    ],
+    "explicit_role_mentions": [],
+    "subsections": [],
+    "original_event_id": "event_demo_1",
+    "category": "專業相關",
+    "aspects": {
+      "動機": [],
+      "角色": [
+        {
+          "aspect": "角色",
+          "text": "擔任程式專題組員",
+          "quote": "擔任組員",
+          "source_unit_id": "unit_demo_1",
+          "page": 1,
+          "bbox": [
+            10,
+            10,
+            500,
+            200
+          ],
+          "status": "candidate_needs_review"
+        }
+      ],
+      "行動": [
+        {
+          "aspect": "行動",
+          "text": "負責撰寫待辦清單功能，並訪談需求、用 Python 開發與測試",
+          "quote": "負責撰寫待辦清單功能。為了方便同學分工，我先訪談需求，再用 Python 開發並測試。",
+          "source_unit_id": "unit_demo_1",
+          "page": 1,
+          "bbox": [
+            10,
+            10,
+            500,
+            200
+          ],
+          "status": "candidate_needs_review"
+        }
+      ],
+      "成果": [
+        {
+          "aspect": "成果",
+          "text": "完成原型",
+          "quote": "最後完成原型。",
+          "source_unit_id": "unit_demo_1",
+          "page": 1,
+          "bbox": [
+            10,
+            10,
+            500,
+            200
+          ],
+          "status": "candidate_needs_review"
+        }
+      ],
+      "反思": [
+        {
+          "aspect": "反思",
+          "text": "發現自己測試不足，後來補上錯誤輸入的測試案例",
+          "quote": "我發現自己測試不足，後來補上錯誤輸入的測試案例。",
+          "source_unit_id": "unit_demo_1",
+          "page": 1,
+          "bbox": [
+            10,
+            10,
+            500,
+            200
+          ],
+          "status": "candidate_needs_review"
+        }
+      ],
+      "能力": []
+    },
+    "rejected_claims": []
+  }
+]

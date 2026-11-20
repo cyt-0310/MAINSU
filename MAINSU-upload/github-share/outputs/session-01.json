@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "scope": "steps_2_to_12_text_only",
+  "finished": false,
+  "elapsed": 0,
+  "total_questions": 1,
+  "topics": [
+    {
+      "type": "自我介紹",
+      "event": "自我介紹",
+      "source": "固定題",
+      "portfolio_role": "未提及",
+      "check_aspects": [
+        "動機",
+        "個人特質",
+        "經歷亮點"
+      ],
+      "question": "請用大約 1 分鐘做個自我介紹，並說明你為什麼想就讀資訊管理學系。",
+      "answer_limit": 90,
+      "max_followups": 1,
+      "event_id": null
+    },
+    {
+      "type": "學習歷程",
+      "event": "虛構：待辦清單程式專題",
+      "event_id": "doc1:event_demo_1",
+      "source": "C:\\Users\\sherr\\Desktop\\MAINSU-upload\\MAINSU-upload\\github-share\\examples\\fictional.events.json",
+      "portfolio_role": "擔任程式專題組員",
+      "question": "在參與校內程式專題開發待辦清單功能時，你提到自己負責需求訪談與Python程式開發，請問在訪談同學需求時，你發現最關鍵的痛點是什麼？又是如何將這些需求轉化為系統功能的？",
+      "check_aspects": [
+        "需求訪談與分析能力",
+        "Python程式開發經驗",
+        "溝通與協作能力"
+      ],
+      "max_followups": 2,
+      "answer_limit": 120
+    }
+  ],
+  "log": [
+    {
+      "kind": "question",
+      "elapsed": 0,
+      "question_kind": "main",
+      "text": "請用大約 1 分鐘做個自我介紹，並說明你為什麼想就讀資訊管理學系。",
+      "topic_index": 0,
+      "total_questions": 1
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+[
+  {
+    "type": "自我介紹",
+    "event": "自我介紹",
+    "source": "固定題",
+    "portfolio_role": "未提及",
+    "check_aspects": [
+      "動機",
+      "個人特質",
+      "經歷亮點"
+    ],
+    "question": "請用大約 1 分鐘做個自我介紹，並說明你為什麼想就讀資訊管理學系。",
+    "answer_limit": 90,
+    "max_followups": 1,
+    "event_id": null
+  },
+  {
+    "type": "學習歷程",
+    "event": "修課選擇",
+    "event_id": "doc1:event_0002",
+    "source": "C:\\Users\\sherr\\Desktop\\MAINSU-upload 1108\\MAINSU-upload\\github-share\\integration_review\\integrated\\parsed_2\\輔大資管.events.json",
+    "portfolio_role": "未提及",
+    "question": "你在自述中提到原本選擇第三類組，但在高二、高三探索後發現自己更喜歡偏數理與管理的內容，並對資訊與人工智慧產生興趣。能否請你分享這段探索過程中，具體是什麼經驗或契機讓你做出這樣的轉變？",
+    "check_aspects": [
+      "學科轉向動機",
+      "對資訊與人工智慧的理解",
+      "高中探索經歷"
+    ],
+    "max_followups": 2,
+    "answer_limit": 120
+  },
+  {
+    "type": "學習歷程",
+    "event": "多元表現",
+    "event_id": "doc1:event_0003",
+    "source": "C:\\Users\\sherr\\Desktop\\MAINSU-upload 1108\\MAINSU-upload\\github-share\\integration_review\\integrated\\parsed_2\\輔大資管.events.json",
+    "portfolio_role": "未提及",
+    "question": "在多元表現與社團活動中，你有參與熱舞社等經歷。能否談談在熱舞社的活動中，哪一項經驗最讓你印象深刻，或是它對你的團隊合作與時間管理能力帶來了什麼幫助？",
+    "check_aspects": [
+      "社團參與經驗",
+      "團隊協作能力",
+      "時間管理與調適"
+    ],
+    "max_followups": 2,
+    "answer_limit": 120
+  }
+]

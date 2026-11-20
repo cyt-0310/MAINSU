@@ -1,0 +1,4329 @@
+{
+  "schema_name": "DoclingDocument",
+  "version": "1.11.0",
+  "name": "輔大資管",
+  "origin": {
+    "mimetype": "application/pdf",
+    "binary_hash": 1564058866912601029,
+    "filename": "輔大資管.pdf"
+  },
+  "furniture": {
+    "self_ref": "#/furniture",
+    "children": [],
+    "content_layer": "furniture",
+    "name": "_root_",
+    "label": "unspecified"
+  },
+  "body": {
+    "self_ref": "#/body",
+    "children": [
+      {
+        "$ref": "#/pictures/0"
+      },
+      {
+        "$ref": "#/texts/0"
+      },
+      {
+        "$ref": "#/texts/1"
+      },
+      {
+        "$ref": "#/texts/2"
+      },
+      {
+        "$ref": "#/texts/3"
+      },
+      {
+        "$ref": "#/groups/0"
+      },
+      {
+        "$ref": "#/pictures/1"
+      },
+      {
+        "$ref": "#/texts/5"
+      },
+      {
+        "$ref": "#/tables/0"
+      },
+      {
+        "$ref": "#/texts/6"
+      },
+      {
+        "$ref": "#/texts/7"
+      },
+      {
+        "$ref": "#/texts/8"
+      },
+      {
+        "$ref": "#/texts/9"
+      },
+      {
+        "$ref": "#/texts/10"
+      },
+      {
+        "$ref": "#/texts/11"
+      },
+      {
+        "$ref": "#/texts/12"
+      },
+      {
+        "$ref": "#/texts/13"
+      },
+      {
+        "$ref": "#/texts/14"
+      },
+      {
+        "$ref": "#/pictures/2"
+      },
+      {
+        "$ref": "#/texts/16"
+      },
+      {
+        "$ref": "#/texts/17"
+      },
+      {
+        "$ref": "#/texts/18"
+      },
+      {
+        "$ref": "#/texts/19"
+      },
+      {
+        "$ref": "#/texts/20"
+      },
+      {
+        "$ref": "#/texts/21"
+      },
+      {
+        "$ref": "#/texts/22"
+      },
+      {
+        "$ref": "#/texts/23"
+      },
+      {
+        "$ref": "#/texts/24"
+      },
+      {
+        "$ref": "#/texts/25"
+      },
+      {
+        "$ref": "#/texts/26"
+      },
+      {
+        "$ref": "#/texts/27"
+      },
+      {
+        "$ref": "#/texts/28"
+      },
+      {
+        "$ref": "#/texts/29"
+      },
+      {
+        "$ref": "#/pictures/3"
+      },
+      {
+        "$ref": "#/texts/30"
+      },
+      {
+        "$ref": "#/texts/31"
+      },
+      {
+        "$ref": "#/texts/32"
+      },
+      {
+        "$ref": "#/texts/33"
+      },
+      {
+        "$ref": "#/texts/34"
+      },
+      {
+        "$ref": "#/texts/35"
+      },
+      {
+        "$ref": "#/texts/36"
+      },
+      {
+        "$ref": "#/texts/37"
+      },
+      {
+        "$ref": "#/texts/38"
+      },
+      {
+        "$ref": "#/texts/39"
+      },
+      {
+        "$ref": "#/texts/40"
+      },
+      {
+        "$ref": "#/texts/41"
+      },
+      {
+        "$ref": "#/groups/1"
+      },
+      {
+        "$ref": "#/texts/52"
+      },
+      {
+        "$ref": "#/texts/53"
+      },
+      {
+        "$ref": "#/texts/54"
+      },
+      {
+        "$ref": "#/texts/55"
+      },
+      {
+        "$ref": "#/texts/56"
+      },
+      {
+        "$ref": "#/texts/57"
+      },
+      {
+        "$ref": "#/texts/58"
+      },
+      {
+        "$ref": "#/texts/59"
+      },
+      {
+        "$ref": "#/texts/60"
+      },
+      {
+        "$ref": "#/texts/61"
+      },
+      {
+        "$ref": "#/pictures/4"
+      },
+      {
+        "$ref": "#/texts/62"
+      },
+      {
+        "$ref": "#/texts/63"
+      },
+      {
+        "$ref": "#/texts/64"
+      },
+      {
+        "$ref": "#/pictures/5"
+      },
+      {
+        "$ref": "#/texts/65"
+      },
+      {
+        "$ref": "#/texts/66"
+      },
+      {
+        "$ref": "#/groups/2"
+      },
+      {
+        "$ref": "#/texts/76"
+      },
+      {
+        "$ref": "#/texts/77"
+      },
+      {
+        "$ref": "#/texts/78"
+      },
+      {
+        "$ref": "#/texts/79"
+      },
+      {
+        "$ref": "#/texts/80"
+      },
+      {
+        "$ref": "#/texts/81"
+      },
+      {
+        "$ref": "#/texts/82"
+      },
+      {
+        "$ref": "#/texts/83"
+      },
+      {
+        "$ref": "#/texts/84"
+      },
+      {
+        "$ref": "#/texts/85"
+      },
+      {
+        "$ref": "#/texts/86"
+      },
+      {
+        "$ref": "#/texts/87"
+      },
+      {
+        "$ref": "#/texts/88"
+      },
+      {
+        "$ref": "#/texts/89"
+      },
+      {
+        "$ref": "#/texts/90"
+      },
+      {
+        "$ref": "#/texts/91"
+      },
+      {
+        "$ref": "#/texts/92"
+      },
+      {
+        "$ref": "#/texts/93"
+      },
+      {
+        "$ref": "#/texts/94"
+      },
+      {
+        "$ref": "#/texts/95"
+      },
+      {
+        "$ref": "#/texts/96"
+      },
+      {
+        "$ref": "#/pictures/6"
+      },
+      {
+        "$ref": "#/texts/98"
+      },
+      {
+        "$ref": "#/texts/99"
+      },
+      {
+        "$ref": "#/texts/100"
+      },
+      {
+        "$ref": "#/texts/101"
+      },
+      {
+        "$ref": "#/texts/102"
+      },
+      {
+        "$ref": "#/texts/103"
+      },
+      {
+        "$ref": "#/texts/104"
+      },
+      {
+        "$ref": "#/texts/105"
+      },
+      {
+        "$ref": "#/texts/106"
+      }
+    ],
+    "content_layer": "body",
+    "name": "_root_",
+    "label": "unspecified"
+  },
+  "groups": [
+    {
+      "self_ref": "#/groups/0",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [
+        {
+          "$ref": "#/texts/4"
+        }
+      ],
+      "content_layer": "body",
+      "name": "group",
+      "label": "key_value_area"
+    },
+    {
+      "self_ref": "#/groups/1",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [
+        {
+          "$ref": "#/texts/42"
+        },
+        {
+          "$ref": "#/texts/43"
+        },
+        {
+          "$ref": "#/texts/44"
+        },
+        {
+          "$ref": "#/texts/45"
+        },
+        {
+          "$ref": "#/texts/46"
+        },
+        {
+          "$ref": "#/texts/47"
+        },
+        {
+          "$ref": "#/texts/48"
+        },
+        {
+          "$ref": "#/texts/49"
+        },
+        {
+          "$ref": "#/texts/50"
+        },
+        {
+          "$ref": "#/texts/51"
+        }
+      ],
+      "content_layer": "body",
+      "name": "list",
+      "label": "list"
+    },
+    {
+      "self_ref": "#/groups/2",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [
+        {
+          "$ref": "#/texts/67"
+        },
+        {
+          "$ref": "#/texts/68"
+        },
+        {
+          "$ref": "#/texts/69"
+        },
+        {
+          "$ref": "#/texts/70"
+        },
+        {
+          "$ref": "#/texts/71"
+        },
+        {
+          "$ref": "#/texts/72"
+        },
+        {
+          "$ref": "#/texts/73"
+        },
+        {
+          "$ref": "#/texts/74"
+        },
+        {
+          "$ref": "#/texts/75"
+        }
+      ],
+      "content_layer": "body",
+      "name": "list",
+      "label": "list"
+    }
+  ],
+  "texts": [
+    {
+      "self_ref": "#/texts/0",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 1,
+          "bbox": {
+            "l": 158.33333333333334,
+            "t": 785.5833120333334,
+            "r": 425.3333333333333,
+            "b": 745.5833120333334,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            7
+          ]
+        }
+      ],
+      "orig": "天主教輔仁大學",
+      "text": "天主教輔仁大學",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/1",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 1,
+          "bbox": {
+            "l": 224.66666666666666,
+            "t": 744.5833120333334,
+            "r": 425.6666666666667,
+            "b": 726.5833120333334,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            19
+          ]
+        }
+      ],
+      "orig": "CATHOLIC UNIVERSITY",
+      "text": "CATHOLIC UNIVERSITY"
+    },
+    {
+      "self_ref": "#/texts/2",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 1,
+          "bbox": {
+            "l": 133.74608587776373,
+            "t": 654.652020541195,
+            "r": 451.197507824416,
+            "b": 624.3698976500772,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            10
+          ]
+        }
+      ],
+      "orig": "輔仁大學資訊管理學系",
+      "text": "輔仁大學資訊管理學系",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/3",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 1,
+          "bbox": {
+            "l": 123.69405180608096,
+            "t": 543.0179548571855,
+            "r": 471.80318132719873,
+            "b": 484.99859303649356,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            6
+          ]
+        }
+      ],
+      "orig": "學習歷程自述",
+      "text": "學習歷程自述",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/4",
+      "parent": {
+        "$ref": "#/groups/0"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 1,
+          "bbox": {
+            "l": 193.3257235610699,
+            "t": 414.4625647693348,
+            "r": 383.5744377605709,
+            "b": 388.20479958892844,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            7
+          ]
+        }
+      ],
+      "orig": "申請人：徐苙媗",
+      "text": "申請人：徐苙媗"
+    },
+    {
+      "self_ref": "#/texts/5",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 2,
+          "bbox": {
+            "l": 201.81345395860572,
+            "t": 773.9279529573349,
+            "r": 393.68277927379836,
+            "b": 677.9893032975307,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            2
+          ]
+        }
+      ],
+      "orig": "目錄",
+      "text": "目錄",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/6",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 3,
+          "bbox": {
+            "l": 69.36228830740453,
+            "t": 800.1731030948985,
+            "r": 345.4442797096532,
+            "b": 690.3842357512693,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            11
+          ]
+        }
+      ],
+      "orig": "壹、高中學習 歷程反思",
+      "text": "壹、高中學習 歷程反思",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/7",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 3,
+          "bbox": {
+            "l": 111.54535092122684,
+            "t": 644.7381636006786,
+            "r": 211.93371892185695,
+            "b": 598.8091260554198,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            2
+          ]
+        }
+      ],
+      "orig": "前言",
+      "text": "前言",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/8",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 3,
+          "bbox": {
+            "l": 81.2912150128659,
+            "t": 539.3057482496582,
+            "r": 534.9866046848086,
+            "b": 153.1577583373238,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            127
+          ]
+        }
+      ],
+      "orig": "我認為我是一個尋寶家，對 未來有所目標以及憧憬，在在不 懈的堅持與努力下，在找尋寶藏 的路途中，不斷學習和反思改 進，有時也會有意外之喜。多數 時間在團體中找尋方向，學習在 解決問題時仍保持樂觀，與人合 作。「高中學習歷程反思」成為 我高中三年的尋寶圖。",
+      "text": "我認為我是一個尋寶家，對 未來有所目標以及憧憬，在在不 懈的堅持與努力下，在找尋寶藏 的路途中，不斷學習和反思改 進，有時也會有意外之喜。多數 時間在團體中找尋方向，學習在 解決問題時仍保持樂觀，與人合 作。「高中學習歷程反思」成為 我高中三年的尋寶圖。"
+    },
+    {
+      "self_ref": "#/texts/9",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "furniture",
+      "label": "page_footer",
+      "prov": [
+        {
+          "page_no": 3,
+          "bbox": {
+            "l": 540.1376654942629,
+            "t": 45.93769564962065,
+            "r": 571.9322757720021,
+            "b": 8.80530408437778,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            1
+          ]
+        }
+      ],
+      "orig": "3",
+      "text": "3"
+    },
+    {
+      "self_ref": "#/texts/10",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 4,
+          "bbox": {
+            "l": 57.72221692890753,
+            "t": 769.3556277540282,
+            "r": 256.03170881875167,
+            "b": 719.7645269300842,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            4
+          ]
+        }
+      ],
+      "orig": "修課選擇",
+      "text": "修課選擇",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/11",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 4,
+          "bbox": {
+            "l": 38.97087365621353,
+            "t": 675.7451825439555,
+            "r": 345.05254022518477,
+            "b": 644.6262127120814,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            9
+          ]
+        }
+      ],
+      "orig": "為何選擇第三類群？",
+      "text": "為何選擇第三類群？",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/12",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 4,
+          "bbox": {
+            "l": 59.54999751875,
+            "t": 637.4132980535838,
+            "r": 534.7808104778782,
+            "b": 313.29117651867284,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            122
+          ]
+        }
+      ],
+      "orig": "會選擇三類組的原因，第一個 是還未確定好未來的志向，想要先 多學一些學業上的課程，第二個是 因為自己的生物成績在高一算中上 階層，很有成就感，想要繼續堅 持、維持，第三個是身邊多數人建 議若是還未確定好未來目標，便選 擇三類組，有更多的選擇權。",
+      "text": "會選擇三類組的原因，第一個 是還未確定好未來的志向，想要先 多學一些學業上的課程，第二個是 因為自己的生物成績在高一算中上 階層，很有成就感，想要繼續堅 持、維持，第三個是身邊多數人建 議若是還未確定好未來目標，便選 擇三類組，有更多的選擇權。"
+    },
+    {
+      "self_ref": "#/texts/13",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 4,
+          "bbox": {
+            "l": 38.97087365621353,
+            "t": 297.3025879123975,
+            "r": 140.9990269466873,
+            "b": 266.1836180805234,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            3
+          ]
+        }
+      ],
+      "orig": "可是…",
+      "text": "可是…",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/14",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 4,
+          "bbox": {
+            "l": 57.931370386192796,
+            "t": 259.7059913913889,
+            "r": 533.162183345321,
+            "b": 61.631361564498775,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            72
+          ]
+        }
+      ],
+      "orig": "我經過高二和高三的探索後， 發現第三類組的課程和未來方向， 與我所喜愛的有所差距，而我更喜 歡偏數理、管理的內容，對資訊以 及人工智能更感興趣。",
+      "text": "我經過高二和高三的探索後， 發現第三類組的課程和未來方向， 與我所喜愛的有所差距，而我更喜 歡偏數理、管理的內容，對資訊以 及人工智能更感興趣。"
+    },
+    {
+      "self_ref": "#/texts/15",
+      "parent": {
+        "$ref": "#/pictures/2"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 4,
+          "bbox": {
+            "l": 533.1556337851811,
+            "t": 38.07939997704955,
+            "r": 570.4620834358859,
+            "b": 0.9470084118066779,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            1
+          ]
+        }
+      ],
+      "orig": "4",
+      "text": "4"
+    },
+    {
+      "self_ref": "#/texts/16",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 5,
+          "bbox": {
+            "l": 59.56101118334609,
+            "t": 789.9743588890818,
+            "r": 292.9022052978282,
+            "b": 736.5950308462792,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            4
+          ]
+        }
+      ],
+      "orig": "多元表現",
+      "text": "多元表現",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/17",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 5,
+          "bbox": {
+            "l": 49.074108565245396,
+            "t": 668.1644189948606,
+            "r": 197.11560009122212,
+            "b": 634.2994559171116,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            4
+          ]
+        }
+      ],
+      "orig": "自主學習",
+      "text": "自主學習",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/18",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 5,
+          "bbox": {
+            "l": 76.08074103996898,
+            "t": 580.1280237739502,
+            "r": 94.93289908639517,
+            "b": 550.8420058066941,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            1
+          ]
+        }
+      ],
+      "orig": "1",
+      "text": "1"
+    },
+    {
+      "self_ref": "#/texts/19",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 5,
+          "bbox": {
+            "l": 76.08074103996898,
+            "t": 416.7416441817163,
+            "r": 94.93289908639517,
+            "b": 387.45562621446027,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            1
+          ]
+        }
+      ],
+      "orig": "2",
+      "text": "2"
+    },
+    {
+      "self_ref": "#/texts/20",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 5,
+          "bbox": {
+            "l": 122.61727325844673,
+            "t": 593.6231752116522,
+            "r": 250.63693328275622,
+            "b": 564.3371572443962,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            4
+          ]
+        }
+      ],
+      "orig": "數學統計",
+      "text": "數學統計",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/21",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 5,
+          "bbox": {
+            "l": 122.60555009143519,
+            "t": 543.0427287631445,
+            "r": 573.7529362360269,
+            "b": 439.38634579424536,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            36
+          ]
+        }
+      ],
+      "orig": "調查了過敏原以及疫苗施打的統 計數據，進行分析與統整，推測後面 的可能。",
+      "text": "調查了過敏原以及疫苗施打的統 計數據，進行分析與統整，推測後面 的可能。"
+    },
+    {
+      "self_ref": "#/texts/22",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 5,
+          "bbox": {
+            "l": 122.61727325844673,
+            "t": 426.67905976765735,
+            "r": 250.63693328275622,
+            "b": 397.3930418004013,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            4
+          ]
+        }
+      ],
+      "orig": "我的地圖",
+      "text": "我的地圖"
+    },
+    {
+      "self_ref": "#/texts/23",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 5,
+          "bbox": {
+            "l": 122.60555009143519,
+            "t": 380.79794032334445,
+            "r": 573.7529362360269,
+            "b": 316.15625716883267,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            30
+          ]
+        }
+      ],
+      "orig": "對現在市場上的店家進行評估和 學習SWOT分析，整合優缺點。",
+      "text": "對現在市場上的店家進行評估和 學習SWOT分析，整合優缺點。"
+    },
+    {
+      "self_ref": "#/texts/24",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 5,
+          "bbox": {
+            "l": 52.008113722995176,
+            "t": 271.0611963408288,
+            "r": 200.04960524897191,
+            "b": 237.19623326307976,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            4
+          ]
+        }
+      ],
+      "orig": "社團表現",
+      "text": "社團表現"
+    },
+    {
+      "self_ref": "#/texts/25",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 5,
+          "bbox": {
+            "l": 221.44666905323007,
+            "t": 273.416779674469,
+            "r": 352.5268364583799,
+            "b": 233.4355501540066,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            3
+          ]
+        }
+      ],
+      "orig": "熱舞社",
+      "text": "熱舞社"
+    },
+    {
+      "self_ref": "#/texts/26",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 5,
+          "bbox": {
+            "l": 122.60555009143519,
+            "t": 202.2579157625123,
+            "r": 567.0752619966095,
+            "b": 59.58683297922573,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            51
+          ]
+        }
+      ],
+      "orig": "在熱舞社學習到堅持與團結， 如何與人相處，解決問題，有所擔 當和責任感，面對困難仍不畏懼， 積極向上。",
+      "text": "在熱舞社學習到堅持與團結， 如何與人相處，解決問題，有所擔 當和責任感，面對困難仍不畏懼， 積極向上。"
+    },
+    {
+      "self_ref": "#/texts/27",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "furniture",
+      "label": "page_footer",
+      "prov": [
+        {
+          "page_no": 5,
+          "bbox": {
+            "l": 543.122497369895,
+            "t": 43.69016774326758,
+            "r": 573.7567204112203,
+            "b": 6.55777617802471,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            1
+          ]
+        }
+      ],
+      "orig": "5",
+      "text": "5"
+    },
+    {
+      "self_ref": "#/texts/28",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 6,
+          "bbox": {
+            "l": 127.0109303586277,
+            "t": 766.1343212372669,
+            "r": 256.13077237646405,
+            "b": 701.5624836736803,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            2
+          ]
+        }
+      ],
+      "orig": "結語",
+      "text": "結語",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/29",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 6,
+          "bbox": {
+            "l": 42.1924230419823,
+            "t": 649.7552603932854,
+            "r": 551.8237025317368,
+            "b": 357.3550901879437,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            108
+          ]
+        }
+      ],
+      "orig": "在這高中三年的嘗試與摸索下， 確定了自己的目標以及未來的方向。 我了解到多元的學習也是極為重要 的，可以使我們的眼界更加開闊，更 加了解自己，在自己的目標上不斷強 化自身，從不同的角度看待周遭，獲 取新的進步與成長。",
+      "text": "在這高中三年的嘗試與摸索下， 確定了自己的目標以及未來的方向。 我了解到多元的學習也是極為重要 的，可以使我們的眼界更加開闊，更 加了解自己，在自己的目標上不斷強 化自身，從不同的角度看待周遭，獲 取新的進步與成長。"
+    },
+    {
+      "self_ref": "#/texts/30",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 6,
+          "bbox": {
+            "l": 534.837937715085,
+            "t": 38.07939997704955,
+            "r": 568.7792643801897,
+            "b": 0.9470084118066779,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            1
+          ]
+        }
+      ],
+      "orig": "6",
+      "text": "6"
+    },
+    {
+      "self_ref": "#/texts/31",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 7,
+          "bbox": {
+            "l": 73.90075531830173,
+            "t": 768.9767396747469,
+            "r": 349.9827467205504,
+            "b": 722.9619008738665,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            6
+          ]
+        }
+      ],
+      "orig": "貳、就讀動機",
+      "text": "貳、就讀動機",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/32",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 7,
+          "bbox": {
+            "l": 111.54535092122684,
+            "t": 644.7381636006786,
+            "r": 211.93371892185695,
+            "b": 598.8091260554198,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            2
+          ]
+        }
+      ],
+      "orig": "主因",
+      "text": "主因",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/33",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 7,
+          "bbox": {
+            "l": 82.73391015275361,
+            "t": 510.4639826766188,
+            "r": 533.5257073198447,
+            "b": 171.31121426047787,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            113
+          ]
+        }
+      ],
+      "orig": "在國小的時候有上過資訊的課 程，就覺得還滿適合自己的，很 有條理，上課高中之後，發現資 訊課程可以做很多有意義的事 情，例如：國防安全和人工智能 等，而我又是一個滿喜歡接觸人 得覺就，人的係關同不﻿群，了解 資訊管理更適合我。",
+      "text": "在國小的時候有上過資訊的課 程，就覺得還滿適合自己的，很 有條理，上課高中之後，發現資 訊課程可以做很多有意義的事 情，例如：國防安全和人工智能 等，而我又是一個滿喜歡接觸人 得覺就，人的係關同不﻿群，了解 資訊管理更適合我。"
+    },
+    {
+      "self_ref": "#/texts/34",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 7,
+          "bbox": {
+            "l": 540.372169484492,
+            "t": 45.93769564962065,
+            "r": 571.7026248676657,
+            "b": 8.80530408437778,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            1
+          ]
+        }
+      ],
+      "orig": "7",
+      "text": "7"
+    },
+    {
+      "self_ref": "#/texts/35",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 8,
+          "bbox": {
+            "l": 57.72221692890753,
+            "t": 769.3556277540282,
+            "r": 256.03170881875167,
+            "b": 719.7645269300842,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            4
+          ]
+        }
+      ],
+      "orig": "選校動機",
+      "text": "選校動機",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/36",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 8,
+          "bbox": {
+            "l": 38.97087365621353,
+            "t": 675.7451825439555,
+            "r": 243.0257832107947,
+            "b": 644.6262127120814,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            6
+          ]
+        }
+      ],
+      "orig": "一、專業課程",
+      "text": "一、專業課程",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/37",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 8,
+          "bbox": {
+            "l": 60.7257022697623,
+            "t": 625.5588441475194,
+            "r": 535.9586445311612,
+            "b": 385.46838375128897,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            91
+          ]
+        }
+      ],
+      "orig": "有透過查詢網站和網路資訊了 解到貴系建立跨領域學習，有分好 幾大類，我對企業領導中的大數據 跨領域微學程，可以使我無論在資 訊上，或是未來在企業中，有更好 的決策和更穩重的處理方式。",
+      "text": "有透過查詢網站和網路資訊了 解到貴系建立跨領域學習，有分好 幾大類，我對企業領導中的大數據 跨領域微學程，可以使我無論在資 訊上，或是未來在企業中，有更好 的決策和更穩重的處理方式。"
+    },
+    {
+      "self_ref": "#/texts/38",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 8,
+          "bbox": {
+            "l": 38.97087365621353,
+            "t": 357.27517741353955,
+            "r": 243.0257832107947,
+            "b": 326.1562075816654,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            6
+          ]
+        }
+      ],
+      "orig": "二、業界實習",
+      "text": "二、業界實習",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/39",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 8,
+          "bbox": {
+            "l": 60.7257022697623,
+            "t": 307.2889414087658,
+            "r": 535.9675061199979,
+            "b": 109.21431158187568,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            73
+          ]
+        }
+      ],
+      "orig": "貴系有提供海外實習的機會， 也有補助，使我們可以沒有沉重的 壓力，可以好好的多方面體驗職場 生活，使我們可以做好更足的準 備，面對未來的職場生活。",
+      "text": "貴系有提供海外實習的機會， 也有補助，使我們可以沒有沉重的 壓力，可以好好的多方面體驗職場 生活，使我們可以做好更足的準 備，面對未來的職場生活。"
+    },
+    {
+      "self_ref": "#/texts/40",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "furniture",
+      "label": "page_footer",
+      "prov": [
+        {
+          "page_no": 8,
+          "bbox": {
+            "l": 533.302177779075,
+            "t": 38.07939997704955,
+            "r": 570.3185306206765,
+            "b": 0.9470084118066779,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            1
+          ]
+        }
+      ],
+      "orig": "8",
+      "text": "8"
+    },
+    {
+      "self_ref": "#/texts/41",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 9,
+          "bbox": {
+            "l": 35.236076019330106,
+            "t": 775.892389959232,
+            "r": 355.48500047536214,
+            "b": 719.1121153041516,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            7
+          ]
+        }
+      ],
+      "orig": "SWOT 分析",
+      "text": "SWOT 分析",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/42",
+      "parent": {
+        "$ref": "#/groups/1"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "list_item",
+      "prov": [
+        {
+          "page_no": 9,
+          "bbox": {
+            "l": 187.2955429310187,
+            "t": 676.9911485379865,
+            "r": 347.3194031295739,
+            "b": 647.7051305707305,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            5
+          ]
+        }
+      ],
+      "orig": "注重小細節",
+      "text": "注重小細節",
+      "enumerated": false,
+      "marker": ""
+    },
+    {
+      "self_ref": "#/texts/43",
+      "parent": {
+        "$ref": "#/groups/1"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "list_item",
+      "prov": [
+        {
+          "page_no": 9,
+          "bbox": {
+            "l": 187.2955429310187,
+            "t": 632.7244699024316,
+            "r": 251.30680260683687,
+            "b": 603.4384519351755,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            2
+          ]
+        }
+      ],
+      "orig": "自律",
+      "text": "自律",
+      "enumerated": false,
+      "marker": ""
+    },
+    {
+      "self_ref": "#/texts/44",
+      "parent": {
+        "$ref": "#/groups/1"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "list_item",
+      "prov": [
+        {
+          "page_no": 9,
+          "bbox": {
+            "l": 187.2955429310187,
+            "t": 588.4577912668766,
+            "r": 251.30680260683687,
+            "b": 559.1717732996206,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            2
+          ]
+        }
+      ],
+      "orig": "樂觀",
+      "text": "樂觀",
+      "enumerated": false,
+      "marker": ""
+    },
+    {
+      "self_ref": "#/texts/45",
+      "parent": {
+        "$ref": "#/groups/1"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "list_item",
+      "prov": [
+        {
+          "page_no": 9,
+          "bbox": {
+            "l": 187.2955429310187,
+            "t": 544.1911126313215,
+            "r": 315.31520295532823,
+            "b": 514.9050946640656,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            4
+          ]
+        }
+      ],
+      "orig": "企圖心強",
+      "text": "企圖心強",
+      "enumerated": false,
+      "marker": ""
+    },
+    {
+      "self_ref": "#/texts/46",
+      "parent": {
+        "$ref": "#/groups/1"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "list_item",
+      "prov": [
+        {
+          "page_no": 9,
+          "bbox": {
+            "l": 187.2955429310187,
+            "t": 468.17043083885017,
+            "r": 443.3320036523109,
+            "b": 438.8844128715941,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            8
+          ]
+        }
+      ],
+      "orig": "處理事情容易急躁",
+      "text": "處理事情容易急躁",
+      "enumerated": false,
+      "marker": ""
+    },
+    {
+      "self_ref": "#/texts/47",
+      "parent": {
+        "$ref": "#/groups/1"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "list_item",
+      "prov": [
+        {
+          "page_no": 9,
+          "bbox": {
+            "l": 187.2955429310187,
+            "t": 423.90375220329514,
+            "r": 443.3320036523109,
+            "b": 394.61773423603915,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            8
+          ]
+        }
+      ],
+      "orig": "思考事情過於完美",
+      "text": "思考事情過於完美",
+      "enumerated": false,
+      "marker": ""
+    },
+    {
+      "self_ref": "#/texts/48",
+      "parent": {
+        "$ref": "#/groups/1"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "list_item",
+      "prov": [
+        {
+          "page_no": 9,
+          "bbox": {
+            "l": 187.2955429310187,
+            "t": 324.28865603392444,
+            "r": 578.1482869832278,
+            "b": 250.73595943111343,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            18
+          ]
+        }
+      ],
+      "orig": "申請到交換學生：找尋創 意、打開人脈",
+      "text": "申請到交換學生：找尋創 意、打開人脈",
+      "enumerated": false,
+      "marker": ""
+    },
+    {
+      "self_ref": "#/texts/49",
+      "parent": {
+        "$ref": "#/groups/1"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "list_item",
+      "prov": [
+        {
+          "page_no": 9,
+          "bbox": {
+            "l": 187.2955429310187,
+            "t": 235.7552987628144,
+            "r": 475.3362038265566,
+            "b": 206.46928079555835,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            9
+          ]
+        }
+      ],
+      "orig": "申請貴系的實習機會",
+      "text": "申請貴系的實習機會",
+      "enumerated": false,
+      "marker": ""
+    },
+    {
+      "self_ref": "#/texts/50",
+      "parent": {
+        "$ref": "#/groups/1"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "list_item",
+      "prov": [
+        {
+          "page_no": 9,
+          "bbox": {
+            "l": 187.2955429310187,
+            "t": 138.73355176538746,
+            "r": 571.3488043492936,
+            "b": 109.44753379813142,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            12
+          ]
+        }
+      ],
+      "orig": "英文程度有很大的進步空間",
+      "text": "英文程度有很大的進步空間",
+      "enumerated": false,
+      "marker": ""
+    },
+    {
+      "self_ref": "#/texts/51",
+      "parent": {
+        "$ref": "#/groups/1"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "list_item",
+      "prov": [
+        {
+          "page_no": 9,
+          "bbox": {
+            "l": 187.2955429310187,
+            "t": 94.46687312983249,
+            "r": 571.3488043492936,
+            "b": 65.18085516257645,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            12
+          ]
+        }
+      ],
+      "orig": "資訊專業領域仍需繼續學習",
+      "text": "資訊專業領域仍需繼續學習",
+      "enumerated": false,
+      "marker": ""
+    },
+    {
+      "self_ref": "#/texts/52",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 9,
+          "bbox": {
+            "l": 63.986870133880295,
+            "t": 627.2395759954397,
+            "r": 106.04223083326582,
+            "b": 557.2156911549363,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            1
+          ]
+        }
+      ],
+      "orig": "S",
+      "text": "S"
+    },
+    {
+      "self_ref": "#/texts/53",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 9,
+          "bbox": {
+            "l": 48.6415875732671,
+            "t": 471.5405184829007,
+            "r": 115.24633776191226,
+            "b": 401.51663364239727,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            1
+          ]
+        }
+      ],
+      "orig": "W",
+      "text": "W",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/54",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 9,
+          "bbox": {
+            "l": 54.591098525370796,
+            "t": 307.0084269384048,
+            "r": 109.29725855701412,
+            "b": 236.98454209790134,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            1
+          ]
+        }
+      ],
+      "orig": "O",
+      "text": "O"
+    },
+    {
+      "self_ref": "#/texts/55",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 9,
+          "bbox": {
+            "l": 59.54999751875,
+            "t": 142.10364180943782,
+            "r": 104.34066621971769,
+            "b": 72.07975696893436,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            1
+          ]
+        }
+      ],
+      "orig": "T",
+      "text": "T"
+    },
+    {
+      "self_ref": "#/texts/56",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 9,
+          "bbox": {
+            "l": 377.696911430128,
+            "t": 731.6633481039518,
+            "r": 573.7453908515574,
+            "b": 706.0363647638275,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            7
+          ]
+        }
+      ],
+      "orig": "別人眼中的我…",
+      "text": "別人眼中的我…"
+    },
+    {
+      "self_ref": "#/texts/57",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "furniture",
+      "label": "page_footer",
+      "prov": [
+        {
+          "page_no": 9,
+          "bbox": {
+            "l": 541.469569438767,
+            "t": 43.69016774326758,
+            "r": 575.4108961038718,
+            "b": 6.55777617802471,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            1
+          ]
+        }
+      ],
+      "orig": "9",
+      "text": "9"
+    },
+    {
+      "self_ref": "#/texts/58",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 10,
+          "bbox": {
+            "l": 116.8555440645188,
+            "t": 764.6013457921233,
+            "r": 216.01944191042952,
+            "b": 715.0102449681793,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            2
+          ]
+        }
+      ],
+      "orig": "特質",
+      "text": "特質",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/59",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 10,
+          "bbox": {
+            "l": 279.9730847444543,
+            "t": 733.8824264114901,
+            "r": 532.0350392159726,
+            "b": 708.2554430713658,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            9
+          ]
+        }
+      ],
+      "orig": "我適合貴系的原因⋯",
+      "text": "我適合貴系的原因⋯",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/60",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 10,
+          "bbox": {
+            "l": 36.58482639563217,
+            "t": 665.8865650006776,
+            "r": 548.6548885108898,
+            "b": 636.6005470334215,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            16
+          ]
+        }
+      ],
+      "orig": "一、清晰的思路細心處理事情的冷靜",
+      "text": "一、清晰的思路細心處理事情的冷靜",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/61",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 10,
+          "bbox": {
+            "l": 78.7952679168637,
+            "t": 622.2157256234537,
+            "r": 539.0983852240009,
+            "b": 275.3225259859031,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            145
+          ]
+        }
+      ],
+      "orig": "高二上下學期和高三上學期在班 上有擔任風紀股長，高二擔任熱舞社 成發總召，面對突如其來的事情以及 困難都需冷靜的思考後，進行新的動 作和處理方法。例如：當時因為有人 的家長不同意他參加成發，我就要幫 助他說服他家長，盡量的滿足大家的 需求。在成發當天音樂有出現一些問 題，我也努力現場解決。",
+      "text": "高二上下學期和高三上學期在班 上有擔任風紀股長，高二擔任熱舞社 成發總召，面對突如其來的事情以及 困難都需冷靜的思考後，進行新的動 作和處理方法。例如：當時因為有人 的家長不同意他參加成發，我就要幫 助他說服他家長，盡量的滿足大家的 需求。在成發當天音樂有出現一些問 題，我也努力現場解決。"
+    },
+    {
+      "self_ref": "#/texts/62",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "furniture",
+      "label": "page_footer",
+      "prov": [
+        {
+          "page_no": 10,
+          "bbox": {
+            "l": 522.7396102191819,
+            "t": 38.07939997704955,
+            "r": 580.8744819732797,
+            "b": 0.9470084118066779,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            2
+          ]
+        }
+      ],
+      "orig": "10",
+      "text": "10"
+    },
+    {
+      "self_ref": "#/texts/63",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 11,
+          "bbox": {
+            "l": 36.58482639563217,
+            "t": 791.7379332768703,
+            "r": 356.62968746541566,
+            "b": 762.4519153096143,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            10
+          ]
+        }
+      ],
+      "orig": "二、策劃與組織的能力",
+      "text": "二、策劃與組織的能力",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/64",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 11,
+          "bbox": {
+            "l": 50.3955675001846,
+            "t": 731.8953130534708,
+            "r": 535.9688457551586,
+            "b": 265.7071659065431,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            191
+          ]
+        }
+      ],
+      "orig": "高二班級的有氧舞蹈比賽是負責 人，不僅要負責動作以及隊形，還有 各個細項的進度，督促同學要來練 習，與他們溝通。有些人會只願意在 上課時間練習，可這些時間遠遠不足 夠，我就會嘗試與他們交換條件，例 如：原本應該要練一小時，有些人可 能需要補習或是家裡住比較遠，就會 讓他們提早走等等。要慢慢了解每個 人的個性與溝通方式，像是有人比較 愛表現，就可以幫他設計一些只屬於 他的特別動作。",
+      "text": "高二班級的有氧舞蹈比賽是負責 人，不僅要負責動作以及隊形，還有 各個細項的進度，督促同學要來練 習，與他們溝通。有些人會只願意在 上課時間練習，可這些時間遠遠不足 夠，我就會嘗試與他們交換條件，例 如：原本應該要練一小時，有些人可 能需要補習或是家裡住比較遠，就會 讓他們提早走等等。要慢慢了解每個 人的個性與溝通方式，像是有人比較 愛表現，就可以幫他設計一些只屬於 他的特別動作。"
+    },
+    {
+      "self_ref": "#/texts/65",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "furniture",
+      "label": "page_footer",
+      "prov": [
+        {
+          "page_no": 11,
+          "bbox": {
+            "l": 535.94997766875,
+            "t": 47.95566356553854,
+            "r": 581.6687059932195,
+            "b": 10.823272000295674,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            2
+          ]
+        }
+      ],
+      "orig": "11",
+      "text": "11"
+    },
+    {
+      "self_ref": "#/texts/66",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 12,
+          "bbox": {
+            "l": 43.173958816084976,
+            "t": 776.4030164559852,
+            "r": 395.24676125523405,
+            "b": 674.6098450286954,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            14
+          ]
+        }
+      ],
+      "orig": "参、未來學習計畫 與生涯規劃",
+      "text": "参、未來學習計畫 與生涯規劃",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/67",
+      "parent": {
+        "$ref": "#/groups/2"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "list_item",
+      "prov": [
+        {
+          "page_no": 12,
+          "bbox": {
+            "l": 318.91959894918284,
+            "t": 593.5567381419855,
+            "r": 574.9563800411831,
+            "b": 561.549678640413,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            8
+          ]
+        }
+      ],
+      "orig": "先修資訊相關內容",
+      "text": "先修資訊相關內容",
+      "enumerated": false,
+      "marker": ""
+    },
+    {
+      "self_ref": "#/texts/68",
+      "parent": {
+        "$ref": "#/groups/2"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "list_item",
+      "prov": [
+        {
+          "page_no": 12,
+          "bbox": {
+            "l": 318.88442944814824,
+            "t": 549.2900595064306,
+            "r": 510.9127186571692,
+            "b": 517.2830000048581,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            6
+          ]
+        }
+      ],
+      "orig": "增進英文能力",
+      "text": "增進英文能力",
+      "enumerated": false,
+      "marker": ""
+    },
+    {
+      "self_ref": "#/texts/69",
+      "parent": {
+        "$ref": "#/groups/2"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "list_item",
+      "prov": [
+        {
+          "page_no": 12,
+          "bbox": {
+            "l": 318.88442944814824,
+            "t": 505.0233808708755,
+            "r": 446.9042267741898,
+            "b": 473.01632136930306,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            4
+          ]
+        }
+      ],
+      "orig": "大學先修",
+      "text": "大學先修",
+      "enumerated": false,
+      "marker": ""
+    },
+    {
+      "self_ref": "#/texts/70",
+      "parent": {
+        "$ref": "#/groups/2"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "list_item",
+      "prov": [
+        {
+          "page_no": 12,
+          "bbox": {
+            "l": 318.88442944814824,
+            "t": 403.8247724474844,
+            "r": 446.9042267741898,
+            "b": 371.817712945912,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            4
+          ]
+        }
+      ],
+      "orig": "專業學習",
+      "text": "專業學習",
+      "enumerated": false,
+      "marker": ""
+    },
+    {
+      "self_ref": "#/texts/71",
+      "parent": {
+        "$ref": "#/groups/2"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "list_item",
+      "prov": [
+        {
+          "page_no": 12,
+          "bbox": {
+            "l": 318.88442944814824,
+            "t": 359.55809381192944,
+            "r": 446.9042267741898,
+            "b": 327.55103431035695,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            4
+          ]
+        }
+      ],
+      "orig": "考取英檢",
+      "text": "考取英檢",
+      "enumerated": false,
+      "marker": ""
+    },
+    {
+      "self_ref": "#/texts/72",
+      "parent": {
+        "$ref": "#/groups/2"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "list_item",
+      "prov": [
+        {
+          "page_no": 12,
+          "bbox": {
+            "l": 318.91959894918284,
+            "t": 315.29141517637447,
+            "r": 574.9563800411831,
+            "b": 283.284355674802,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            8
+          ]
+        }
+      ],
+      "orig": "申請交換學生資格",
+      "text": "申請交換學生資格",
+      "enumerated": false,
+      "marker": ""
+    },
+    {
+      "self_ref": "#/texts/73",
+      "parent": {
+        "$ref": "#/groups/2"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "list_item",
+      "prov": [
+        {
+          "page_no": 12,
+          "bbox": {
+            "l": 318.88442944814824,
+            "t": 203.90869277732133,
+            "r": 446.9042267741898,
+            "b": 171.90163327574885,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            4
+          ]
+        }
+      ],
+      "orig": "讀研究所",
+      "text": "讀研究所",
+      "enumerated": false,
+      "marker": ""
+    },
+    {
+      "self_ref": "#/texts/74",
+      "parent": {
+        "$ref": "#/groups/2"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "list_item",
+      "prov": [
+        {
+          "page_no": 12,
+          "bbox": {
+            "l": 318.88442944814824,
+            "t": 159.64201414176648,
+            "r": 574.9915495422177,
+            "b": 83.36827600463891,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            12
+          ]
+        }
+      ],
+      "orig": "申請外商公司的實 習資格",
+      "text": "申請外商公司的實 習資格",
+      "enumerated": false,
+      "marker": ""
+    },
+    {
+      "self_ref": "#/texts/75",
+      "parent": {
+        "$ref": "#/groups/2"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "list_item",
+      "prov": [
+        {
+          "page_no": 12,
+          "bbox": {
+            "l": 318.88442944814824,
+            "t": 71.10865687065643,
+            "r": 592.4593890932379,
+            "b": 10.579648010446704,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            7
+          ]
+        }
+      ],
+      "orig": "回饋社會 12",
+      "text": "回饋社會 12",
+      "enumerated": false,
+      "marker": ""
+    },
+    {
+      "self_ref": "#/texts/76",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 12,
+          "bbox": {
+            "l": 109.69662982930689,
+            "t": 560.0135495778026,
+            "r": 189.7203761306494,
+            "b": 520.000972286828,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            2
+          ]
+        }
+      ],
+      "orig": "近期",
+      "text": "近期"
+    },
+    {
+      "self_ref": "#/texts/77",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 12,
+          "bbox": {
+            "l": 49.68573789726083,
+            "t": 476.8837017847308,
+            "r": 249.73094769198735,
+            "b": 454.0027116904814,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            8
+          ]
+        }
+      ],
+      "orig": "（高三下～大一）",
+      "text": "（高三下～大一）"
+    },
+    {
+      "self_ref": "#/texts/78",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 12,
+          "bbox": {
+            "l": 109.69662982930689,
+            "t": 362.600324203354,
+            "r": 189.7203761306494,
+            "b": 322.5877469123793,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            2
+          ]
+        }
+      ],
+      "orig": "中期",
+      "text": "中期"
+    },
+    {
+      "self_ref": "#/texts/79",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 12,
+          "bbox": {
+            "l": 62.18849417631263,
+            "t": 278.21904926242496,
+            "r": 237.2282345026797,
+            "b": 255.33805916817562,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            7
+          ]
+        }
+      ],
+      "orig": "（大二～大三）",
+      "text": "（大二～大三）"
+    },
+    {
+      "self_ref": "#/texts/80",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 12,
+          "bbox": {
+            "l": 102.18812454216129,
+            "t": 162.6841965331929,
+            "r": 182.21187084350385,
+            "b": 122.6716192422183,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            2
+          ]
+        }
+      ],
+      "orig": "遠期",
+      "text": "遠期"
+    },
+    {
+      "self_ref": "#/texts/81",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 12,
+          "bbox": {
+            "l": 62.18849417631263,
+            "t": 77.05153764440502,
+            "r": 237.2282345026797,
+            "b": 54.170547550155675,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            7
+          ]
+        }
+      ],
+      "orig": "（大四～畢業）",
+      "text": "（大四～畢業）"
+    },
+    {
+      "self_ref": "#/texts/82",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 13,
+          "bbox": {
+            "l": 59.56172068576153,
+            "t": 775.1302260895678,
+            "r": 589.7134044030734,
+            "b": 710.3955674607975,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            27
+          ]
+        }
+      ],
+      "orig": "近程目標 修習課程，充實自我，增 進英文能力和資訊能力",
+      "text": "近程目標 修習課程，充實自我，增 進英文能力和資訊能力"
+    },
+    {
+      "self_ref": "#/texts/83",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 13,
+          "bbox": {
+            "l": 59.829045507123,
+            "t": 672.5854122756125,
+            "r": 127.84828004289434,
+            "b": 641.4664424437384,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            2
+          ]
+        }
+      ],
+      "orig": "資訊",
+      "text": "資訊",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/84",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 13,
+          "bbox": {
+            "l": 73.6258721322552,
+            "t": 613.4215927867182,
+            "r": 522.9301903525269,
+            "b": 495.6022175483522,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            40
+          ]
+        }
+      ],
+      "orig": "在網路上使用台大開放課程學一 些Pythons的課程，初步了解 概念，訓練基礎。",
+      "text": "在網路上使用台大開放課程學一 些Pythons的課程，初步了解 概念，訓練基礎。"
+    },
+    {
+      "self_ref": "#/texts/85",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 13,
+          "bbox": {
+            "l": 59.54999751875,
+            "t": 463.8405873733139,
+            "r": 127.56923205452134,
+            "b": 432.72161754143974,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            2
+          ]
+        }
+      ],
+      "orig": "英語",
+      "text": "英語",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/86",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 13,
+          "bbox": {
+            "l": 73.0950713543719,
+            "t": 404.54117269006935,
+            "r": 522.3912264989901,
+            "b": 286.7217974517033,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            67
+          ]
+        }
+      ],
+      "orig": "閱 讀 線 上 英 文 雜 誌 Breaking New English 中 2-page mini lesson提升閱讀和聽力能力。",
+      "text": "閱 讀 線 上 英 文 雜 誌 Breaking New English 中 2-page mini lesson提升閱讀和聽力能力。"
+    },
+    {
+      "self_ref": "#/texts/87",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 13,
+          "bbox": {
+            "l": 59.829045507123,
+            "t": 258.1446215439796,
+            "r": 127.84828004289434,
+            "b": 227.0256517121055,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            2
+          ]
+        }
+      ],
+      "orig": "先修",
+      "text": "先修",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/88",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 13,
+          "bbox": {
+            "l": 73.0950713543719,
+            "t": 196.85192534378837,
+            "r": 522.3993895746436,
+            "b": 79.03255010542239,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            38
+          ]
+        }
+      ],
+      "orig": "根據資料查詢知道未來要上微積 分和統計等，打好高中基礎外， 看網路影片學習。",
+      "text": "根據資料查詢知道未來要上微積 分和統計等，打好高中基礎外， 看網路影片學習。"
+    },
+    {
+      "self_ref": "#/texts/89",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "furniture",
+      "label": "page_footer",
+      "prov": [
+        {
+          "page_no": 13,
+          "bbox": {
+            "l": 528.707617970515,
+            "t": 45.93769564962065,
+            "r": 583.3613280153712,
+            "b": 8.80530408437778,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            2
+          ]
+        }
+      ],
+      "orig": "13",
+      "text": "13"
+    },
+    {
+      "self_ref": "#/texts/90",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 14,
+          "bbox": {
+            "l": 59.56172068576153,
+            "t": 772.3706656445496,
+            "r": 583.3371752918817,
+            "b": 707.6360070157792,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            23
+          ]
+        }
+      ],
+      "orig": "中程目標 準備比賽，申請交換學 生，跨領域學習",
+      "text": "中程目標 準備比賽，申請交換學 生，跨領域學習"
+    },
+    {
+      "self_ref": "#/texts/91",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 14,
+          "bbox": {
+            "l": 59.829045507123,
+            "t": 672.4605930808133,
+            "r": 161.8571987975968,
+            "b": 641.3416232489392,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            3
+          ]
+        }
+      ],
+      "orig": "研究所",
+      "text": "研究所",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/92",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 14,
+          "bbox": {
+            "l": 81.10109182078769,
+            "t": 613.4215927867182,
+            "r": 515.458417118314,
+            "b": 495.6022175483522,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            37
+          ]
+        }
+      ],
+      "orig": "積極參與課程的專題和專業比 賽，找尋自己喜歡的方向，精 進自己的技術能力。",
+      "text": "積極參與課程的專題和專業比 賽，找尋自己喜歡的方向，精 進自己的技術能力。"
+    },
+    {
+      "self_ref": "#/texts/93",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 14,
+          "bbox": {
+            "l": 59.829045507123,
+            "t": 467.5919936170053,
+            "r": 127.84828004289434,
+            "b": 436.47302378513115,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            2
+          ]
+        }
+      ],
+      "orig": "英檢",
+      "text": "英檢",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/94",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 14,
+          "bbox": {
+            "l": 81.10109182078769,
+            "t": 406.5344446070163,
+            "r": 515.458417118314,
+            "b": 288.71506936865035,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            40
+          ]
+        }
+      ],
+      "orig": "先考取多益的金色證書，再努 力考取托福的83分以上，有助 於申請全校的交換學生。",
+      "text": "先考取多益的金色證書，再努 力考取托福的83分以上，有助 於申請全校的交換學生。"
+    },
+    {
+      "self_ref": "#/texts/95",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 14,
+          "bbox": {
+            "l": 59.829045507123,
+            "t": 258.37965353418656,
+            "r": 195.86611755229927,
+            "b": 227.26068370231235,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            4
+          ]
+        }
+      ],
+      "orig": "交換學生",
+      "text": "交換學生",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/96",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 14,
+          "bbox": {
+            "l": 81.10109182078769,
+            "t": 196.85192534378837,
+            "r": 515.4584621352753,
+            "b": 79.03255010542239,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            39
+          ]
+        }
+      ],
+      "orig": "想要申請全校性的交換學生， 能讓我能探索更多未知的領 域，體驗當地的文化特色。",
+      "text": "想要申請全校性的交換學生， 能讓我能探索更多未知的領 域，體驗當地的文化特色。"
+    },
+    {
+      "self_ref": "#/texts/97",
+      "parent": {
+        "$ref": "#/pictures/6"
+      },
+      "children": [],
+      "content_layer": "furniture",
+      "label": "page_footer",
+      "prov": [
+        {
+          "page_no": 14,
+          "bbox": {
+            "l": 525.9526580853051,
+            "t": 45.93769564962065,
+            "r": 586.118207503127,
+            "b": 8.80530408437778,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            2
+          ]
+        }
+      ],
+      "orig": "14",
+      "text": "14"
+    },
+    {
+      "self_ref": "#/texts/98",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 15,
+          "bbox": {
+            "l": 59.56172068576153,
+            "t": 772.3706656445496,
+            "r": 583.3371752918817,
+            "b": 707.6360070157792,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            20
+          ]
+        }
+      ],
+      "orig": "遠程目標 繼續深造，善用所學， 貢獻社會",
+      "text": "遠程目標 繼續深造，善用所學， 貢獻社會"
+    },
+    {
+      "self_ref": "#/texts/99",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 15,
+          "bbox": {
+            "l": 59.829045507123,
+            "t": 672.4605930808133,
+            "r": 161.8571987975968,
+            "b": 641.3416232489392,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            3
+          ]
+        }
+      ],
+      "orig": "研究所",
+      "text": "研究所",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/100",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 15,
+          "bbox": {
+            "l": 81.10109182078769,
+            "t": 613.4215927867182,
+            "r": 515.458417118314,
+            "b": 495.6022175483522,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            30
+          ]
+        }
+      ],
+      "orig": "想要申請國外知名的研究所， 出國深造，取得碩士、博士學 位。",
+      "text": "想要申請國外知名的研究所， 出國深造，取得碩士、博士學 位。"
+    },
+    {
+      "self_ref": "#/texts/101",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 15,
+          "bbox": {
+            "l": 59.54999751875,
+            "t": 467.5919936170053,
+            "r": 195.58706956392626,
+            "b": 436.47302378513115,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            4
+          ]
+        }
+      ],
+      "orig": "業界實習",
+      "text": "業界實習",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/102",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 15,
+          "bbox": {
+            "l": 81.10109182078769,
+            "t": 406.5344446070163,
+            "r": 515.4584621352753,
+            "b": 288.71506936865035,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            38
+          ]
+        }
+      ],
+      "orig": "我想要先從助理程式設計師開 始學習，打好基礎，累積經 驗，再慢慢的開發程式。",
+      "text": "我想要先從助理程式設計師開 始學習，打好基礎，累積經 驗，再慢慢的開發程式。"
+    },
+    {
+      "self_ref": "#/texts/103",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 15,
+          "bbox": {
+            "l": 59.829045507123,
+            "t": 258.37965353418656,
+            "r": 195.86611755229927,
+            "b": 227.26068370231235,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            4
+          ]
+        }
+      ],
+      "orig": "回饋社會",
+      "text": "回饋社會",
+      "level": 1
+    },
+    {
+      "self_ref": "#/texts/104",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "text",
+      "prov": [
+        {
+          "page_no": 15,
+          "bbox": {
+            "l": 81.10109182078769,
+            "t": 196.85192534378837,
+            "r": 515.4584621352753,
+            "b": 79.03255010542239,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            32
+          ]
+        }
+      ],
+      "orig": "無論是寫出好的程式提供社 會，又或是實際勞動服務，偏 鄉教育等。",
+      "text": "無論是寫出好的程式提供社 會，又或是實際勞動服務，偏 鄉教育等。"
+    },
+    {
+      "self_ref": "#/texts/105",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "furniture",
+      "label": "page_footer",
+      "prov": [
+        {
+          "page_no": 15,
+          "bbox": {
+            "l": 529.287937946335,
+            "t": 45.93769564962065,
+            "r": 582.7812607547773,
+            "b": 8.80530408437778,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            2
+          ]
+        }
+      ],
+      "orig": "15",
+      "text": "15"
+    },
+    {
+      "self_ref": "#/texts/106",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "section_header",
+      "prov": [
+        {
+          "page_no": 16,
+          "bbox": {
+            "l": 85.8737822431756,
+            "t": 513.3191899622501,
+            "r": 509.5840799209963,
+            "b": 270.552826585096,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            9
+          ]
+        }
+      ],
+      "orig": "THANK YOU",
+      "text": "THANK YOU",
+      "level": 1
+    }
+  ],
+  "pictures": [
+    {
+      "self_ref": "#/pictures/0",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "picture",
+      "prov": [
+        {
+          "page_no": 1,
+          "bbox": {
+            "l": 45.22583620980282,
+            "t": 799.6788069435811,
+            "r": 138.07369008160276,
+            "b": 706.8831872520798,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            0
+          ]
+        }
+      ],
+      "captions": [],
+      "references": [],
+      "footnotes": [],
+      "annotations": []
+    },
+    {
+      "self_ref": "#/pictures/1",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "picture",
+      "prov": [
+        {
+          "page_no": 1,
+          "bbox": {
+            "l": 55.577480956211986,
+            "t": 370.7823986348998,
+            "r": 535.9036156059111,
+            "b": 50.1766923046024,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            0
+          ]
+        }
+      ],
+      "captions": [],
+      "references": [],
+      "footnotes": [],
+      "annotations": []
+    },
+    {
+      "self_ref": "#/pictures/2",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [
+        {
+          "$ref": "#/texts/15"
+        }
+      ],
+      "content_layer": "body",
+      "label": "picture",
+      "prov": [
+        {
+          "page_no": 4,
+          "bbox": {
+            "l": 533.2899043960059,
+            "t": 51.947027447098776,
+            "r": 569.8418558619967,
+            "b": 5.570600918571472,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            0
+          ]
+        }
+      ],
+      "captions": [],
+      "references": [],
+      "footnotes": [],
+      "annotations": []
+    },
+    {
+      "self_ref": "#/pictures/3",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "picture",
+      "prov": [
+        {
+          "page_no": 6,
+          "bbox": {
+            "l": 536.7326314529316,
+            "t": 52.727094518257786,
+            "r": 566.9721950044568,
+            "b": 7.407954018479018,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            0
+          ]
+        }
+      ],
+      "captions": [],
+      "references": [],
+      "footnotes": [],
+      "annotations": []
+    },
+    {
+      "self_ref": "#/pictures/4",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "picture",
+      "prov": [
+        {
+          "page_no": 10,
+          "bbox": {
+            "l": 61.63368672172495,
+            "t": 261.8622103678499,
+            "r": 564.8775791961874,
+            "b": 82.64649629476833,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            0
+          ]
+        }
+      ],
+      "captions": [],
+      "references": [],
+      "footnotes": [],
+      "annotations": []
+    },
+    {
+      "self_ref": "#/pictures/5",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "picture",
+      "prov": [
+        {
+          "page_no": 11,
+          "bbox": {
+            "l": 92.65567056924705,
+            "t": 232.06086752268413,
+            "r": 502.4181202114028,
+            "b": 46.515523854145954,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            0
+          ]
+        }
+      ],
+      "captions": [],
+      "references": [],
+      "footnotes": [],
+      "annotations": []
+    },
+    {
+      "self_ref": "#/pictures/6",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [
+        {
+          "$ref": "#/texts/97"
+        }
+      ],
+      "content_layer": "body",
+      "label": "picture",
+      "prov": [
+        {
+          "page_no": 14,
+          "bbox": {
+            "l": 525.6533109421698,
+            "t": 59.79264104732488,
+            "r": 585.294823460931,
+            "b": 13.627879059447423,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            0
+          ]
+        }
+      ],
+      "captions": [],
+      "references": [],
+      "footnotes": [],
+      "annotations": []
+    }
+  ],
+  "tables": [
+    {
+      "self_ref": "#/tables/0",
+      "parent": {
+        "$ref": "#/body"
+      },
+      "children": [],
+      "content_layer": "body",
+      "label": "document_index",
+      "prov": [
+        {
+          "page_no": 2,
+          "bbox": {
+            "l": 23.636968254242966,
+            "t": 633.6821677255634,
+            "r": 539.3909829158911,
+            "b": 25.030261889849726,
+            "coord_origin": "BOTTOMLEFT"
+          },
+          "charspan": [
+            0,
+            0
+          ]
+        }
+      ],
+      "captions": [],
+      "references": [],
+      "footnotes": [],
+      "data": {
+        "table_cells": [
+          {
+            "bbox": {
+              "l": 24.07052203706154,
+              "t": 214.77347529890324,
+              "r": 522.9863692058332,
+              "b": 244.05949326615928,
+              "coord_origin": "TOPLEFT"
+            },
+            "row_span": 1,
+            "col_span": 1,
+            "start_row_offset_idx": 0,
+            "end_row_offset_idx": 1,
+            "start_col_offset_idx": 0,
+            "end_col_offset_idx": 1,
+            "text": "壹、高中學習歷程反思……………3",
+            "column_header": false,
+            "row_header": false,
+            "row_section": false,
+            "fillable": false
+          },
+          {
+            "bbox": {
+              "l": 118.52407864899652,
+              "t": 259.0401539344582,
+              "r": 521.4271917447126,
+              "b": 288.32617190171425,
+              "coord_origin": "TOPLEFT"
+            },
+            "row_span": 1,
+            "col_span": 1,
+            "start_row_offset_idx": 1,
+            "end_row_offset_idx": 2,
+            "start_col_offset_idx": 0,
+            "end_col_offset_idx": 1,
+            "text": "前言⋯⋯⋯⋯⋯⋯⋯⋯……3",
+            "column_header": false,
+            "row_header": false,
+            "row_section": false,
+            "fillable": false
+          },
+          {
+            "bbox": {
+              "l": 117.2696997787623,
+              "t": 303.3068325700133,
+              "r": 520.1728091230649,
+              "b": 332.5928505372692,
+              "coord_origin": "TOPLEFT"
+            },
+            "row_span": 1,
+            "col_span": 1,
+            "start_row_offset_idx": 2,
+            "end_row_offset_idx": 3,
+            "start_col_offset_idx": 0,
+            "end_col_offset_idx": 1,
+            "text": "修課選擇⋯⋯⋯⋯⋯⋯⋯⋯4",
+            "column_header": false,
+            "row_header": false,
+            "row_section": false,
+            "fillable": false
+          },
+          {
+            "bbox": {
+              "l": 117.2696997787623,
+              "t": 347.5735112055682,
+              "r": 520.1728091230649,
+              "b": 376.85952917282424,
+              "coord_origin": "TOPLEFT"
+            },
+            "row_span": 1,
+            "col_span": 1,
+            "start_row_offset_idx": 3,
+            "end_row_offset_idx": 4,
+            "start_col_offset_idx": 0,
+            "end_col_offset_idx": 1,
+            "text": "多元表現……………………5",
+            "column_header": false,
+            "row_header": false,
+            "row_section": false,
+            "fillable": false
+          },
+          {
+            "bbox": {
+              "l": 117.2696997787623,
+              "t": 391.8401898411232,
+              "r": 520.1728091230649,
+              "b": 421.1262078083792,
+              "coord_origin": "TOPLEFT"
+            },
+            "row_span": 1,
+            "col_span": 1,
+            "start_row_offset_idx": 4,
+            "end_row_offset_idx": 5,
+            "start_col_offset_idx": 0,
+            "end_col_offset_idx": 1,
+            "text": "結語…………………………6",
+            "column_header": false,
+            "row_header": false,
+            "row_section": false,
+            "fillable": false
+          },
+          {
+            "bbox": {
+              "l": 24.07052203706154,
+              "t": 436.1068684766782,
+              "r": 522.9856826971729,
+              "b": 465.3928864439342,
+              "coord_origin": "TOPLEFT"
+            },
+            "row_span": 1,
+            "col_span": 1,
+            "start_row_offset_idx": 5,
+            "end_row_offset_idx": 6,
+            "start_col_offset_idx": 0,
+            "end_col_offset_idx": 1,
+            "text": "貳、就讀動機………………………7",
+            "column_header": false,
+            "row_header": false,
+            "row_section": false,
+            "fillable": false
+          },
+          {
+            "bbox": {
+              "l": 122.00368352764615,
+              "t": 474.9219917627672,
+              "r": 521.7060868257703,
+              "b": 507.3114527293735,
+              "coord_origin": "TOPLEFT"
+            },
+            "row_span": 1,
+            "col_span": 1,
+            "start_row_offset_idx": 6,
+            "end_row_offset_idx": 7,
+            "start_col_offset_idx": 0,
+            "end_col_offset_idx": 1,
+            "text": "主因⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯7",
+            "column_header": false,
+            "row_header": false,
+            "row_section": false,
+            "fillable": false
+          },
+          {
+            "bbox": {
+              "l": 121.1714999389961,
+              "t": 518.9006068484049,
+              "r": 521.9301362422813,
+              "b": 551.5781313649285,
+              "coord_origin": "TOPLEFT"
+            },
+            "row_span": 1,
+            "col_span": 1,
+            "start_row_offset_idx": 7,
+            "end_row_offset_idx": 8,
+            "start_col_offset_idx": 0,
+            "end_col_offset_idx": 1,
+            "text": "選校動機⋯⋯⋯⋯⋯⋯⋯⋯8",
+            "column_header": false,
+            "row_header": false,
+            "row_section": false,
+            "fillable": false
+          },
+          {
+            "bbox": {
+              "l": 119.13368333359632,
+              "t": 563.3273207894695,
+              "r": 525.3771299878438,
+              "b": 595.8448100004834,
+              "coord_origin": "TOPLEFT"
+            },
+            "row_span": 1,
+            "col_span": 1,
+            "start_row_offset_idx": 8,
+            "end_row_offset_idx": 9,
+            "start_col_offset_idx": 0,
+            "end_col_offset_idx": 1,
+            "text": "SWOT分析 ⋯⋯⋯⋯⋯⋯⋯9",
+            "column_header": false,
+            "row_header": false,
+            "row_section": false,
+            "fillable": false
+          },
+          {
+            "bbox": {
+              "l": 121.13949287789417,
+              "t": 607.5939994250244,
+              "r": 533.4198124300065,
+              "b": 640.1114886360385,
+              "coord_origin": "TOPLEFT"
+            },
+            "row_span": 1,
+            "col_span": 1,
+            "start_row_offset_idx": 9,
+            "end_row_offset_idx": 10,
+            "start_col_offset_idx": 0,
+            "end_col_offset_idx": 1,
+            "text": "特質⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯10",
+            "column_header": false,
+            "row_header": false,
+            "row_section": false,
+            "fillable": false
+          },
+          {
+            "bbox": {
+              "l": 24.07052203706154,
+              "t": 657.440261654453,
+              "r": 541.8361691137686,
+              "b": 686.7262796217092,
+              "coord_origin": "TOPLEFT"
+            },
+            "row_span": 1,
+            "col_span": 1,
+            "start_row_offset_idx": 10,
+            "end_row_offset_idx": 11,
+            "start_col_offset_idx": 0,
+            "end_col_offset_idx": 1,
+            "text": "参、未來學習計畫與生涯規劃⋯⋯12",
+            "column_header": false,
+            "row_header": false,
+            "row_section": false,
+            "fillable": false
+          },
+          {
+            "bbox": {
+              "l": 118.52407864899652,
+              "t": 701.7069402900081,
+              "r": 540.2776661567852,
+              "b": 730.992958257264,
+              "coord_origin": "TOPLEFT"
+            },
+            "row_span": 1,
+            "col_span": 1,
+            "start_row_offset_idx": 11,
+            "end_row_offset_idx": 12,
+            "start_col_offset_idx": 0,
+            "end_col_offset_idx": 1,
+            "text": "近程目標⋯⋯⋯⋯⋯⋯⋯⋯13",
+            "column_header": false,
+            "row_header": false,
+            "row_section": false,
+            "fillable": false
+          },
+          {
+            "bbox": {
+              "l": 117.2696997787623,
+              "t": 745.9736189255631,
+              "r": 539.0232835351376,
+              "b": 775.2596368928191,
+              "coord_origin": "TOPLEFT"
+            },
+            "row_span": 1,
+            "col_span": 1,
+            "start_row_offset_idx": 12,
+            "end_row_offset_idx": 13,
+            "start_col_offset_idx": 0,
+            "end_col_offset_idx": 1,
+            "text": "中程目標……………………14",
+            "column_header": false,
+            "row_header": false,
+            "row_section": false,
+            "fillable": false
+          },
+          {
+            "bbox": {
+              "l": 117.2696997787623,
+              "t": 790.240297561118,
+              "r": 539.0232835351376,
+              "b": 819.5263155283741,
+              "coord_origin": "TOPLEFT"
+            },
+            "row_span": 1,
+            "col_span": 1,
+            "start_row_offset_idx": 13,
+            "end_row_offset_idx": 14,
+            "start_col_offset_idx": 0,
+            "end_col_offset_idx": 1,
+            "text": "遠程目標……………………15",
+            "column_header": false,
+            "row_header": false,
+            "row_section": false,
+            "fillable": false
+          }
+        ],
+        "num_rows": 14,
+        "num_cols": 1,
+        "orientation": "rot_0",
+        "grid": [
+          [
+            {
+              "bbox": {
+                "l": 24.07052203706154,
+                "t": 214.77347529890324,
+                "r": 522.9863692058332,
+                "b": 244.05949326615928,
+                "coord_origin": "TOPLEFT"
+              },
+              "row_span": 1,
+              "col_span": 1,
+              "start_row_offset_idx": 0,
+              "end_row_offset_idx": 1,
+              "start_col_offset_idx": 0,
+              "end_col_offset_idx": 1,
+              "text": "壹、高中學習歷程反思……………3",
+              "column_header": false,
+              "row_header": false,
+              "row_section": false,
+              "fillable": false
+            }
+          ],
+          [
+            {
+              "bbox": {
+                "l": 118.52407864899652,
+                "t": 259.0401539344582,
+                "r": 521.4271917447126,
+                "b": 288.32617190171425,
+                "coord_origin": "TOPLEFT"
+              },
+              "row_span": 1,
+              "col_span": 1,
+              "start_row_offset_idx": 1,
+              "end_row_offset_idx": 2,
+              "start_col_offset_idx": 0,
+              "end_col_offset_idx": 1,
+              "text": "前言⋯⋯⋯⋯⋯⋯⋯⋯……3",
+              "column_header": false,
+              "row_header": false,
+              "row_section": false,
+              "fillable": false
+            }
+          ],
+          [
+            {
+              "bbox": {
+                "l": 117.2696997787623,
+                "t": 303.3068325700133,
+                "r": 520.1728091230649,
+                "b": 332.5928505372692,
+                "coord_origin": "TOPLEFT"
+              },
+              "row_span": 1,
+              "col_span": 1,
+              "start_row_offset_idx": 2,
+              "end_row_offset_idx": 3,
+              "start_col_offset_idx": 0,
+              "end_col_offset_idx": 1,
+              "text": "修課選擇⋯⋯⋯⋯⋯⋯⋯⋯4",
+              "column_header": false,
+              "row_header": false,
+              "row_section": false,
+              "fillable": false
+            }
+          ],
+          [
+            {
+              "bbox": {
+                "l": 117.2696997787623,
+                "t": 347.5735112055682,
+                "r": 520.1728091230649,
+                "b": 376.85952917282424,
+                "coord_origin": "TOPLEFT"
+              },
+              "row_span": 1,
+              "col_span": 1,
+              "start_row_offset_idx": 3,
+              "end_row_offset_idx": 4,
+              "start_col_offset_idx": 0,
+              "end_col_offset_idx": 1,
+              "text": "多元表現……………………5",
+              "column_header": false,
+              "row_header": false,
+              "row_section": false,
+              "fillable": false
+            }
+          ],
+          [
+            {
+              "bbox": {
+                "l": 117.2696997787623,
+                "t": 391.8401898411232,
+                "r": 520.1728091230649,
+                "b": 421.1262078083792,
+                "coord_origin": "TOPLEFT"
+              },
+              "row_span": 1,
+              "col_span": 1,
+              "start_row_offset_idx": 4,
+              "end_row_offset_idx": 5,
+              "start_col_offset_idx": 0,
+              "end_col_offset_idx": 1,
+              "text": "結語…………………………6",
+              "column_header": false,
+              "row_header": false,
+              "row_section": false,
+              "fillable": false
+            }
+          ],
+          [
+            {
+              "bbox": {
+                "l": 24.07052203706154,
+                "t": 436.1068684766782,
+                "r": 522.9856826971729,
+                "b": 465.3928864439342,
+                "coord_origin": "TOPLEFT"
+              },
+              "row_span": 1,
+              "col_span": 1,
+              "start_row_offset_idx": 5,
+              "end_row_offset_idx": 6,
+              "start_col_offset_idx": 0,
+              "end_col_offset_idx": 1,
+              "text": "貳、就讀動機………………………7",
+              "column_header": false,
+              "row_header": false,
+              "row_section": false,
+              "fillable": false
+            }
+          ],
+          [
+            {
+              "bbox": {
+                "l": 122.00368352764615,
+                "t": 474.9219917627672,
+                "r": 521.7060868257703,
+                "b": 507.3114527293735,
+                "coord_origin": "TOPLEFT"
+              },
+              "row_span": 1,
+              "col_span": 1,
+              "start_row_offset_idx": 6,
+              "end_row_offset_idx": 7,
+              "start_col_offset_idx": 0,
+              "end_col_offset_idx": 1,
+              "text": "主因⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯7",
+              "column_header": false,
+              "row_header": false,
+              "row_section": false,
+              "fillable": false
+            }
+          ],
+          [
+            {
+              "bbox": {
+                "l": 121.1714999389961,
+                "t": 518.9006068484049,
+                "r": 521.9301362422813,
+                "b": 551.5781313649285,
+                "coord_origin": "TOPLEFT"
+              },
+              "row_span": 1,
+              "col_span": 1,
+              "start_row_offset_idx": 7,
+              "end_row_offset_idx": 8,
+              "start_col_offset_idx": 0,
+              "end_col_offset_idx": 1,
+              "text": "選校動機⋯⋯⋯⋯⋯⋯⋯⋯8",
+              "column_header": false,
+              "row_header": false,
+              "row_section": false,
+              "fillable": false
+            }
+          ],
+          [
+            {
+              "bbox": {
+                "l": 119.13368333359632,
+                "t": 563.3273207894695,
+                "r": 525.3771299878438,
+                "b": 595.8448100004834,
+                "coord_origin": "TOPLEFT"
+              },
+              "row_span": 1,
+              "col_span": 1,
+              "start_row_offset_idx": 8,
+              "end_row_offset_idx": 9,
+              "start_col_offset_idx": 0,
+              "end_col_offset_idx": 1,
+              "text": "SWOT分析 ⋯⋯⋯⋯⋯⋯⋯9",
+              "column_header": false,
+              "row_header": false,
+              "row_section": false,
+              "fillable": false
+            }
+          ],
+          [
+            {
+              "bbox": {
+                "l": 121.13949287789417,
+                "t": 607.5939994250244,
+                "r": 533.4198124300065,
+                "b": 640.1114886360385,
+                "coord_origin": "TOPLEFT"
+              },
+              "row_span": 1,
+              "col_span": 1,
+              "start_row_offset_idx": 9,
+              "end_row_offset_idx": 10,
+              "start_col_offset_idx": 0,
+              "end_col_offset_idx": 1,
+              "text": "特質⋯⋯⋯⋯⋯⋯⋯⋯⋯⋯10",
+              "column_header": false,
+              "row_header": false,
+              "row_section": false,
+              "fillable": false
+            }
+          ],
+          [
+            {
+              "bbox": {
+                "l": 24.07052203706154,
+                "t": 657.440261654453,
+                "r": 541.8361691137686,
+                "b": 686.7262796217092,
+                "coord_origin": "TOPLEFT"
+              },
+              "row_span": 1,
+              "col_span": 1,
+              "start_row_offset_idx": 10,
+              "end_row_offset_idx": 11,
+              "start_col_offset_idx": 0,
+              "end_col_offset_idx": 1,
+              "text": "参、未來學習計畫與生涯規劃⋯⋯12",
+              "column_header": false,
+              "row_header": false,
+              "row_section": false,
+              "fillable": false
+            }
+          ],
+          [
+            {
+              "bbox": {
+                "l": 118.52407864899652,
+                "t": 701.7069402900081,
+                "r": 540.2776661567852,
+                "b": 730.992958257264,
+                "coord_origin": "TOPLEFT"
+              },
+              "row_span": 1,
+              "col_span": 1,
+              "start_row_offset_idx": 11,
+              "end_row_offset_idx": 12,
+              "start_col_offset_idx": 0,
+              "end_col_offset_idx": 1,
+              "text": "近程目標⋯⋯⋯⋯⋯⋯⋯⋯13",
+              "column_header": false,
+              "row_header": false,
+              "row_section": false,
+              "fillable": false
+            }
+          ],
+          [
+            {
+              "bbox": {
+                "l": 117.2696997787623,
+                "t": 745.9736189255631,
+                "r": 539.0232835351376,
+                "b": 775.2596368928191,
+                "coord_origin": "TOPLEFT"
+              },
+              "row_span": 1,
+              "col_span": 1,
+              "start_row_offset_idx": 12,
+              "end_row_offset_idx": 13,
+              "start_col_offset_idx": 0,
+              "end_col_offset_idx": 1,
+              "text": "中程目標……………………14",
+              "column_header": false,
+              "row_header": false,
+              "row_section": false,
+              "fillable": false
+            }
+          ],
+          [
+            {
+              "bbox": {
+                "l": 117.2696997787623,
+                "t": 790.240297561118,
+                "r": 539.0232835351376,
+                "b": 819.5263155283741,
+                "coord_origin": "TOPLEFT"
+              },
+              "row_span": 1,
+              "col_span": 1,
+              "start_row_offset_idx": 13,
+              "end_row_offset_idx": 14,
+              "start_col_offset_idx": 0,
+              "end_col_offset_idx": 1,
+              "text": "遠程目標……………………15",
+              "column_header": false,
+              "row_header": false,
+              "row_section": false,
+              "fillable": false
+            }
+          ]
+        ]
+      },
+      "annotations": []
+    }
+  ],
+  "key_value_items": [],
+  "form_items": [],
+  "pages": {
+    "1": {
+      "size": {
+        "width": 595.5,
+        "height": 842.2499787
+      },
+      "page_no": 1
+    },
+    "2": {
+      "size": {
+        "width": 595.5,
+        "height": 842.2499787
+      },
+      "page_no": 2
+    },
+    "3": {
+      "size": {
+        "width": 595.5,
+        "height": 842.2499787
+      },
+      "page_no": 3
+    },
+    "4": {
+      "size": {
+        "width": 595.5,
+        "height": 842.2499787
+      },
+      "page_no": 4
+    },
+    "5": {
+      "size": {
+        "width": 595.5,
+        "height": 842.2499787
+      },
+      "page_no": 5
+    },
+    "6": {
+      "size": {
+        "width": 595.5,
+        "height": 842.2499787
+      },
+      "page_no": 6
+    },
+    "7": {
+      "size": {
+        "width": 595.5,
+        "height": 842.2499787
+      },
+      "page_no": 7
+    },
+    "8": {
+      "size": {
+        "width": 595.5,
+        "height": 842.2499787
+      },
+      "page_no": 8
+    },
+    "9": {
+      "size": {
+        "width": 595.5,
+        "height": 842.2499787
+      },
+      "page_no": 9
+    },
+    "10": {
+      "size": {
+        "width": 595.5,
+        "height": 842.2499787
+      },
+      "page_no": 10
+    },
+    "11": {
+      "size": {
+        "width": 595.5,
+        "height": 842.2499787
+      },
+      "page_no": 11
+    },
+    "12": {
+      "size": {
+        "width": 595.5,
+        "height": 842.2499787
+      },
+      "page_no": 12
+    },
+    "13": {
+      "size": {
+        "width": 595.5,
+        "height": 842.2499787
+      },
+      "page_no": 13
+    },
+    "14": {
+      "size": {
+        "width": 595.5,
+        "height": 842.2499787
+      },
+      "page_no": 14
+    },
+    "15": {
+      "size": {
+        "width": 595.5,
+        "height": 842.2499787
+      },
+      "page_no": 15
+    },
+    "16": {
+      "size": {
+        "width": 595.5,
+        "height": 842.2499787
+      },
+      "page_no": 16
+    }
+  }
+}

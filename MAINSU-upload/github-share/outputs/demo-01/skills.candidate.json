@@ -1,0 +1,10 @@
+[
+  {
+    "event_id": "doc1:event_demo_1",
+    "title": "虛構：待辦清單程式專題",
+    "parent_event_id": null,
+    "child_event_ids": [],
+    "candidate_skills": [],
+    "status": "candidate_needs_review"
+  }
+]

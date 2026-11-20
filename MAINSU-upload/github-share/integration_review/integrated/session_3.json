@@ -1,0 +1,1206 @@
+{
+  "schema_version": 1,
+  "scope": "steps_2_to_12_text_only",
+  "finished": true,
+  "elapsed": 348.906,
+  "processing_excluded": 12.016,
+  "total_questions": 4,
+  "topics": [
+    {
+      "type": "自我介紹",
+      "event": "自我介紹",
+      "source": "固定題",
+      "portfolio_role": "未提及",
+      "check_aspects": [
+        "動機",
+        "個人特質",
+        "經歷亮點"
+      ],
+      "question": "請用大約 1 分鐘做個自我介紹，並說明你為什麼想就讀資訊管理學系。",
+      "answer_limit": 90,
+      "max_followups": 1,
+      "event_id": null
+    },
+    {
+      "type": "學習歷程",
+      "event": "修課選擇",
+      "event_id": "doc1:event_0002",
+      "source": "C:\\Users\\sherr\\Desktop\\MAINSU-upload 1108\\MAINSU-upload\\github-share\\integration_review\\integrated\\parsed_2\\輔大資管.events.json",
+      "portfolio_role": "未提及",
+      "question": "你在自述中提到原本選擇第三類組，但在高二、高三探索後發現自己更喜歡偏數理與管理的內容，並對資訊與人工智慧產生興趣。能否請你分享這段探索過程中，具體是什麼經驗或契機讓你做出這樣的轉變？",
+      "check_aspects": [
+        "學科轉向動機",
+        "對資訊與人工智慧的理解",
+        "高中探索經歷"
+      ],
+      "max_followups": 2,
+      "answer_limit": 120
+    },
+    {
+      "type": "學習歷程",
+      "event": "多元表現",
+      "event_id": "doc1:event_0003",
+      "source": "C:\\Users\\sherr\\Desktop\\MAINSU-upload 1108\\MAINSU-upload\\github-share\\integration_review\\integrated\\parsed_2\\輔大資管.events.json",
+      "portfolio_role": "未提及",
+      "question": "在多元表現與社團活動中，你有參與熱舞社等經歷。能否談談在熱舞社的活動中，哪一項經驗最讓你印象深刻，或是它對你的團隊合作與時間管理能力帶來了什麼幫助？",
+      "check_aspects": [
+        "社團參與經驗",
+        "團隊協作能力",
+        "時間管理與調適"
+      ],
+      "max_followups": 2,
+      "answer_limit": 120
+    }
+  ],
+  "relevance_summary": {
+    "method": "mean_of_question_scores_per_topic",
+    "topics": [
+      {
+        "topic_index": 0,
+        "type": "自我介紹",
+        "questions": [
+          {
+            "question_kind": "main",
+            "question": "請用大約 1 分鐘做個自我介紹，並說明你為什麼想就讀資訊管理學系。",
+            "relevance_score": 0.788
+          }
+        ],
+        "relevance_score": 0.788,
+        "completeness": {
+          "exp": 37.5,
+          "trait": 25.0,
+          "depth": 0.0
+        }
+      },
+      {
+        "topic_index": 1,
+        "type": "學習歷程",
+        "questions": [
+          {
+            "question_kind": "main",
+            "question": "你在自述中提到原本選擇第三類組，但在高二、高三探索後發現自己更喜歡偏數理與管理的內容，並對資訊與人工智慧產生興趣。能否請你分享這段探索過程中，具體是什麼經驗或契機讓你做出這樣的轉變？",
+            "relevance_score": 0.917
+          }
+        ],
+        "relevance_score": 0.917,
+        "completeness": {
+          "exp": 58.3,
+          "trait": 62.5,
+          "depth": 62.5
+        }
+      },
+      {
+        "topic_index": 2,
+        "type": "學習歷程",
+        "questions": [
+          {
+            "question_kind": "main",
+            "question": "在多元表現與社團活動中，你有參與熱舞社等經歷。能否談談在熱舞社的活動中，哪一項經驗最讓你印象深刻，或是它對你的團隊合作與時間管理能力帶來了什麼幫助？",
+            "relevance_score": 0.6
+          },
+          {
+            "question_kind": "followup",
+            "question": "回頭看那次由你們這一屆自己處理的熱舞社成發，能不能帶我們走一遍在籌備與演出過程中，遇到最棘手的狀況是什麼，而這段經歷又徹底改變了你對團隊合作的什麼看法？",
+            "relevance_score": 0.599
+          }
+        ],
+        "relevance_score": 0.599,
+        "completeness": {
+          "exp": 65.0,
+          "trait": 41.7,
+          "depth": 62.5
+        }
+      }
+    ],
+    "overall": 0.768
+  },
+  "log": [
+    {
+      "kind": "question",
+      "elapsed": 0,
+      "question_kind": "main",
+      "text": "請用大約 1 分鐘做個自我介紹，並說明你為什麼想就讀資訊管理學系。",
+      "topic_index": 0,
+      "total_questions": 1
+    },
+    {
+      "kind": "answer",
+      "elapsed": 29.219,
+      "topic_index": 0,
+      "question": "請用大約 1 分鐘做個自我介紹，並說明你為什麼想就讀資訊管理學系。",
+      "answer": "我是徐苙媗 就讀於南湖高中 想讀資管系的原因是因為高二的時候有上過python的初階課程 而有了興趣 我自己認為字的個性適合管理 曾經擔任過熱舞社的幹部",
+      "answer_elapsed": 29.219,
+      "timed_out": false,
+      "submitted_by": "enter"
+    },
+    {
+      "kind": "analysis",
+      "elapsed": 29.219,
+      "topic_index": 0,
+      "question": "請用大約 1 分鐘做個自我介紹，並說明你為什麼想就讀資訊管理學系。",
+      "question_kind": "main",
+      "relevance": {
+        "vector_cosine": 0.5297,
+        "vector_score": 0.9421,
+        "cross_logit": 2.1852,
+        "cross_score": 0.6333,
+        "copy_ratio": 0.12,
+        "copied_question": false,
+        "relevance_score": 0.7877,
+        "level": "relevant",
+        "relevance_status": "切題",
+        "method": "llm_band_with_model_position",
+        "llm_label": "relevant",
+        "llm_reason": "學生確實回答了自我介紹以及想就讀資訊管理學系的原因。",
+        "model_score": 0.7877
+      },
+      "relevance_status": "切題",
+      "assessment": {
+        "details": {
+          "star": {
+            "why_score": 0.5,
+            "how_score": 0.0,
+            "what_score": 0.0,
+            "role_score": 0.25,
+            "action_score": 0.0
+          },
+          "ask": {
+            "skill_score": 0.25,
+            "attitude_score": 0.0,
+            "knowledge_score": 0.0
+          },
+          "gibbs": {
+            "reflection_score": 0.0,
+            "challenge_score": 0.0
+          }
+        },
+        "not_applicable": [
+          "how_score",
+          "what_score",
+          "action_score",
+          "skill_score",
+          "attitude_score",
+          "knowledge_score",
+          "reflection_score",
+          "challenge_score"
+        ],
+        "relevance_judgement": {
+          "label": "relevant",
+          "reason": "學生確實回答了自我介紹以及想就讀資訊管理學系的原因。"
+        },
+        "reasoning": "自我介紹題目主要聚焦於動機與背景，因此Why給予0.5概括提及（Python初階課程與個性適合管理），Role給予0.25一句帶過（擔任熱舞社幹部），Skill給予0.25一句帶過（接觸過python初階課程）。其餘過程、成效、行動、反思與挑戰等細項因題型為自我介紹且未涉及具體專案深談，故列為不適用。",
+        "consistency_issues": [],
+        "mentions_outside_portfolio": false,
+        "retrieved_evidence": [
+          {
+            "chunk_id": "doc1:event_0005:unit_000035:0",
+            "event_id": "doc1:event_0005",
+            "title": "貳、就讀動機",
+            "unit_id": "unit_000035",
+            "page": 7,
+            "bbox": [
+              82.73391015275361,
+              331.78599602338124,
+              533.5257073198447,
+              670.9387644395222
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload 1108\\MAINSU-upload\\github-share\\integration_review\\integrated\\parsed_2\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "在國小的時候有上過資訊的課程，就覺得還滿適合自己的，很有條理，上課高中之後，發現資訊課程可以做很多有意義的事情，例如：國防安全和人工智能等，而我又是一個滿喜歡接觸人得覺就，人的係關同不﻿群，了解資訊管理更適合我。",
+            "similarity": 0.78312
+          },
+          {
+            "chunk_id": "doc1:event_0002:unit_000016:0",
+            "event_id": "doc1:event_0002",
+            "title": "修課選擇",
+            "unit_id": "unit_000016",
+            "page": 4,
+            "bbox": [
+              57.931370386192796,
+              582.5439873086111,
+              533.162183345321,
+              780.6186171355013
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload 1108\\MAINSU-upload\\github-share\\integration_review\\integrated\\parsed_2\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "我經過高二和高三的探索後， 發現第三類組的課程和未來方向， 與我所喜愛的有所差距，而我更喜歡偏數理、管理的內容，對資訊以及人工智能更感興趣。",
+            "similarity": 0.76127
+          },
+          {
+            "chunk_id": "doc1:event_0006:unit_000039:0",
+            "event_id": "doc1:event_0006",
+            "title": "選校動機",
+            "unit_id": "unit_000039",
+            "page": 8,
+            "bbox": [
+              60.7257022697623,
+              216.69113455248066,
+              535.9586445311612,
+              456.7815949487111
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload 1108\\MAINSU-upload\\github-share\\integration_review\\integrated\\parsed_2\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "有透過查詢網站和網路資訊了解到貴系建立跨領域學習，有分好幾大類，我對企業領導中的大數據跨領域微學程，可以使我無論在資訊上，或是未來在企業中，有更好的決策和更穩重的處理方式。",
+            "similarity": 0.71065
+          },
+          {
+            "chunk_id": "doc1:event_0001:unit_000010:0",
+            "event_id": "doc1:event_0001",
+            "title": "壹、高中學習歷程反思",
+            "unit_id": "unit_000010",
+            "page": 3,
+            "bbox": [
+              81.2912150128659,
+              302.9442304503418,
+              534.9866046848086,
+              689.0922203626762
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload 1108\\MAINSU-upload\\github-share\\integration_review\\integrated\\parsed_2\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "我認為我是一個尋寶家，對未來有所目標以及憧憬，在在不懈的堅持與努力下，在找尋寶藏的路途中，不斷學習和反思改進，有時也會有意外之喜。多數時間在團體中找尋方向，學習在解決問題時仍保持樂觀，與人合作。「高中學習歷程反思」成為我高中三年的尋寶圖。",
+            "similarity": 0.69048
+          },
+          {
+            "chunk_id": "doc1:event_0008:unit_000063:0",
+            "event_id": "doc1:event_0008",
+            "title": "特質",
+            "unit_id": "unit_000063",
+            "page": 10,
+            "bbox": [
+              78.7952679168637,
+              220.0342530765463,
+              539.0983852240009,
+              566.927452714097
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload 1108\\MAINSU-upload\\github-share\\integration_review\\integrated\\parsed_2\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "高二上下學期和高三上學期在班上有擔任風紀股長，高二擔任熱舞社成發總召，面對突如其來的事情以及困難都需冷靜的思考後，進行新的動作和處理方法。例如：當時因為有人的家長不同意他參加成發，我就要幫助他說服他家長，盡量的滿足大家的需求。在成發當天音樂有出現一些問題，我也努力現場解決。",
+            "similarity": 0.68935
+          },
+          {
+            "chunk_id": "doc1:event_0009:unit_000066:0",
+            "event_id": "doc1:event_0009",
+            "title": "二、策劃與組織的能力",
+            "unit_id": "unit_000066",
+            "page": 11,
+            "bbox": [
+              50.3955675001846,
+              110.35466564652927,
+              535.9688457551586,
+              576.542812793457
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload 1108\\MAINSU-upload\\github-share\\integration_review\\integrated\\parsed_2\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "高二班級的有氧舞蹈比賽是負責人，不僅要負責動作以及隊形，還有各個細項的進度，督促同學要來練習，與他們溝通。有些人會只願意在上課時間練習，可這些時間遠遠不足夠，我就會嘗試與他們交換條件，例如：原本應該要練一小時，有些人可能需要補習或是家裡住比較遠，就會讓他們提早走等等。要慢慢了解每個人的個性與溝通方式，像是有人比較愛表現，就可以幫他設計一些只屬於他的特別動作。",
+            "similarity": 0.68748
+          }
+        ],
+        "context_scope": "retrieved_evidence_only_not_entire_portfolio"
+      },
+      "gap": {
+        "details": {
+          "star": {
+            "why_score": 0.5,
+            "how_score": 0.0,
+            "what_score": 0.0,
+            "role_score": 0.25,
+            "action_score": 0.0
+          },
+          "ask": {
+            "skill_score": 0.25,
+            "attitude_score": 0.0,
+            "knowledge_score": 0.0
+          },
+          "gibbs": {
+            "reflection_score": 0.0,
+            "challenge_score": 0.0
+          }
+        },
+        "not_applicable": [
+          "action_score",
+          "attitude_score",
+          "challenge_score",
+          "how_score",
+          "knowledge_score",
+          "reflection_score",
+          "what_score"
+        ],
+        "scores": {
+          "exp": 37.5,
+          "trait": 25.0,
+          "depth": 0.0
+        },
+        "is_all_passed": false,
+        "gaps": [
+          "depth",
+          "trait",
+          "exp"
+        ],
+        "target_gap": "depth",
+        "target_item": "reflection_score",
+        "hidden_items": [
+          {
+            "field": "depth",
+            "item": "reflection_score"
+          },
+          {
+            "field": "trait",
+            "item": "skill_score"
+          },
+          {
+            "field": "exp",
+            "item": "role_score"
+          }
+        ],
+        "decision": "follow_up",
+        "reason": "深度邏輯 0.0% 最低；用一個問題暗藏以下缺口：深度邏輯›反思、個人特質›能力、經驗內容›角色"
+      }
+    },
+    {
+      "kind": "topic_end",
+      "elapsed": 29.219,
+      "topic_index": 0,
+      "reason": "自介沒有可追問的備審外重要內容",
+      "followups": 0,
+      "topic_elapsed": 29.219,
+      "processing_excluded": 2.61,
+      "details": {
+        "star": {
+          "why_score": 0.5,
+          "how_score": 0.0,
+          "what_score": 0.0,
+          "role_score": 0.25,
+          "action_score": 0.0
+        },
+        "ask": {
+          "skill_score": 0.25,
+          "attitude_score": 0.0,
+          "knowledge_score": 0.0
+        },
+        "gibbs": {
+          "reflection_score": 0.0,
+          "challenge_score": 0.0
+        }
+      }
+    },
+    {
+      "kind": "question",
+      "elapsed": 29.219,
+      "question_kind": "main",
+      "text": "你在自述中提到原本選擇第三類組，但在高二、高三探索後發現自己更喜歡偏數理與管理的內容，並對資訊與人工智慧產生興趣。能否請你分享這段探索過程中，具體是什麼經驗或契機讓你做出這樣的轉變？",
+      "topic_index": 1,
+      "total_questions": 2
+    },
+    {
+      "kind": "answer",
+      "elapsed": 108.906,
+      "topic_index": 1,
+      "question": "你在自述中提到原本選擇第三類組，但在高二、高三探索後發現自己更喜歡偏數理與管理的內容，並對資訊與人工智慧產生興趣。能否請你分享這段探索過程中，具體是什麼經驗或契機讓你做出這樣的轉變？",
+      "answer": "我認為經歷過三類的學習讓我更了解自己喜歡甚麼 也會因為高三要學很多東西需要分配時間所以也讓我知道如何更好的善用時間 也因為高三不是就讀資訊相關的二類組所以我也在確定方向之後有在暑假時間學習一些線上的資訊課程",
+      "answer_elapsed": 79.687,
+      "timed_out": false,
+      "submitted_by": "enter"
+    },
+    {
+      "kind": "analysis",
+      "elapsed": 108.906,
+      "topic_index": 1,
+      "question": "你在自述中提到原本選擇第三類組，但在高二、高三探索後發現自己更喜歡偏數理與管理的內容，並對資訊與人工智慧產生興趣。能否請你分享這段探索過程中，具體是什麼經驗或契機讓你做出這樣的轉變？",
+      "question_kind": "main",
+      "relevance": {
+        "vector_cosine": 0.7689,
+        "vector_score": 1.0,
+        "cross_logit": 6.4336,
+        "cross_score": 0.8332,
+        "copy_ratio": 0.0968,
+        "copied_question": false,
+        "relevance_score": 0.9166,
+        "level": "relevant",
+        "relevance_status": "切題",
+        "method": "llm_band_with_model_position",
+        "llm_label": "relevant",
+        "llm_reason": "學生回答了轉變的契機，包含三類學習的收穫、時間分配，以及在確定方向後利用暑假學習線上資訊課程。",
+        "model_score": 0.9166
+      },
+      "relevance_status": "切題",
+      "assessment": {
+        "details": {
+          "star": {
+            "why_score": 0.75,
+            "how_score": 0.5,
+            "what_score": 0.0,
+            "role_score": 0.0,
+            "action_score": 0.5
+          },
+          "ask": {
+            "skill_score": 0.5,
+            "attitude_score": 0.75,
+            "knowledge_score": 0.0
+          },
+          "gibbs": {
+            "reflection_score": 0.75,
+            "challenge_score": 0.5
+          }
+        },
+        "not_applicable": [
+          "what_score",
+          "role_score",
+          "knowledge_score"
+        ],
+        "relevance_judgement": {
+          "label": "relevant",
+          "reason": "學生回答了轉變的契機，包含三類學習的收穫、時間分配，以及在確定方向後利用暑假學習線上資訊課程。"
+        },
+        "reasoning": "學生說明了從三類轉往資訊與管理的原因與心態轉變(why_score 0.75)，提及利用暑假上線上課程的概括動作(action_score 0.5、skill_score 0.5)，展現積極學習態度(attitude_score 0.75)，並對三類學習過程進行反思(reflection_score 0.75)與面對時間分配的挑戰(challenge_score 0.5)。由於屬於個人探索歷程分享，產出、團隊角色與深層技術知識並不適用，故列入不適用項目。",
+        "consistency_issues": [],
+        "mentions_outside_portfolio": true,
+        "retrieved_evidence": [
+          {
+            "chunk_id": "doc1:event_0002:unit_000016:0",
+            "event_id": "doc1:event_0002",
+            "title": "修課選擇",
+            "unit_id": "unit_000016",
+            "page": 4,
+            "bbox": [
+              57.931370386192796,
+              582.5439873086111,
+              533.162183345321,
+              780.6186171355013
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload 1108\\MAINSU-upload\\github-share\\integration_review\\integrated\\parsed_2\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "我經過高二和高三的探索後， 發現第三類組的課程和未來方向， 與我所喜愛的有所差距，而我更喜歡偏數理、管理的內容，對資訊以及人工智能更感興趣。",
+            "similarity": 0.91107
+          },
+          {
+            "chunk_id": "doc1:event_0002:unit_000014:0",
+            "event_id": "doc1:event_0002",
+            "title": "修課選擇",
+            "unit_id": "unit_000014",
+            "page": 4,
+            "bbox": [
+              59.54999751875,
+              204.8366806464162,
+              534.7808104778782,
+              528.9588021813272
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload 1108\\MAINSU-upload\\github-share\\integration_review\\integrated\\parsed_2\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "會選擇三類組的原因，第一個是還未確定好未來的志向，想要先多學一些學業上的課程，第二個是因為自己的生物成績在高一算中上階層，很有成就感，想要繼續堅持、維持，第三個是身邊多數人建議若是還未確定好未來目標，便選擇三類組，有更多的選擇權。",
+            "similarity": 0.84639
+          },
+          {
+            "chunk_id": "doc1:event_0002:unit_000013:0",
+            "event_id": "doc1:event_0002",
+            "title": "修課選擇",
+            "unit_id": "unit_000013",
+            "page": 4,
+            "bbox": [
+              38.97087365621353,
+              166.50479615604456,
+              345.05254022518477,
+              197.62376598791866
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload 1108\\MAINSU-upload\\github-share\\integration_review\\integrated\\parsed_2\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "為何選擇第三類群？",
+            "similarity": 0.67815
+          },
+          {
+            "chunk_id": "doc1:event_0001:unit_000010:0",
+            "event_id": "doc1:event_0001",
+            "title": "壹、高中學習歷程反思",
+            "unit_id": "unit_000010",
+            "page": 3,
+            "bbox": [
+              81.2912150128659,
+              302.9442304503418,
+              534.9866046848086,
+              689.0922203626762
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload 1108\\MAINSU-upload\\github-share\\integration_review\\integrated\\parsed_2\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "我認為我是一個尋寶家，對未來有所目標以及憧憬，在在不懈的堅持與努力下，在找尋寶藏的路途中，不斷學習和反思改進，有時也會有意外之喜。多數時間在團體中找尋方向，學習在解決問題時仍保持樂觀，與人合作。「高中學習歷程反思」成為我高中三年的尋寶圖。",
+            "similarity": 0.83118
+          },
+          {
+            "chunk_id": "doc1:event_0004:unit_000031:0",
+            "event_id": "doc1:event_0004",
+            "title": "結語",
+            "unit_id": "unit_000031",
+            "page": 6,
+            "bbox": [
+              42.1924230419823,
+              192.49471830671462,
+              551.8237025317368,
+              484.89488851205635
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload 1108\\MAINSU-upload\\github-share\\integration_review\\integrated\\parsed_2\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "在這高中三年的嘗試與摸索下， 確定了自己的目標以及未來的方向。 我了解到多元的學習也是極為重要的，可以使我們的眼界更加開闊，更加了解自己，在自己的目標上不斷強化自身，從不同的角度看待周遭，獲取新的進步與成長。",
+            "similarity": 0.81861
+          },
+          {
+            "chunk_id": "doc1:event_0005:unit_000035:0",
+            "event_id": "doc1:event_0005",
+            "title": "貳、就讀動機",
+            "unit_id": "unit_000035",
+            "page": 7,
+            "bbox": [
+              82.73391015275361,
+              331.78599602338124,
+              533.5257073198447,
+              670.9387644395222
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload 1108\\MAINSU-upload\\github-share\\integration_review\\integrated\\parsed_2\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "在國小的時候有上過資訊的課程，就覺得還滿適合自己的，很有條理，上課高中之後，發現資訊課程可以做很多有意義的事情，例如：國防安全和人工智能等，而我又是一個滿喜歡接觸人得覺就，人的係關同不﻿群，了解資訊管理更適合我。",
+            "similarity": 0.79489
+          }
+        ],
+        "context_scope": "retrieved_evidence_only_not_entire_portfolio"
+      },
+      "gap": {
+        "details": {
+          "star": {
+            "why_score": 0.75,
+            "how_score": 0.5,
+            "what_score": 0.0,
+            "role_score": 0.0,
+            "action_score": 0.5
+          },
+          "ask": {
+            "skill_score": 0.5,
+            "attitude_score": 0.75,
+            "knowledge_score": 0.0
+          },
+          "gibbs": {
+            "reflection_score": 0.75,
+            "challenge_score": 0.5
+          }
+        },
+        "not_applicable": [
+          "knowledge_score",
+          "role_score",
+          "what_score"
+        ],
+        "scores": {
+          "exp": 58.3,
+          "trait": 62.5,
+          "depth": 62.5
+        },
+        "is_all_passed": true,
+        "gaps": [],
+        "target_gap": null,
+        "target_item": null,
+        "hidden_items": [],
+        "decision": "switch_topic",
+        "reason": "三項完整度均 >= 55.0%"
+      }
+    },
+    {
+      "kind": "topic_end",
+      "elapsed": 108.906,
+      "topic_index": 1,
+      "reason": "三項完整度均 >= 55.0%",
+      "followups": 0,
+      "topic_elapsed": 79.687,
+      "processing_excluded": 2.609,
+      "details": {
+        "star": {
+          "why_score": 0.75,
+          "how_score": 0.5,
+          "what_score": 0.0,
+          "role_score": 0.0,
+          "action_score": 0.5
+        },
+        "ask": {
+          "skill_score": 0.5,
+          "attitude_score": 0.75,
+          "knowledge_score": 0.0
+        },
+        "gibbs": {
+          "reflection_score": 0.75,
+          "challenge_score": 0.5
+        }
+      }
+    },
+    {
+      "kind": "question",
+      "elapsed": 108.906,
+      "question_kind": "main",
+      "text": "在多元表現與社團活動中，你有參與熱舞社等經歷。能否談談在熱舞社的活動中，哪一項經驗最讓你印象深刻，或是它對你的團隊合作與時間管理能力帶來了什麼幫助？",
+      "topic_index": 2,
+      "total_questions": 3
+    },
+    {
+      "kind": "answer",
+      "elapsed": 228.922,
+      "topic_index": 2,
+      "question": "在多元表現與社團活動中，你有參與熱舞社等經歷。能否談談在熱舞社的活動中，哪一項經驗最讓你印象深刻，或是它對你的團隊合作與時間管理能力帶來了什麼幫助？",
+      "answer": "印象最為深刻的就是高二最後的一場表演是我們的成發 從頭到尾都是由我們這一屆自己處理包括聯繫廠商怎麼邀請 路線租借場地 所以學習到很多溝通的技巧",
+      "answer_elapsed": 120.016,
+      "timed_out": true,
+      "submitted_by": "timeout"
+    },
+    {
+      "kind": "analysis",
+      "elapsed": 228.922,
+      "topic_index": 2,
+      "question": "在多元表現與社團活動中，你有參與熱舞社等經歷。能否談談在熱舞社的活動中，哪一項經驗最讓你印象深刻，或是它對你的團隊合作與時間管理能力帶來了什麼幫助？",
+      "question_kind": "main",
+      "relevance": {
+        "vector_cosine": 0.4882,
+        "vector_score": 0.8235,
+        "cross_logit": -2.6092,
+        "cross_score": 0.3425,
+        "copy_ratio": 0.1168,
+        "copied_question": false,
+        "relevance_score": 0.6,
+        "level": "relevant",
+        "relevance_status": "切題",
+        "method": "llm_band_with_model_position",
+        "llm_label": "relevant",
+        "llm_reason": "學生確實回答了關於熱舞社成發的經驗以及從中學習到的溝通技巧。",
+        "model_score": 0.583
+      },
+      "relevance_status": "切題",
+      "assessment": {
+        "details": {
+          "star": {
+            "why_score": 0.5,
+            "how_score": 0.75,
+            "what_score": 0.5,
+            "role_score": 0.75,
+            "action_score": 0.75
+          },
+          "ask": {
+            "skill_score": 0.75,
+            "attitude_score": 0.5,
+            "knowledge_score": 0.0
+          },
+          "gibbs": {
+            "reflection_score": 0.5,
+            "challenge_score": 0.5
+          }
+        },
+        "not_applicable": [
+          "knowledge_score"
+        ],
+        "relevance_judgement": {
+          "label": "relevant",
+          "reason": "學生確實回答了關於熱舞社成發的經驗以及從中學習到的溝通技巧。"
+        },
+        "reasoning": "學生在回答中提及熱舞社成發的具體籌備過程（聯絡廠商、場地租借），展現了部分實作過程與溝通技巧（0.75）；但對於Why（動機）、What（具體成效數據）僅概括提及（0.5）；知識細項因題目與經驗性質不適用，故給0分並不適用。",
+        "consistency_issues": [],
+        "mentions_outside_portfolio": false,
+        "retrieved_evidence": [
+          {
+            "chunk_id": "doc1:event_0003:unit_000028:0",
+            "event_id": "doc1:event_0003",
+            "title": "多元表現",
+            "unit_id": "unit_000028",
+            "page": 5,
+            "bbox": [
+              122.60555009143519,
+              639.9920629374877,
+              567.0752619966095,
+              782.6631457207743
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload 1108\\MAINSU-upload\\github-share\\integration_review\\integrated\\parsed_2\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "在熱舞社學習到堅持與團結， 如何與人相處，解決問題，有所擔當和責任感，面對困難仍不畏懼， 積極向上。",
+            "similarity": 0.73541
+          },
+          {
+            "chunk_id": "doc1:event_0003:unit_000022:0",
+            "event_id": "doc1:event_0003",
+            "title": "多元表現",
+            "unit_id": "unit_000022",
+            "page": 5,
+            "bbox": [
+              122.60555009143519,
+              299.20724993685553,
+              573.7529362360269,
+              402.8636329057547
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload 1108\\MAINSU-upload\\github-share\\integration_review\\integrated\\parsed_2\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "調查了過敏原以及疫苗施打的統計數據，進行分析與統整，推測後面的可能。",
+            "similarity": 0.64775
+          },
+          {
+            "chunk_id": "doc1:event_0003:unit_000027:0",
+            "event_id": "doc1:event_0003",
+            "title": "多元表現",
+            "unit_id": "unit_000027",
+            "page": 5,
+            "bbox": [
+              221.44666905323007,
+              568.833199025531,
+              352.5268364583799,
+              608.8144285459935
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload 1108\\MAINSU-upload\\github-share\\integration_review\\integrated\\parsed_2\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "熱舞社",
+            "similarity": 0.61204
+          },
+          {
+            "chunk_id": "doc1:event_0008:unit_000063:0",
+            "event_id": "doc1:event_0008",
+            "title": "特質",
+            "unit_id": "unit_000063",
+            "page": 10,
+            "bbox": [
+              78.7952679168637,
+              220.0342530765463,
+              539.0983852240009,
+              566.927452714097
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload 1108\\MAINSU-upload\\github-share\\integration_review\\integrated\\parsed_2\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "高二上下學期和高三上學期在班上有擔任風紀股長，高二擔任熱舞社成發總召，面對突如其來的事情以及困難都需冷靜的思考後，進行新的動作和處理方法。例如：當時因為有人的家長不同意他參加成發，我就要幫助他說服他家長，盡量的滿足大家的需求。在成發當天音樂有出現一些問題，我也努力現場解決。",
+            "similarity": 0.82879
+          },
+          {
+            "chunk_id": "doc1:event_0009:unit_000066:0",
+            "event_id": "doc1:event_0009",
+            "title": "二、策劃與組織的能力",
+            "unit_id": "unit_000066",
+            "page": 11,
+            "bbox": [
+              50.3955675001846,
+              110.35466564652927,
+              535.9688457551586,
+              576.542812793457
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload 1108\\MAINSU-upload\\github-share\\integration_review\\integrated\\parsed_2\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "高二班級的有氧舞蹈比賽是負責人，不僅要負責動作以及隊形，還有各個細項的進度，督促同學要來練習，與他們溝通。有些人會只願意在上課時間練習，可這些時間遠遠不足夠，我就會嘗試與他們交換條件，例如：原本應該要練一小時，有些人可能需要補習或是家裡住比較遠，就會讓他們提早走等等。要慢慢了解每個人的個性與溝通方式，像是有人比較愛表現，就可以幫他設計一些只屬於他的特別動作。",
+            "similarity": 0.77991
+          },
+          {
+            "chunk_id": "doc1:event_0001:unit_000010:0",
+            "event_id": "doc1:event_0001",
+            "title": "壹、高中學習歷程反思",
+            "unit_id": "unit_000010",
+            "page": 3,
+            "bbox": [
+              81.2912150128659,
+              302.9442304503418,
+              534.9866046848086,
+              689.0922203626762
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload 1108\\MAINSU-upload\\github-share\\integration_review\\integrated\\parsed_2\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "我認為我是一個尋寶家，對未來有所目標以及憧憬，在在不懈的堅持與努力下，在找尋寶藏的路途中，不斷學習和反思改進，有時也會有意外之喜。多數時間在團體中找尋方向，學習在解決問題時仍保持樂觀，與人合作。「高中學習歷程反思」成為我高中三年的尋寶圖。",
+            "similarity": 0.74478
+          }
+        ],
+        "context_scope": "retrieved_evidence_only_not_entire_portfolio"
+      },
+      "gap": {
+        "details": {
+          "star": {
+            "why_score": 0.5,
+            "how_score": 0.75,
+            "what_score": 0.5,
+            "role_score": 0.75,
+            "action_score": 0.75
+          },
+          "ask": {
+            "skill_score": 0.75,
+            "attitude_score": 0.5,
+            "knowledge_score": 0.0
+          },
+          "gibbs": {
+            "reflection_score": 0.5,
+            "challenge_score": 0.5
+          }
+        },
+        "not_applicable": [
+          "knowledge_score"
+        ],
+        "scores": {
+          "exp": 65.0,
+          "trait": 62.5,
+          "depth": 50.0
+        },
+        "is_all_passed": false,
+        "gaps": [
+          "depth"
+        ],
+        "target_gap": "depth",
+        "target_item": "reflection_score",
+        "hidden_items": [
+          {
+            "field": "depth",
+            "item": "reflection_score"
+          },
+          {
+            "field": "depth",
+            "item": "challenge_score"
+          }
+        ],
+        "decision": "follow_up",
+        "reason": "深度邏輯 50.0% 最低；用一個問題暗藏以下缺口：深度邏輯›反思、深度邏輯›挑戰"
+      }
+    },
+    {
+      "kind": "followup_reason",
+      "elapsed": 228.922,
+      "topic_index": 2,
+      "follow_up_reason": "學生在回答熱舞社成發經驗時，僅提及負責聯繫廠商與場地等溝通技巧，但缺乏對具體挑戰的處理方式以及事後的深層反思與收穫，故需透過引導式追問補足『深度邏輯›反思』與『深度邏輯›挑戰』的資訊缺口。",
+      "follow_up_question": "回頭看那次由你們這一屆自己處理的熱舞社成發，能不能帶我們走一遍在籌備與演出過程中，遇到最棘手的狀況是什麼，而這段經歷又徹底改變了你對團隊合作的什麼看法？",
+      "targets_outside_portfolio": false,
+      "retrieved_evidence": [
+        {
+          "chunk_id": "doc1:event_0003:unit_000028:0",
+          "event_id": "doc1:event_0003",
+          "title": "多元表現",
+          "unit_id": "unit_000028",
+          "page": 5,
+          "bbox": [
+            122.60555009143519,
+            639.9920629374877,
+            567.0752619966095,
+            782.6631457207743
+          ],
+          "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload 1108\\MAINSU-upload\\github-share\\integration_review\\integrated\\parsed_2\\輔大資管.events.json",
+          "char_start": 0,
+          "text": "在熱舞社學習到堅持與團結， 如何與人相處，解決問題，有所擔當和責任感，面對困難仍不畏懼， 積極向上。",
+          "similarity": 0.73541
+        },
+        {
+          "chunk_id": "doc1:event_0003:unit_000022:0",
+          "event_id": "doc1:event_0003",
+          "title": "多元表現",
+          "unit_id": "unit_000022",
+          "page": 5,
+          "bbox": [
+            122.60555009143519,
+            299.20724993685553,
+            573.7529362360269,
+            402.8636329057547
+          ],
+          "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload 1108\\MAINSU-upload\\github-share\\integration_review\\integrated\\parsed_2\\輔大資管.events.json",
+          "char_start": 0,
+          "text": "調查了過敏原以及疫苗施打的統計數據，進行分析與統整，推測後面的可能。",
+          "similarity": 0.64775
+        },
+        {
+          "chunk_id": "doc1:event_0003:unit_000027:0",
+          "event_id": "doc1:event_0003",
+          "title": "多元表現",
+          "unit_id": "unit_000027",
+          "page": 5,
+          "bbox": [
+            221.44666905323007,
+            568.833199025531,
+            352.5268364583799,
+            608.8144285459935
+          ],
+          "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload 1108\\MAINSU-upload\\github-share\\integration_review\\integrated\\parsed_2\\輔大資管.events.json",
+          "char_start": 0,
+          "text": "熱舞社",
+          "similarity": 0.61204
+        },
+        {
+          "chunk_id": "doc1:event_0008:unit_000063:0",
+          "event_id": "doc1:event_0008",
+          "title": "特質",
+          "unit_id": "unit_000063",
+          "page": 10,
+          "bbox": [
+            78.7952679168637,
+            220.0342530765463,
+            539.0983852240009,
+            566.927452714097
+          ],
+          "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload 1108\\MAINSU-upload\\github-share\\integration_review\\integrated\\parsed_2\\輔大資管.events.json",
+          "char_start": 0,
+          "text": "高二上下學期和高三上學期在班上有擔任風紀股長，高二擔任熱舞社成發總召，面對突如其來的事情以及困難都需冷靜的思考後，進行新的動作和處理方法。例如：當時因為有人的家長不同意他參加成發，我就要幫助他說服他家長，盡量的滿足大家的需求。在成發當天音樂有出現一些問題，我也努力現場解決。",
+          "similarity": 0.82879
+        },
+        {
+          "chunk_id": "doc1:event_0009:unit_000066:0",
+          "event_id": "doc1:event_0009",
+          "title": "二、策劃與組織的能力",
+          "unit_id": "unit_000066",
+          "page": 11,
+          "bbox": [
+            50.3955675001846,
+            110.35466564652927,
+            535.9688457551586,
+            576.542812793457
+          ],
+          "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload 1108\\MAINSU-upload\\github-share\\integration_review\\integrated\\parsed_2\\輔大資管.events.json",
+          "char_start": 0,
+          "text": "高二班級的有氧舞蹈比賽是負責人，不僅要負責動作以及隊形，還有各個細項的進度，督促同學要來練習，與他們溝通。有些人會只願意在上課時間練習，可這些時間遠遠不足夠，我就會嘗試與他們交換條件，例如：原本應該要練一小時，有些人可能需要補習或是家裡住比較遠，就會讓他們提早走等等。要慢慢了解每個人的個性與溝通方式，像是有人比較愛表現，就可以幫他設計一些只屬於他的特別動作。",
+          "similarity": 0.77991
+        },
+        {
+          "chunk_id": "doc1:event_0001:unit_000010:0",
+          "event_id": "doc1:event_0001",
+          "title": "壹、高中學習歷程反思",
+          "unit_id": "unit_000010",
+          "page": 3,
+          "bbox": [
+            81.2912150128659,
+            302.9442304503418,
+            534.9866046848086,
+            689.0922203626762
+          ],
+          "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload 1108\\MAINSU-upload\\github-share\\integration_review\\integrated\\parsed_2\\輔大資管.events.json",
+          "char_start": 0,
+          "text": "我認為我是一個尋寶家，對未來有所目標以及憧憬，在在不懈的堅持與努力下，在找尋寶藏的路途中，不斷學習和反思改進，有時也會有意外之喜。多數時間在團體中找尋方向，學習在解決問題時仍保持樂觀，與人合作。「高中學習歷程反思」成為我高中三年的尋寶圖。",
+          "similarity": 0.74478
+        }
+      ]
+    },
+    {
+      "kind": "question",
+      "elapsed": 228.922,
+      "question_kind": "followup",
+      "text": "回頭看那次由你們這一屆自己處理的熱舞社成發，能不能帶我們走一遍在籌備與演出過程中，遇到最棘手的狀況是什麼，而這段經歷又徹底改變了你對團隊合作的什麼看法？",
+      "topic_index": 2,
+      "total_questions": 4
+    },
+    {
+      "kind": "answer",
+      "elapsed": 348.906,
+      "topic_index": 2,
+      "question": "回頭看那次由你們這一屆自己處理的熱舞社成發，能不能帶我們走一遍在籌備與演出過程中，遇到最棘手的狀況是什麼，而這段經歷又徹底改變了你對團隊合作的什麼看法？",
+      "answer": "最棘手的事情應該是場地的部分我們租業的是陽明大學大禮堂 因為本身就比較遠再加上那個場地需要爬一個小山坡 再加上場地預約的時間甚至是需要用搶的所以我們在預約場地之前",
+      "answer_elapsed": 119.984,
+      "timed_out": true,
+      "submitted_by": "timeout"
+    },
+    {
+      "kind": "analysis",
+      "elapsed": 348.906,
+      "topic_index": 2,
+      "question": "回頭看那次由你們這一屆自己處理的熱舞社成發，能不能帶我們走一遍在籌備與演出過程中，遇到最棘手的狀況是什麼，而這段經歷又徹底改變了你對團隊合作的什麼看法？",
+      "question_kind": "followup",
+      "relevance": {
+        "vector_cosine": 0.5316,
+        "vector_score": 0.9474,
+        "cross_logit": 4.0896,
+        "cross_score": 0.7354,
+        "copy_ratio": 0.0795,
+        "copied_question": false,
+        "relevance_score": 0.599,
+        "level": "partial",
+        "relevance_status": "部分離題",
+        "method": "llm_band_with_model_position",
+        "llm_label": "partial",
+        "llm_reason": "學生在回答追問時僅提到場地遠、需要爬山坡以及需要用搶的背景，話語尚未完整描述最棘手狀況的解決過程與團隊合作觀點便中斷。",
+        "model_score": 0.8414
+      },
+      "relevance_status": "部分離題",
+      "assessment": {
+        "details": {
+          "star": {
+            "why_score": 0.5,
+            "how_score": 0.5,
+            "what_score": 0.0,
+            "role_score": 0.75,
+            "action_score": 0.5
+          },
+          "ask": {
+            "skill_score": 0.25,
+            "attitude_score": 0.5,
+            "knowledge_score": 0.0
+          },
+          "gibbs": {
+            "reflection_score": 0.25,
+            "challenge_score": 0.75
+          }
+        },
+        "not_applicable": [],
+        "relevance_judgement": {
+          "label": "partial",
+          "reason": "學生在回答追問時僅提到場地遠、需要爬山坡以及需要用搶的背景，話語尚未完整描述最棘手狀況的解決過程與團隊合作觀點便中斷。"
+        },
+        "reasoning": "動機與過程部分學生在第一题提及籌備成發及聯繫廠商與場地，但細節較為概括（給予0.5）；角色上提及自己為該屆負責處理的人，對應備審為總召（給予0.75）；成效與知識未見具體數據或理論（給予0.0）；挑戰部分針對場地預約與搶場地有具體描述（給予0.75）。",
+        "consistency_issues": [],
+        "mentions_outside_portfolio": false,
+        "retrieved_evidence": [
+          {
+            "chunk_id": "doc1:event_0003:unit_000028:0",
+            "event_id": "doc1:event_0003",
+            "title": "多元表現",
+            "unit_id": "unit_000028",
+            "page": 5,
+            "bbox": [
+              122.60555009143519,
+              639.9920629374877,
+              567.0752619966095,
+              782.6631457207743
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload 1108\\MAINSU-upload\\github-share\\integration_review\\integrated\\parsed_2\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "在熱舞社學習到堅持與團結， 如何與人相處，解決問題，有所擔當和責任感，面對困難仍不畏懼， 積極向上。",
+            "similarity": 0.73541
+          },
+          {
+            "chunk_id": "doc1:event_0003:unit_000022:0",
+            "event_id": "doc1:event_0003",
+            "title": "多元表現",
+            "unit_id": "unit_000022",
+            "page": 5,
+            "bbox": [
+              122.60555009143519,
+              299.20724993685553,
+              573.7529362360269,
+              402.8636329057547
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload 1108\\MAINSU-upload\\github-share\\integration_review\\integrated\\parsed_2\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "調查了過敏原以及疫苗施打的統計數據，進行分析與統整，推測後面的可能。",
+            "similarity": 0.64775
+          },
+          {
+            "chunk_id": "doc1:event_0003:unit_000027:0",
+            "event_id": "doc1:event_0003",
+            "title": "多元表現",
+            "unit_id": "unit_000027",
+            "page": 5,
+            "bbox": [
+              221.44666905323007,
+              568.833199025531,
+              352.5268364583799,
+              608.8144285459935
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload 1108\\MAINSU-upload\\github-share\\integration_review\\integrated\\parsed_2\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "熱舞社",
+            "similarity": 0.61204
+          },
+          {
+            "chunk_id": "doc1:event_0008:unit_000063:0",
+            "event_id": "doc1:event_0008",
+            "title": "特質",
+            "unit_id": "unit_000063",
+            "page": 10,
+            "bbox": [
+              78.7952679168637,
+              220.0342530765463,
+              539.0983852240009,
+              566.927452714097
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload 1108\\MAINSU-upload\\github-share\\integration_review\\integrated\\parsed_2\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "高二上下學期和高三上學期在班上有擔任風紀股長，高二擔任熱舞社成發總召，面對突如其來的事情以及困難都需冷靜的思考後，進行新的動作和處理方法。例如：當時因為有人的家長不同意他參加成發，我就要幫助他說服他家長，盡量的滿足大家的需求。在成發當天音樂有出現一些問題，我也努力現場解決。",
+            "similarity": 0.82879
+          },
+          {
+            "chunk_id": "doc1:event_0009:unit_000066:0",
+            "event_id": "doc1:event_0009",
+            "title": "二、策劃與組織的能力",
+            "unit_id": "unit_000066",
+            "page": 11,
+            "bbox": [
+              50.3955675001846,
+              110.35466564652927,
+              535.9688457551586,
+              576.542812793457
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload 1108\\MAINSU-upload\\github-share\\integration_review\\integrated\\parsed_2\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "高二班級的有氧舞蹈比賽是負責人，不僅要負責動作以及隊形，還有各個細項的進度，督促同學要來練習，與他們溝通。有些人會只願意在上課時間練習，可這些時間遠遠不足夠，我就會嘗試與他們交換條件，例如：原本應該要練一小時，有些人可能需要補習或是家裡住比較遠，就會讓他們提早走等等。要慢慢了解每個人的個性與溝通方式，像是有人比較愛表現，就可以幫他設計一些只屬於他的特別動作。",
+            "similarity": 0.77991
+          },
+          {
+            "chunk_id": "doc1:event_0001:unit_000010:0",
+            "event_id": "doc1:event_0001",
+            "title": "壹、高中學習歷程反思",
+            "unit_id": "unit_000010",
+            "page": 3,
+            "bbox": [
+              81.2912150128659,
+              302.9442304503418,
+              534.9866046848086,
+              689.0922203626762
+            ],
+            "source_file": "C:\\Users\\sherr\\Desktop\\MAINSU-upload 1108\\MAINSU-upload\\github-share\\integration_review\\integrated\\parsed_2\\輔大資管.events.json",
+            "char_start": 0,
+            "text": "我認為我是一個尋寶家，對未來有所目標以及憧憬，在在不懈的堅持與努力下，在找尋寶藏的路途中，不斷學習和反思改進，有時也會有意外之喜。多數時間在團體中找尋方向，學習在解決問題時仍保持樂觀，與人合作。「高中學習歷程反思」成為我高中三年的尋寶圖。",
+            "similarity": 0.74478
+          }
+        ],
+        "context_scope": "retrieved_evidence_only_not_entire_portfolio"
+      },
+      "gap": {
+        "details": {
+          "star": {
+            "why_score": 0.5,
+            "how_score": 0.75,
+            "what_score": 0.5,
+            "role_score": 0.75,
+            "action_score": 0.75
+          },
+          "ask": {
+            "skill_score": 0.75,
+            "attitude_score": 0.5,
+            "knowledge_score": 0.0
+          },
+          "gibbs": {
+            "reflection_score": 0.5,
+            "challenge_score": 0.75
+          }
+        },
+        "not_applicable": [],
+        "scores": {
+          "exp": 65.0,
+          "trait": 41.7,
+          "depth": 62.5
+        },
+        "is_all_passed": false,
+        "gaps": [
+          "trait"
+        ],
+        "target_gap": null,
+        "target_item": null,
+        "hidden_items": [],
+        "decision": "switch_topic",
+        "reason": "本主題時間已達 4 分鐘"
+      }
+    },
+    {
+      "kind": "topic_end",
+      "elapsed": 348.906,
+      "topic_index": 2,
+      "reason": "本主題剩餘不足 60 秒，直接換題",
+      "followups": 1,
+      "topic_elapsed": 240.0,
+      "processing_excluded": 6.797,
+      "details": {
+        "star": {
+          "why_score": 0.5,
+          "how_score": 0.75,
+          "what_score": 0.5,
+          "role_score": 0.75,
+          "action_score": 0.75
+        },
+        "ask": {
+          "skill_score": 0.75,
+          "attitude_score": 0.5,
+          "knowledge_score": 0.0
+        },
+        "gibbs": {
+          "reflection_score": 0.5,
+          "challenge_score": 0.75
+        }
+      }
+    },
+    {
+      "kind": "interview_end",
+      "elapsed": 348.906,
+      "reason": "所有主題已完成",
+      "total_questions": 4,
+      "processing_excluded": 12.016
+    }
+  ]
+}

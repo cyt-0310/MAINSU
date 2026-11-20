@@ -1,0 +1,166 @@
+[
+  {
+    "event_id": "doc1:event_0001",
+    "title": "壹、高中學習歷程反思",
+    "parent_event_id": null,
+    "child_event_ids": [],
+    "candidate_skills": [
+      {
+        "aspect": "能力",
+        "text": "學習在解決問題時仍保持樂觀，與人合作",
+        "quote": "學習在解決問題時仍保持樂觀，與人合作",
+        "source_unit_id": "unit_000010",
+        "page": 3,
+        "bbox": [
+          81.2912150128659,
+          302.9442304503418,
+          534.9866046848086,
+          689.0922203626762
+        ],
+        "status": "candidate_needs_review"
+      }
+    ],
+    "status": "candidate_needs_review"
+  },
+  {
+    "event_id": "doc1:event_0002",
+    "title": "修課選擇",
+    "parent_event_id": null,
+    "child_event_ids": [],
+    "candidate_skills": [],
+    "status": "candidate_needs_review"
+  },
+  {
+    "event_id": "doc1:event_0003",
+    "title": "多元表現",
+    "parent_event_id": null,
+    "child_event_ids": [],
+    "candidate_skills": [],
+    "status": "candidate_needs_review"
+  },
+  {
+    "event_id": "doc1:event_0004",
+    "title": "結語",
+    "parent_event_id": null,
+    "child_event_ids": [],
+    "candidate_skills": [],
+    "status": "candidate_needs_review"
+  },
+  {
+    "event_id": "doc1:event_0005",
+    "title": "貳、就讀動機",
+    "parent_event_id": null,
+    "child_event_ids": [],
+    "candidate_skills": [],
+    "status": "candidate_needs_review"
+  },
+  {
+    "event_id": "doc1:event_0006",
+    "title": "選校動機",
+    "parent_event_id": null,
+    "child_event_ids": [],
+    "candidate_skills": [],
+    "status": "candidate_needs_review"
+  },
+  {
+    "event_id": "doc1:event_0007",
+    "title": "SWOT 分析",
+    "parent_event_id": null,
+    "child_event_ids": [],
+    "candidate_skills": [
+      {
+        "aspect": "能力",
+        "text": "具備自律、樂觀、企圖心強以及注重小細節等特質",
+        "quote": "自律",
+        "source_unit_id": "unit_000047",
+        "page": 9,
+        "bbox": [
+          187.2955429310187,
+          209.52550879756848,
+          251.30680260683687,
+          238.81152676482452
+        ],
+        "status": "candidate_needs_review"
+      }
+    ],
+    "status": "candidate_needs_review"
+  },
+  {
+    "event_id": "doc1:event_0008",
+    "title": "特質",
+    "parent_event_id": null,
+    "child_event_ids": [],
+    "candidate_skills": [
+      {
+        "aspect": "能力",
+        "text": "清晰的思路細心處理事情的冷靜",
+        "quote": "一、清晰的思路細心處理事情的冷靜",
+        "source_unit_id": "unit_000062",
+        "page": 10,
+        "bbox": [
+          36.58482639563217,
+          176.36341369932245,
+          548.6548885108898,
+          205.6494316665785
+        ],
+        "status": "candidate_needs_review"
+      }
+    ],
+    "status": "candidate_needs_review"
+  },
+  {
+    "event_id": "doc1:event_0009",
+    "title": "二、策劃與組織的能力",
+    "parent_event_id": null,
+    "child_event_ids": [],
+    "candidate_skills": [],
+    "status": "candidate_needs_review"
+  },
+  {
+    "event_id": "doc1:event_0010",
+    "title": "参、未來學習計畫與生涯規劃",
+    "parent_event_id": null,
+    "child_event_ids": [],
+    "candidate_skills": [
+      {
+        "aspect": "能力",
+        "text": "增進英文能力",
+        "quote": "增進英文能力",
+        "source_unit_id": "unit_000071",
+        "page": 12,
+        "bbox": [
+          318.88442944814824,
+          292.9599191935695,
+          510.9127186571692,
+          324.96697869514196
+        ],
+        "status": "candidate_needs_review"
+      }
+    ],
+    "status": "candidate_needs_review"
+  },
+  {
+    "event_id": "doc1:event_0011",
+    "title": "資訊",
+    "parent_event_id": null,
+    "child_event_ids": [],
+    "candidate_skills": [],
+    "status": "candidate_needs_review"
+  },
+  {
+    "event_id": "doc1:event_0012",
+    "title": "研究所",
+    "parent_event_id": null,
+    "child_event_ids": [],
+    "candidate_skills": [],
+    "status": "candidate_needs_review"
+  },
+  {
+    "event_id": "doc1:event_0013",
+    "title": "THANK YOU",
+    "parent_event_id": null,
+    "child_event_ids": [],
+    "candidate_skills": [],
+    "status": "candidate_needs_review"
+  }
+]

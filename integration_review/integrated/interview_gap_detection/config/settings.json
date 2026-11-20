@@ -1,0 +1,50 @@
+{
+  "department": "資訊管理學系",
+
+  "interview": {
+    "max_total_questions": 15,
+    "max_total_seconds": 1200,
+    "topic_time_limit_seconds": 240
+  },
+
+  "answer_time": {
+    "intro_target_seconds": 60,
+    "intro_limit_seconds": 90,
+    "general_limit_seconds": 120
+  },
+
+  "followup": {
+    "max_general": 2,
+    "max_intro": 1,
+    "max_outside_portfolio": 1
+  },
+
+  "relevance": {
+    "relevant_threshold": 0.6,
+    "off_topic_threshold": 0.4,
+    "vector_weight": 0.7,
+    "cross_weight": 0.3,
+    "vector_model": "shibing624/text2vec-base-chinese",
+    "cross_model": "BAAI/bge-reranker-base"
+  },
+
+  "completeness": {
+    "pass_threshold": 55.0
+  },
+
+  "gap_fields": [
+    {"key": "trait", "name": "個人特質", "detail_key": "ask",   "framework": "ASK（能力 Skill／態度 Attitude／知識 Knowledge）"},
+    {"key": "depth", "name": "深度邏輯", "detail_key": "gibbs", "framework": "Gibbs 反思模型（感受、評估、分析、結論、行動計畫）"},
+    {"key": "exp",   "name": "經驗內容", "detail_key": "star",  "framework": "STAR（情境、任務、行動、結果）"}
+  ],
+
+  "llm": {
+    "provider": "gemini",
+    "gemini_model": "gemini-3.5-flash-lite",
+    "gemini_timeout_seconds": 60,
+    "gemini_transport": "rest",
+    "timeout_seconds": 30,
+    "max_retries": 1,
+    "pdf_prompt_chars": 8000
+  }
+}

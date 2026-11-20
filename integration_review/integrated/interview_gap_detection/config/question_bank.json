@@ -1,0 +1,16 @@
+{
+  "intro": {
+    "type": "自我介紹",
+    "event": "自我介紹",
+    "source": "固定題",
+    "portfolio_role": "未提及",
+    "check_aspects": ["動機", "個人特質", "經歷亮點"],
+    "question": "請用大約 1 分鐘做個自我介紹，並說明你為什麼想就讀{department}。"
+  },
+  "max_events": 2,
+  "event_priority": {
+    "專業相關": 0,
+    "社團競賽": 1,
+    "其他": 2
+  }
+}

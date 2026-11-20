@@ -1,0 +1,10 @@
+# Inferred from source; versions have not been integration-tested.
+openai>=2,<3
+google-genai
+pydantic>=2,<3
+# Only needed for relevance.py:
+numpy
+sentence-transformers
+scikit-learn
+# Only needed for original portfolio.py:
+pypdf

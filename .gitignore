@@ -1,30 +1,21 @@
-.env
-.env.*
-!.env.example
-*.pem
-*.key
-credentials*.json
-__pycache__/
-*.py[cod]
-.venv/
-venv/
+node_modules/
+dist/
+build/
 .cache/
-models/
-data/
-outputs/
-results/
-*.pdf
-*.docling.json
-*.events.json
-**/*session*.json
-**/evidence.index.json
-**/events.structured.json
-**/skills.candidate.json
-**/student.profile.json
-**/question.plan.json
-**/topics.json
-*.summary.md
-*.tmp
+.env*
+.vite/
+vite.config.*.timestamp-*
+*.tsbuildinfo
+*-debug.log*
+logs/
 *.log
-.claude/
-.codex/
+.claude-replay.*
+.tmp-*
+/.figma/design-context/
+
+# Platform-managed agentplat state, not project source. In the
+# client-initiated single-repo workspace layout (make's `Path: "."` spec) the
+# repo root IS the workspace root, so these land inside this repo rather than
+# beside it.
+/.plugins/
+/.opencode-skills/

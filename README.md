@@ -1,102 +1,85 @@
-# 備審文字面試：流程 2～12
+# MAINSU：備審個人化文字面試（前端＋後端）
 
-Python 3.12 專案。以備審候選事件建立個人化題庫，透過 Gemini 評分、檢索原文證據及動態追問。只使用文字回答，不含語音、面部偵測、科系常見問題或第十三步報告。
-
-## 功能與狀態
-
-- Docling／EasyOCR PDF 解析、異常編碼局部補救、閱讀順序整理及候選事件切分。
-- 事件父子層級、來源頁碼／座標、向量檢索、候選技能樹。
-- 自介＋1～2 個備審事件；完整度門檻 55%，相關度低於 0.4 最多重述一次，仍離題就換題。
-- 輸入文字後按 **Enter 立即結束本題回答並送出**，不必等待時間到。空白 Enter 會提醒補上文字；到時會提交目前已輸入文字。Ctrl+C 中斷面試。
-- 一般單題 120 秒、自介 90 秒、主題 4 分鐘、全場 20 分鐘／15 題上限。模型等待時間計入面試時間。
-
-使用者已在本機確認 Gemini REST 的 gemini-3.5-flash-lite 連線及 prepare 成功。自動測試以假模型回應檢查流程，並不代表評分準確率或所有終端中文輸入法已驗收。
-
-## 1. 安裝
-
-下載或 clone 本倉庫後，在專案根目錄開啟 PowerShell：
-
-```powershell
-py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r integration_review\integrated\requirements-ai.txt
-```
-
-若需要從 PDF 開始，另安裝：
-
-```powershell
-.\.venv\Scripts\python.exe -m pip install -r docling_pdf\requirements.txt
-```
-
-模型首次使用需要連網下載。API 免費額度及可用模型依各自帳號為準；不要假設所有請求都免費。
-
-## 2. 每位成員設定自己的 Gemini 金鑰
-
-到 [Google AI Studio](https://aistudio.google.com/apikey) 建立自己的金鑰。先執行第一行，看到提示才貼金鑰並按 Enter；接著執行其餘三行。金鑰只在目前視窗使用，不會寫入程式。
-
-```powershell
-$geminiKey = Read-Host "貼上自己的 Gemini 金鑰" -AsSecureString
-$env:GEMINI_API_KEY = [System.Net.NetworkCredential]::new('', $geminiKey).Password
-$env:LLM_PROVIDER = "gemini"
-$env:GEMINI_TRANSPORT = "rest"
-$env:GEMINI_MODEL = "gemini-3.5-flash-lite"
-```
-
-執行一個短連線測試：
-
-```powershell
-.\.venv\Scripts\python.exe integration_review\integrated\run_text_interview.py check --timeout 60
-```
-
-API 模式會把備審與問答傳給服務。請先使用下方虛構範例；免費方案的資料使用條款請查看 [Google 官方價格說明](https://ai.google.dev/gemini-api/docs/pricing)。
-
-## 3. 先用虛構資料跑題庫與面試
-
-examples/fictional.events.json 是手寫的虛構解析格式範例，不是真實 PDF 的解析結果。它能測試第 5～12 步的接線，不驗證第 2～4 步 PDF 解析品質。
-
-```powershell
-New-Item -ItemType Directory -Force outputs | Out-Null
-.\.venv\Scripts\python.exe integration_review\integrated\run_text_interview.py prepare examples\fictional.events.json --output outputs\demo-01
-.\.venv\Scripts\python.exe integration_review\integrated\run_text_interview.py interview outputs\demo-01 --output outputs\session-01.json
-```
-
-題庫在 outputs/demo-01/topics.json；請先核對，再開始面試。面試時輸入完成即可按 Enter，畫面會顯示「回答已送出，正在分析」。下一次請換新輸出名稱；目前沒有中斷續答功能。
-
-## 4. 使用自己的 PDF
-
-將個人檔案放進 data/，解析到 outputs/，這兩個目錄都排除於 Git 追蹤之外：
-
-```powershell
-.\.venv\Scripts\python.exe integration_review\integrated\run_text_interview.py parse data\自己的備審.pdf --output outputs\parsed-01
-```
-
-接著把 prepare 的輸入改為上一步產出的 .events.json。多份備審可依序列出多個 .events.json，但必須屬於同一學生。此倉庫不提供真實學生 PDF、解析結果、索引或問答紀錄。
-
-## 5. 執行測試
-
-```powershell
-.\.venv\Scripts\python.exe -m unittest discover -s integration_review\integrated -p "test_*.py"
-```
-
-不需要真實金鑰、不會發出付費 API 請求。兩個私人 PDF 回歸測試在共用版會跳過，公開虛構資料測試仍會執行。
-
-## 團隊協作
-
-1. 每次開始工作先 Fetch／Pull，取得同學最新修改。
-2. 建立自己的分支，例如 feature/question-bank，只改自己負責的功能。
-3. 測試後 Commit，Push，再開 Pull Request 給同學檢查。
-4. 合併後其他成員再 Pull。不要互傳整包 .venv 或 API 金鑰。
-
-.gitignore 已排除常見私人輸出；若另用自訂名稱存檔，仍請先檢查 GitHub Desktop 的 Changes。尤其不能提交金鑰、真實備審、事件證據或問答；Private 倉庫也一樣。專案設定的模型名稱可以共用，每人實際金鑰必須自己設定。
-
-## 檔案分工
-
-| 路徑 | 工作 |
+| 資料夾 | 內容 |
 |---|---|
-| docling_pdf/parse_pdf.py | PDF 解析與候選事件 |
-| integration_review/integrated/evidence.py | 事件來源與 RAG 索引 |
-| integration_review/integrated/ai_services.py | 技能整理、題庫與回答檢核 |
-| integration_review/integrated/interview_session.py | 面試狀態、重述與追問規則 |
-| integration_review/integrated/run_text_interview.py | 文字輸入、Enter 提交與主入口 |
-| integration_review/integrated/interview_gap_detection/ | 缺口規則、提示、模型串接與設定 |
+| `MAINSU_web/` | 前端：React + Vite + Tailwind 網站 |
+| `MAINSU-upload/github-share/` | 後端：Python 3.12，PDF 解析、RAG、題庫、Gemini 評分與追問 |
+| `MAINSU-upload/github-share/integration_review/integrated/api_server.py` | 串接兩邊的 HTTP API（FastAPI） |
 
-這是本機 Python 程式；GitHub 用來共用程式碼，不會自動變成線上面試網站。
+## 串接流程
+
+```
+網站「備審資料」上傳 PDF ──► POST /api/projects/{id}/files
+         「開始分析」     ──► parse_pdf.py 解析 → ai_services.prepare 建索引與題庫（背景執行，網頁每 2 秒更新狀態）
+網站「備審分析」         ◄── events.structured.json、topics.json
+網站「模擬面試」文字作答 ──► InterviewSession（相關度、完整度、重述、追問）
+網站「面試報告」         ◄── 面試紀錄 snapshot
+```
+
+開發時前端的 `/api` 由 Vite 自動轉送到 `http://127.0.0.1:8000`（設定在 `MAINSU_web/vite.config.ts`）。
+
+## 啟動（Windows PowerShell，開兩個視窗）
+
+在 `MAINSU-main` 資料夾：
+
+```powershell
+# 視窗 1：後端。第一次會建立 .venv 並安裝套件；會提示貼上自己的 Gemini 金鑰
+powershell -ExecutionPolicy Bypass -File .\start-backend.ps1
+
+# 視窗 2：前端
+powershell -ExecutionPolicy Bypass -File .\start-frontend.ps1
+```
+
+開啟 http://localhost:8443 → 「備審資料」→ 先按 **使用虛構範例** 測試整個流程 → 「查看分析結果」→「前往面試準備」→「開始面試」。
+
+- 第一次分析與第一次面試需要下載嵌入／相關度模型，會比較久。
+- PDF 解析（Docling + EasyOCR）較慢，一份 PDF 可能需要數分鐘。
+- 作答：輸入文字後按 **Enter 送出**，**Shift + Enter 換行**；時間到會自動送出目前文字。
+
+## 資料與隱私
+
+上傳的 PDF、解析結果、題庫與面試紀錄都存在 `MAINSU-upload/github-share/web_data/`，已列入 `.gitignore`。
+不要提交金鑰、真實備審或問答紀錄。`outputs/` 裡現有的真實解析檔也已排除，請勿上傳到 GitHub。
+
+## Neon 資料庫同步（選用）
+
+設定 `NEON_DATABASE_URL` 後（一次性，存在 Windows 使用者環境變數，不放進專案）：
+
+```powershell
+[Environment]::SetEnvironmentVariable('NEON_DATABASE_URL', (Get-Clipboard).Trim(), 'User')
+```
+
+後端會在背景把結果寫進 Neon（程式在 `integration_review/integrated/neon_store.py`）：
+
+| 時機 | 寫入的表格 |
+|---|---|
+| 分析完成 | `portfolios`、`documents`、`document_blocks`、`events`、`event_sources`、`retrieval_chunks`（含向量） |
+| 開始面試／每答一題 | `interview_sessions`、`interview_units`、`interview_questions`、`answers`、`evaluations`、`completeness_items`、`consistency_findings` |
+| 面試結束 | 以上更新＋`reports` |
+
+- 本機 `web_data/` 仍是主要資料；Neon 寫入失敗不會中斷分析或面試，網頁會顯示「Neon 同步失敗」。
+- 網站還沒有登入功能，所以使用預設使用者「示範使用者」與校系（`MAINSU_SCHOOL_NAME`，預設「未指定學校」＋ settings.json 的科系）。
+- 每次分析會新增一筆 `portfolios`；同一場面試重複同步時會覆寫該場資料，不會重複新增。
+- 尚未寫入：`question_bank`、`speech_metrics`、`face_events`、`free_usage_records`（文字版沒有對應資料）。
+
+## API 一覽
+
+| 方法 | 路徑 | 說明 |
+|---|---|---|
+| GET | `/api/health` | 模型服務與金鑰是否設定 |
+| POST | `/api/projects` | 建立備審專案 |
+| GET | `/api/projects/{id}` | 狀態、檔案；完成後含事件與題庫 |
+| POST | `/api/projects/{id}/files` | 上傳 PDF（≤ 5MB） |
+| DELETE | `/api/projects/{id}/files/{fileId}` | 移除 PDF |
+| POST | `/api/projects/{id}/analyze` | 解析＋產生題庫（背景） |
+| POST | `/api/projects/{id}/demo` | 改用虛構範例分析 |
+| POST | `/api/projects/{id}/interviews` | 開始面試，回傳第一題 |
+| POST | `/api/interviews/{sid}/answer` | 送出回答 `{answer, timed_out}`，回傳分析與下一題 |
+| POST | `/api/interviews/{sid}/end` | 提前結束 |
+| GET | `/api/interviews/{sid}/report` | 面試報告 |
+
+分析回答時若模型服務出錯，後端會還原狀態，網頁可直接「重新送出」，不會重複記錄。
+
+## 尚未串接（仍為介面展示）
+
+總覽、申請資料、面試紀錄列表、帳號設定、登入註冊，以及免費版面試／報告。語音、攝影機、口語表達與面部分析在後端沒有對應功能，目前只支援文字作答。

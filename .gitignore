@@ -1,21 +1,17 @@
-node_modules/
-dist/
-build/
-.cache/
-.env*
-.vite/
-vite.config.*.timestamp-*
-*.tsbuildinfo
-*-debug.log*
-logs/
-*.log
-.claude-replay.*
-.tmp-*
-/.figma/design-context/
+# Python
+.venv/
+__pycache__/
+*.pyc
 
-# Platform-managed agentplat state, not project source. In the
-# client-initiated single-repo workspace layout (make's `Path: "."` spec) the
-# repo root IS the workspace root, so these land inside this repo rather than
-# beside it.
-/.plugins/
-/.opencode-skills/
+# 後端產生的私人資料（上傳的備審、解析結果、面試紀錄）——不可提交
+MAINSU-upload/github-share/web_data/
+MAINSU-upload/github-share/data/
+MAINSU-upload/github-share/outputs/
+
+# 金鑰
+.env
+.env.*
+
+# 前端
+MAINSU_web/node_modules/
+MAINSU_web/dist/

@@ -1986,6 +1986,19 @@
 .prep-main .card-title h2 {
   margin-top: 9px;
 }
+.prep-target {
+  display: grid;
+  gap: 6px;
+  margin-top: 16px;
+}
+.prep-target select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ecdce4;
+  border-radius: 8px;
+  background: #fff;
+  color: inherit;
+}
 .rule-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -3513,3 +3526,45 @@
     grid-template-columns: 250px 1fr 230px;
   }
 }
+.portfolio-workspace {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.portfolio-panel {
+  padding: clamp(1rem, 4vw, 1.75rem);
+  border: 1px solid #dedbea;
+  border-radius: 1rem;
+  background: #fff;
+}
+
+.portfolio-panel h2 { font-size: 1.25rem; font-weight: 700; }
+.portfolio-panel h3 { font-weight: 650; }
+.portfolio-panel p { margin-block: .55rem; }
+.portfolio-panel a { color: #5840aa; text-decoration: underline; overflow-wrap: anywhere; }
+.portfolio-panel button { cursor: pointer; }
+.portfolio-panel button:disabled { cursor: default; opacity: .55; }
+.portfolio-heading, .portfolio-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .85rem; }
+.portfolio-heading { justify-content: space-between; }
+.portfolio-actions { margin-top: .85rem; }
+.portfolio-targets, .portfolio-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: .75rem; }
+.portfolio-targets { margin-top: .75rem; }
+.portfolio-targets button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: .75rem;
+  border: 1px solid #dedbea;
+  border-radius: .65rem;
+  padding: .85rem;
+  text-align: left;
+}
+.portfolio-targets button[aria-expanded="true"] { border-color: #6d4dbb; background: #f5f1ff; }
+.portfolio-targets small, .portfolio-category small { color: #59546c; }
+.portfolio-category { margin-top: .85rem; padding-block: .85rem; border-top: 1px solid #ece9f3; }
+.portfolio-category li { margin: .4rem 0; overflow-wrap: anywhere; }
+.portfolio-category input, .portfolio-category small { display: block; margin-block: .45rem; }
+.portfolio-fields label { display: grid; gap: .35rem; margin-top: .75rem; }
+.portfolio-fields input, .portfolio-fields select { border: 1px solid #b5adca; border-radius: .45rem; padding: .55rem; min-width: 0; }
+.portfolio-primary { border-radius: .55rem; background: #6040ad; color: #fff; padding: .55rem .85rem; font-weight: 650; }
+.portfolio-error, .portfolio-panel [role="alert"] { color: #a02f36; }

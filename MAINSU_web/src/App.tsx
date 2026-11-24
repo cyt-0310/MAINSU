@@ -1,4 +1,6 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { PortfolioManager, type ApplicationTarget } from "./PortfolioManager";
+import { startVoiceInput, type VoiceInput } from "./voiceInput";
 
 type Page =
   | "landing"
@@ -893,12 +895,43 @@ function Dashboard({ go }: { go: (p: Page) => void }) {
   );
 }
 
-function Profile({ go }: { go: (p: Page) => void }) {
+const applicationTargetsKey = "mainsu.applicationTargets";
+const defaultApplicationTargets: ApplicationTarget[] = [
+  { school: "國立臺灣大學", department: "資訊管理學系" },
+  { school: "國立政治大學", department: "資訊管理學系" },
+];
+const schoolShortNames: Record<string, string> = {
+  國立臺灣大學: "臺大",
+  國立政治大學: "政大",
+  國立清華大學: "清大",
+  輔仁大學: "輔大",
+};
+
+function loadApplicationTargets(): ApplicationTarget[] {
+  try {
+    const stored = localStorage.getItem(applicationTargetsKey);
+    if (stored !== null) {
+      const parsed: unknown = JSON.parse(stored);
+      if (Array.isArray(parsed)) {
+        return parsed.filter((target): target is ApplicationTarget =>
+          target != null && typeof target.school === "string" && typeof target.department === "string"
+          && target.school.trim() !== "" && target.department.trim() !== "");
+      }
+    }
+  } catch {
+    // The profile can still be used in this session when browser storage is unavailable.
+  }
+  return defaultApplicationTargets;
+}
+
+function Profile({
+  go, schools, setSchools,
+}: {
+  go: (p: Page) => void;
+  schools: ApplicationTarget[];
+  setSchools: React.Dispatch<React.SetStateAction<ApplicationTarget[]>>;
+}) {
   const [saved, setSaved] = useState(true);
-  const [schools, setSchools] = useState([
-    ["國立臺灣大學", "資訊管理學系"],
-    ["國立政治大學", "資訊管理學系"],
-  ]);
   return (
     <AppShell page="profile" go={go}>
       <PageTitle
@@ -948,22 +981,23 @@ function Profile({ go }: { go: (p: Page) => void }) {
                 <label>
                   申請學校
                   <select
-                    value={s[0]}
+                    value={s.school}
                     onChange={(e) =>
-                      setSchools((v) => v.map((x, j) => (j === i ? [e.target.value, x[1]] : x)))
+                      setSchools((v) => v.map((x, j) => (j === i ? { ...x, school: e.target.value } : x)))
                     }
                   >
                     <option>國立臺灣大學</option>
                     <option>國立政治大學</option>
                     <option>國立清華大學</option>
+                    <option>輔仁大學</option>
                   </select>
                 </label>
                 <label>
                   申請科系
                   <select
-                    value={s[1]}
+                    value={s.department}
                     onChange={(e) =>
-                      setSchools((v) => v.map((x, j) => (j === i ? [x[0], e.target.value] : x)))
+                      setSchools((v) => v.map((x, j) => (j === i ? { ...x, department: e.target.value } : x)))
                     }
                   >
                     <option>資訊管理學系</option>
@@ -983,7 +1017,7 @@ function Profile({ go }: { go: (p: Page) => void }) {
           <button
             className="add-school"
             disabled={schools.length >= 6}
-            onClick={() => setSchools((v) => [...v, ["國立清華大學", "企業管理學系"]])}
+            onClick={() => setSchools((v) => [...v, { school: "國立清華大學", department: "企業管理學系" }])}
           >
             <Icon name="plus" size={18} />
             新增申請校系 <small>{schools.length} / 6</small>
@@ -1002,147 +1036,11 @@ function Profile({ go }: { go: (p: Page) => void }) {
   );
 }
 
-const files = [
-  ["學習歷程自述_臺大資管.pdf", "2.4 MB", "分析完成"],
-  ["自主學習成果_校園碳排系統.pdf", "3.1 MB", "分析完成"],
-  ["社團幹部經驗.pdf", "1.8 MB", "上傳完成"],
-];
-
-function Upload({ go }: { go: (p: Page) => void }) {
-  const [active, setActive] = useState("學習歷程自述");
-  const [fileList, setFileList] = useState(files);
-  const categories = [
-    ["學習歷程自述", "必傳", "2 / 6"],
-    ["多元表現", "選填", "3 / 60"],
-    ["課程學習成果", "選填", "2 / 18"],
-    ["其他備審文件", "選填", "1 / 18"],
-  ];
+function Upload({ go, schools }: { go: (p: Page) => void; schools: ApplicationTarget[] }) {
   return (
     <AppShell page="upload" go={go}>
-      <PageTitle
-        eyebrow="備審資料"
-        title="上傳與管理備審文件"
-        desc="上傳 PDF 後選擇適用校系，系統將以模擬資料展示分析流程。"
-        action={
-          <Badge tone="purple">
-            <Icon name="spark" size={14} />
-            完整版功能
-          </Badge>
-        }
-      />
-      <div className="info-banner">
-        <Icon name="shield" size={20} />
-        <div>
-          <strong>這是介面流程展示</strong>
-          <p>目前不會實際上傳或分析文件；範例結果為模擬資料。正式服務僅接受 PDF，每份上限 5MB。</p>
-        </div>
-      </div>
-      <div className="upload-layout">
-        <Card className="category-nav">
-          <h3>文件分類</h3>
-          {categories.map((c) => (
-            <button
-              className={active === c[0] ? "active" : ""}
-              onClick={() => setActive(c[0])}
-              key={c[0]}
-            >
-              <span>
-                <Icon name="file" size={18} />
-                <i>
-                  <strong>{c[0]}</strong>
-                  <small>{c[1]}</small>
-                </i>
-              </span>
-              <em>{c[2]}</em>
-            </button>
-          ))}
-          <div className="capacity">
-            <span>
-              總檔案數 <strong>8 / 102</strong>
-            </span>
-            <Progress value={8} />
-          </div>
-        </Card>
-        <div className="upload-main">
-          <Card>
-            <div className="card-title">
-              <div>
-                <h2>{active}</h2>
-                <p>
-                  {active === "學習歷程自述"
-                    ? "此類文件為完整版分析的必要資料"
-                    : "可依需求補充，協助建立更多面試素材"}
-                </p>
-              </div>
-              <Badge tone={active === "學習歷程自述" ? "amber" : "gray"}>
-                {active === "學習歷程自述" ? "必傳" : "選填"}
-              </Badge>
-            </div>
-            <label className="dropzone">
-              <input
-                type="file"
-                accept=".pdf"
-                onChange={(e) => {
-                  if (e.target.files?.[0])
-                    setFileList((v) => [[e.target.files![0].name, "1.2 MB", "上傳完成"], ...v]);
-                }}
-              />
-              <span>
-                <Icon name="upload" size={26} />
-              </span>
-              <h3>
-                拖曳 PDF 到這裡，或 <u>選擇檔案</u>
-              </h3>
-              <p>僅接受 PDF 格式，單一檔案不超過 5MB</p>
-            </label>
-            <div className="file-list">
-              <div className="list-header">
-                <strong>已上傳檔案</strong>
-                <span>{fileList.length} 份</span>
-              </div>
-              {fileList.map((f, i) => (
-                <div className="file-row" key={`${f[0]}${i}`}>
-                  <span className="pdf-icon">PDF</span>
-                  <div className="file-info">
-                    <strong>{f[0]}</strong>
-                    <small>
-                      {f[1]} ·{" "}
-                      <i>
-                        <Icon name="check" size={12} />
-                        {f[2]}
-                      </i>
-                    </small>
-                  </div>
-                  <div className="school-chips">
-                    <span>臺大資管</span>
-                    {i === 0 && <span>政大資管</span>}
-                    <button>＋ 選擇校系</button>
-                  </div>
-                  <button
-                    aria-label="移除"
-                    onClick={() => setFileList((v) => v.filter((_, j) => j !== i))}
-                  >
-                    <Icon name="trash" size={17} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </Card>
-          <div className="sticky-actions">
-            <span>
-              <Icon name="check" size={16} /> 已自動儲存
-            </span>
-            <div>
-              <Button variant="secondary" onClick={() => go("dashboard")}>
-                返回總覽
-              </Button>
-              <Button onClick={() => go("analysis")}>
-                查看分析結果 <Icon name="arrow" size={17} />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <PageTitle eyebrow="備審資料" title="校系備審資料" />
+      <PortfolioManager applicationTargets={schools} />
     </AppShell>
   );
 }
@@ -1333,25 +1231,59 @@ function Analysis({ go }: { go: (p: Page) => void }) {
   );
 }
 
-function Prepare({ go }: { go: (p: Page) => void }) {
-  const [mic, setMic] = useState(false);
-  const [camera, setCamera] = useState(false);
+function Prepare({
+  go, schools, onStart,
+}: {
+  go: (p: Page) => void;
+  schools: ApplicationTarget[];
+  onStart: (target: ApplicationTarget) => void;
+}) {
+  const [selection, setSelection] = useState("");
+  const [mic, setMic] = useState<"idle" | "testing" | "passed" | "text">("idle");
+  const [micMessage, setMicMessage] = useState("");
+  const test = useRef<VoiceInput | null>(null);
+  const target = selection === "" ? undefined : schools[Number(selection)];
+  const ready = mic === "passed" || mic === "text";
+  useEffect(() => () => test.current?.cancel(), []);
+  useEffect(() => {
+    if (mic !== "testing") return;
+    const timeout = window.setTimeout(() => test.current?.stop(), 12000);
+    return () => window.clearTimeout(timeout);
+  }, [mic]);
+
+  function testMicrophone() {
+    setMicMessage("請允許麥克風權限，然後說一句話。");
+    setMic("testing");
+    try {
+      test.current = startVoiceInput({
+        continuous: false,
+        onStart: () => setMicMessage("請說一句話，例如「我準備好面試了」。"),
+        onText: () => {},
+        onEnd(text, error) {
+          test.current = null;
+          setMic(text ? "passed" : "idle");
+          setMicMessage(text ? `已辨識到：${text}` : error ?? "沒有辨識到語音，請再試一次。");
+        },
+      });
+    } catch (error) {
+      setMic("idle");
+      setMicMessage(error instanceof Error ? error.message : "麥克風測試失敗。");
+    }
+  }
   return (
     <AppShell page="dashboard" go={go}>
       <PageTitle
         eyebrow="面試前準備"
         title="確認設定，準備開始"
-        desc="完成設備測試後，就可以進入模擬面試。"
+        desc="選擇這次要練習的校系，再完成設備測試。"
       />
       <div className="prep-steps">
-        <span className="done">
-          <i>
-            <Icon name="check" size={15} />
-          </i>
+        <span className={target ? "done" : "active"}>
+          <i>{target ? <Icon name="check" size={15} /> : "1"}</i>
           選擇校系
         </span>
         <b />
-        <span className="active">
+        <span className={target ? "active" : undefined}>
           <i>2</i>確認規則
         </span>
         <b />
@@ -1369,13 +1301,24 @@ function Prepare({ go }: { go: (p: Page) => void }) {
             <div className="card-title">
               <div>
                 <Badge tone="purple">完整版面試</Badge>
-                <h2>國立臺灣大學 · 資訊管理學系</h2>
+                <h2>{target ? `${target.school} · ${target.department}` : "選擇本次面試校系"}</h2>
                 <p>個人化動態追問模式</p>
               </div>
               <button className="text-button" onClick={() => go("profile")}>
-                更換校系
+                管理申請校系
               </button>
             </div>
+            {schools.length ? (
+              <label className="prep-target">
+                本次面試校系
+                <select value={selection} onChange={(event) => setSelection(event.target.value)}>
+                  <option value="" disabled>請選擇申請校系</option>
+                  {schools.map(({ school, department }, index) => (
+                    <option key={index} value={index}>{school} · {department}</option>
+                  ))}
+                </select>
+              </label>
+            ) : <p className="prep-target">請先到「申請資料」新增校系。</p>}
             <div className="rule-grid">
               {[
                 ["clock", "預估時間", "約 10～20 分鐘"],
@@ -1409,41 +1352,38 @@ function Prepare({ go }: { go: (p: Page) => void }) {
             <div className="card-title">
               <div>
                 <h2>設備測試</h2>
-                <p>開始前請允許瀏覽器使用麥克風與攝影機</p>
+                <p>語音作答會使用瀏覽器的語音辨識服務。</p>
               </div>
-              <Badge tone="gray">模擬測試</Badge>
             </div>
             <div className="device-row">
-              <span className={`device-icon ${mic ? "success" : ""}`}>
+              <span className={`device-icon ${mic === "passed" ? "success" : ""}`}>
                 <Icon name="mic" />
               </span>
               <div>
                 <strong>麥克風</strong>
-                <p>{mic ? "已偵測到清楚的聲音" : "尚未進行測試"}</p>
-                {mic && (
-                  <div className="volume-bars">
-                    {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
-                      <i key={n} style={{ height: `${6 + n * 2}px` }} />
-                    ))}
-                  </div>
-                )}
+                <p role="status">{micMessage || "尚未進行測試"}</p>
               </div>
-              <Button variant={mic ? "secondary" : "primary"} onClick={() => setMic(true)}>
-                {mic ? "重新測試" : "測試麥克風"}
+              <Button variant={mic === "passed" ? "secondary" : "primary"} onClick={testMicrophone} disabled={mic === "testing"}>
+                {mic === "testing" ? "測試中" : mic === "passed" ? "重新測試" : "測試麥克風"}
               </Button>
             </div>
             <div className="device-row">
-              <span className={`device-icon ${camera ? "success" : ""}`}>
-                <Icon name="camera" />
+              <span className={`device-icon ${mic === "text" ? "success" : ""}`}>
+                <Icon name="file" />
               </span>
               <div>
                 <strong>
-                  攝影機 <Badge tone="purple">完整版支援</Badge>
+                  文字作答
                 </strong>
-                <p>{camera ? "畫面正常；面部行為分析為選用功能" : "尚未進行測試"}</p>
+                <p>{mic === "text" ? "已選擇文字作答" : "也可以用鍵盤輸入回答。"}</p>
               </div>
-              <Button variant="secondary" onClick={() => setCamera(true)}>
-                {camera ? "已通過" : "測試攝影機"}
+              <Button variant="secondary" onClick={() => {
+                test.current?.cancel();
+                test.current = null;
+                setMicMessage("");
+                setMic("text");
+              }}>
+                使用文字作答
               </Button>
             </div>
           </Card>
@@ -1469,326 +1409,202 @@ function Prepare({ go }: { go: (p: Page) => void }) {
               裝置電量充足
             </li>
           </ul>
-          <Button className="full" disabled={!mic} onClick={() => go("interview")} icon="play">
+          <Button className="full" disabled={!target || !ready} onClick={() => {
+            if (target && ready) onStart(target);
+          }} icon="play">
             開始模擬面試
           </Button>
-          {!mic && <small>請先完成麥克風測試</small>}
-          <p className="simulation-note">此原型使用模擬題目，不會啟用真實 AI 或裝置偵測。</p>
+          {!target ? <small>請先選擇面試校系</small> : !ready && <small>請測試麥克風或選擇文字作答</small>}
+          <p className="simulation-note">本場使用練習題，會顯示你實際提交的文字。</p>
         </Card>
       </div>
     </AppShell>
   );
 }
 
-type InterviewState =
-  | "asking"
-  | "answering"
-  | "processing"
-  | "analyzing"
-  | "followup"
-  | "clarify"
-  | "timewarning"
-  | "micerror"
-  | "networkerror"
-  | "done";
+type InterviewAnswer = { question: string; text: string; timedOut: boolean };
 
-function Interview({ go, free = false }: { go: (p: Page) => void; free?: boolean }) {
-  const [state, setState] = useState<InterviewState>("asking");
-  const [seconds, setSeconds] = useState(free ? 120 : 120);
-  const [question, setQuestion] = useState(1);
+function Interview({ go, free = false, target, onFinish }: {
+  go: (p: Page) => void;
+  free?: boolean;
+  target?: ApplicationTarget;
+  onFinish: (answers: InterviewAnswer[]) => void;
+}) {
+  const questions = [
+    { title: "自我介紹", prompt: "請簡短介紹你自己，並分享一項最能代表你的特質。" },
+    { title: "個人經驗", prompt: free
+      ? "請分享一次你如何解決問題的經驗。"
+      : "面對資料格式不一致的問題，你如何找出原因並完成整合？" },
+    { title: "申請動機", prompt: "你為什麼想申請" + (target?.department ?? "這個科系") + "？" },
+  ];
+  const [answers, setAnswers] = useState<InterviewAnswer[]>([]);
+  const [draft, setDraft] = useState("");
+  const [preview, setPreview] = useState("");
+  const [message, setMessage] = useState("");
+  const [captureState, setCaptureState] = useState<"idle" | "starting" | "listening" | "stopping">("idle");
+  const [deadline, setDeadline] = useState<number | null>(null);
+  const [seconds, setSeconds] = useState(free ? 120 : 90);
+  const capture = useRef<VoiceInput | null>(null);
+  const question = questions[answers.length];
+  const limit = !free && answers.length === 0 ? 90 : 120;
+  const timedOut = deadline !== null && seconds === 0;
+  const capturing = captureState !== "idle";
+  const canSubmit = deadline !== null && !capturing && (draft.trim() !== "" || timedOut);
+  useEffect(() => () => capture.current?.cancel(), []);
+
   useEffect(() => {
-    if (state !== "answering" && state !== "timewarning") return;
-    const timer = setInterval(() => setSeconds((s) => Math.max(0, s - 1)), 1000);
-    return () => clearInterval(timer);
-  }, [state]);
+    if (deadline === null) return;
+    const timer = window.setInterval(() => {
+      setSeconds(Math.max(0, Math.ceil((deadline - performance.now()) / 1000)));
+    }, 250);
+    return () => window.clearInterval(timer);
+  }, [deadline]);
+
   useEffect(() => {
-    if (seconds === 0 && (state === "answering" || state === "timewarning")) setState("processing");
-  }, [seconds, state]);
-  const statusMap = {
-    asking: ["AI 正在提問", "請先聆聽完整問題"],
-    answering: ["正在錄製你的回答", "說完後請點選「結束回答」"],
-    processing: ["語音轉文字處理中", "已保留錄音，請稍候"],
-    analyzing: ["AI 正在分析回答", "正在準備下一個問題，通常需要數秒"],
-    followup: ["這是一題追問", "請根據剛才的內容補充說明"],
-    clarify: ["讓我們重新聚焦問題", "剛才的回答較偏離題目，請依提示重新說明"],
-    timewarning: ["回答時間即將結束", "剩餘時間不多，請先說明最重要的結論"],
-    micerror: ["無法使用麥克風", "請檢查瀏覽器權限，或改用文字輸入回答"],
-    networkerror: ["網路暫時異常", "回答已保留；連線恢復後可安全重試"],
-    done: ["面試已完成", "正在產生你的分析報告"],
-  };
-  const advance = () => {
-    if (state === "asking" || state === "followup" || state === "clarify") {
-      setState("answering");
-      setSeconds(question === 1 ? (free ? 120 : 90) : 120);
-    } else if (state === "answering" || state === "timewarning") {
-      setState("processing");
-      setTimeout(() => setState(free ? "asking" : "analyzing"), 1000);
-      if (free) setQuestion((q) => q + 1);
-    } else if (state === "processing") setState("analyzing");
-    else if (state === "analyzing") {
-      setState("followup");
-      setQuestion((q) => q + 1);
+    if (!timedOut || !capture.current) return;
+    setCaptureState("stopping");
+    capture.current.stop();
+  }, [timedOut]);
+
+  function startTimer() {
+    if (deadline === null) {
+      setSeconds(limit);
+      setDeadline(performance.now() + limit * 1000);
     }
-  };
-  useEffect(() => {
-    if (state !== "done") return;
-    const t = setTimeout(() => go(free ? "freeReport" : "report"), 1800);
-    return () => clearTimeout(t);
-  }, [state, free, go]);
-  const isBusy = ["processing", "analyzing", "networkerror", "done"].includes(state);
-  const isRecording = state === "answering" || state === "timewarning";
+  }
+
+  function speak() {
+    if (capture.current || timedOut) return;
+    setMessage("");
+    setCaptureState("starting");
+    const existing = draft.trimEnd();
+    const join = (text: string) => [existing, text].filter(Boolean).join(" ");
+    try {
+      capture.current = startVoiceInput({
+        continuous: true,
+        onStart: () => {
+          startTimer();
+          setCaptureState("listening");
+        },
+        onText: (text) => setPreview(join(text)),
+        onEnd(text, error) {
+          capture.current = null;
+          setCaptureState("idle");
+          setPreview("");
+          setDraft(join(text));
+          setMessage(error ?? (text ? "請確認逐字稿，再送出回答。" : "沒有辨識到語音，可以再試一次或用文字作答。"));
+        },
+      });
+    } catch (error) {
+      setCaptureState("idle");
+      setMessage(error instanceof Error ? error.message : "無法啟動語音辨識。");
+    }
+  }
+
+  function submit() {
+    if (!canSubmit) return;
+    const updated = [...answers, { question: question.prompt, text: draft.trim(), timedOut }];
+    if (updated.length === questions.length) {
+      onFinish(updated);
+      return;
+    }
+    setAnswers(updated);
+    setDraft("");
+    setMessage("");
+    setDeadline(null);
+    setSeconds(120);
+  }
+
   return (
     <div className="interview-page">
       <header className="interview-header">
         <Brand />
         <div className="interview-title">
           <Badge tone={free ? "gray" : "purple"}>{free ? "免費版" : "完整版"}</Badge>
-          <strong>{free ? "基礎模擬面試" : "臺大資訊管理學系"}</strong>
-          <span>此流程為模擬展示</span>
+          <strong>{target ? target.school + " · " + target.department : "基礎模擬面試"}</strong>
+          <span>固定練習題</span>
         </div>
-        <button onClick={() => go("dashboard")}>結束面試</button>
+        <button disabled={capturing} onClick={() => onFinish(answers)}>結束面試</button>
       </header>
       <div className="interview-grid">
         <aside className="interviewer-panel">
-          <div className={`ai-orb ${isBusy ? "thinking" : ""}`}>
-            <span>
-              <Icon name="spark" size={30} />
-            </span>
-            <i />
-            <i />
-            <i />
+          <div className="ai-orb">
+            <span><Icon name="spark" size={30} /></span><i /><i /><i />
           </div>
-          <div className="ai-name">
-            <strong>AI 面試官</strong>
-            <Badge tone={isBusy ? "amber" : "green"}>{isBusy ? "思考中" : "連線正常"}</Badge>
-          </div>
+          <div className="ai-name"><strong>模擬面試</strong></div>
           <div className="speech-bubble">
-            <small>{state === "followup" ? "追問" : "目前提問"}</small>
-            <p>
-              {state === "followup"
-                ? "你剛才提到在團隊中調整了溝通方式，可以具體說明你觀察到什麼問題，以及如何改變嗎？"
-                : free
-                  ? question === 1
-                    ? "請用兩分鐘介紹你自己，並分享一項最能代表你的特質。"
-                    : "為什麼想申請資訊管理學系？"
-                  : "請分享你在校園碳排視覺化系統中，遇到最困難的問題，以及你如何解決。"}
-            </p>
-          </div>
-          <div className="audio-status">
-            <div className="wave small">
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
-                <i key={n} style={{ height: `${6 + (n % 4) * 5}px` }} />
-              ))}
-            </div>
-            <span>{isBusy ? "正在處理" : "語音播放完成"}</span>
+            <small>目前提問</small>
+            <p>{question.prompt}</p>
           </div>
         </aside>
         <main className="answer-panel">
-          <div className={`state-banner state-${state}`}>
-            <span>
-              {isBusy ? (
-                <span className="spinner" />
-              ) : (
-                <Icon
-                  name={isRecording ? "mic" : state === "micerror" ? "alert" : "spark"}
-                  size={20}
-                />
-              )}
-            </span>
-            <div>
-              <strong>{statusMap[state][0]}</strong>
-              <p>{statusMap[state][1]}</p>
-            </div>
-          </div>
           <div className="question-card">
             <div>
-              <Badge tone="purple">
-                {free
-                  ? `第 ${Math.min(question, 3)} 題，共 3 題`
-                  : question === 1
-                    ? "主問題 · 個人經驗"
-                    : "追問 1 / 2"}
-              </Badge>
-              <span className="question-time">
-                <Icon name="clock" size={15} />
-                {question === 1 && !free ? "90 秒" : "最多 2 分鐘"}
-              </span>
+              <Badge tone="purple">第 {answers.length + 1} 題 · {question.title}</Badge>
+              <span className="question-time"><Icon name="clock" size={15} /> 最多 {limit} 秒</span>
             </div>
-            <h1>
-              {state === "followup"
-                ? "你如何發現溝通方式需要調整？改變後帶來什麼結果？"
-                : free
-                  ? question === 1
-                    ? "請用兩分鐘介紹你自己。"
-                    : "為什麼想申請資訊管理學系？"
-                  : "面對資料格式不一致的問題，你如何找出原因並完成整合？"}
-            </h1>
+            <h1>{question.prompt}</h1>
           </div>
-          <div className={`record-area ${isRecording ? "recording" : ""}`}>
-            <div
-              className="timer-ring"
-              style={{ "--progress": `${(seconds / 120) * 360}deg` } as React.CSSProperties}
-            >
+          <div className={"record-area" + (captureState === "listening" ? " recording" : "")}>
+            <div className="timer-ring"
+              style={{ "--progress": (seconds / limit) * 360 + "deg" } as React.CSSProperties}>
               <div>
-                <strong>
-                  {String(Math.floor(seconds / 60)).padStart(2, "0")}:
-                  {String(seconds % 60).padStart(2, "0")}
-                </strong>
-                <small>{isRecording ? "剩餘時間" : "作答上限"}</small>
+                <strong>{String(Math.floor(seconds / 60)).padStart(2, "0")}:{String(seconds % 60).padStart(2, "0")}</strong>
+                <small>{deadline === null ? "作答上限" : "剩餘時間"}</small>
               </div>
             </div>
-            {isRecording ? (
-              <>
-                <div className="live-wave">
-                  {Array.from({ length: 28 }, (_, n) => (
-                    <i key={n} style={{ height: `${12 + ((n * 7) % 36)}px` }} />
-                  ))}
-                </div>
-                <Button variant="danger" icon="pause" onClick={advance}>
-                  結束回答
-                </Button>
-              </>
-            ) : state === "micerror" ? (
-              <div className="processing-copy">
-                <Icon name="mic" size={27} />
-                <strong>請允許網站使用麥克風</strong>
-                <p>你也可以先檢查系統輸入裝置，或改用文字方式完成這一題。</p>
-                <Button variant="secondary" icon="refresh" onClick={() => setState("asking")}>
-                  重新偵測
-                </Button>
-              </div>
-            ) : isBusy ? (
-              <div className="processing-copy">
-                <span className="processing-dots">
-                  <i />
-                  <i />
-                  <i />
-                </span>
-                <strong>請稍候，系統仍在運作</strong>
-                <p>你已完成的回答已安全保留，不會因等待或暫時性異常而清空。</p>
-              </div>
-            ) : (
-              <Button icon="mic" onClick={advance}>
-                開始回答
+            {capturing ? (
+              <Button variant="danger" icon="pause" disabled={captureState === "stopping"} onClick={() => {
+                if (captureState === "starting") {
+                  capture.current?.cancel();
+                  capture.current = null;
+                  setCaptureState("idle");
+                  return;
+                }
+                setCaptureState("stopping");
+                capture.current?.stop();
+              }}>
+                {captureState === "starting" ? "取消連線" : captureState === "stopping" ? "整理辨識文字中" : "停止辨識"}
               </Button>
+            ) : !timedOut && (
+              <div className="voice-actions">
+                <Button icon="mic" onClick={speak}>{draft ? "繼續語音作答" : "開始語音作答"}</Button>
+                {deadline === null && <Button variant="secondary" onClick={startTimer}>使用文字作答</Button>}
+              </div>
             )}
           </div>
           <div className="transcript">
             <div>
-              <span>
-                <Icon name="file" size={17} />
-                語音辨識文字預覽
-              </span>
-              {isRecording && <Badge tone="red">即時辨識中</Badge>}
+              <label htmlFor="interview-answer">回答逐字稿</label>
+              {captureState === "listening" && <Badge tone="red">即時辨識中</Badge>}
             </div>
-            <p>
-              {isRecording
-                ? "在這個專案中，我們一開始拿到的資料格式很不一致。我先把問題分成欄位名稱、日期格式和缺漏值三類，接著……"
-                : "回答開始後，辨識出的文字會顯示在這裡。送出前你可以再次確認。"}
-            </p>
-          </div>
-          <div className="demo-controls">
-            <span>原型狀態展示：</span>
-            <button onClick={() => setState("asking")}>AI 提問</button>
-            <button onClick={() => setState("processing")}>轉文字</button>
-            <button onClick={() => setState("analyzing")}>分析中</button>
-            {!free && <button onClick={() => setState("followup")}>追問</button>}
-            <button onClick={() => setState("clarify")}>偏題提示</button>
-            <button
-              onClick={() => {
-                setSeconds(15);
-                setState("timewarning");
-              }}
-            >
-              倒數提醒
-            </button>
-            <button onClick={() => setState("micerror")}>麥克風錯誤</button>
-            <button onClick={() => setState("networkerror")}>網路異常</button>
-            <button onClick={() => setState("done")}>完成面試</button>
+            <textarea id="interview-answer" rows={5} value={capturing ? preview || draft : draft}
+              readOnly={capturing} disabled={deadline === null && !capturing}
+              placeholder="開始作答後，這裡會顯示辨識文字，也可直接輸入或修正。"
+              onChange={(event) => { setDraft(event.target.value); setMessage(""); }} />
+            {timedOut && <p role="status">作答時間已到。你可以確認逐字稿後送出。</p>}
+            {message && <p role="status">{message}</p>}
+            <div className="voice-actions">
+              <Button onClick={submit} disabled={!canSubmit}>
+                {timedOut && !draft.trim() ? "略過本題" : "送出回答"}
+              </Button>
+            </div>
           </div>
         </main>
         <aside className="progress-panel">
-          <div className="total-time">
-            <small>面試總計時</small>
-            <strong>{free ? "03:26" : "08:42"}</strong>
-            <span>{free ? "上限 08:00" : "預估 10～20 分鐘"}</span>
-          </div>
           <div className="topic-block">
-            <div>
-              <strong>面試進度</strong>
-              <span>{free ? `${Math.min(question, 3)} / 3` : `${question + 2} / 最多 15 題`}</span>
-            </div>
-            <Progress value={free ? (Math.min(question, 3) / 3) * 100 : 34} color="purple" />
+            <div><strong>面試進度</strong><span>{answers.length + 1} / {questions.length}</span></div>
+            <Progress value={(answers.length / questions.length) * 100} color="purple" />
           </div>
           <div className="topics">
-            <h3>{free ? "題目" : "目前主題"}</h3>
-            {free ? (
-              [
-                ["1", "自我介紹"],
-                ["2", "申請動機"],
-                ["3", "常見面試題"],
-              ].map((t, i) => (
-                <div
-                  className={
-                    i + 1 === Math.min(question, 3) ? "current" : i + 1 < question ? "done" : ""
-                  }
-                  key={t[0]}
-                >
-                  <span>{i + 1 < question ? <Icon name="check" size={14} /> : t[0]}</span>
-                  <p>{t[1]}</p>
-                </div>
-              ))
-            ) : (
-              <>
-                <div className="done">
-                  <span>
-                    <Icon name="check" size={14} />
-                  </span>
-                  <p>
-                    自我介紹<small>已完成 · 01:18</small>
-                  </p>
-                </div>
-                <div className="current">
-                  <span>2</span>
-                  <p>
-                    個人經驗與能力<small>進行中 · 03:24</small>
-                  </p>
-                </div>
-                <div>
-                  <span>3</span>
-                  <p>
-                    申請動機與科系連結<small>尚未開始</small>
-                  </p>
-                </div>
-              </>
-            )}
-          </div>
-          <div className="device-status">
-            <h3>裝置狀態</h3>
-            <p>
-              <Icon name="mic" size={17} />
-              <span>麥克風</span>
-              <Badge tone="green">正常</Badge>
-            </p>
-            {!free && (
-              <p>
-                <Icon name="camera" size={17} />
-                <span>攝影機</span>
-                <Badge tone="green">偵測中</Badge>
-              </p>
-            )}
-          </div>
-          {!free && (
-            <div className="camera-preview">
-              <div>
-                <Icon name="user" size={34} />
+            <h3>題目</h3>
+            {questions.map(({ title }, index) => (
+              <div key={title} className={index < answers.length ? "done" : index === answers.length ? "current" : ""}>
+                <span>{index < answers.length ? <Icon name="check" size={14} /> : index + 1}</span>
+                <p>{title}</p>
               </div>
-              <span>
-                <i />
-                畫面正常
-              </span>
-            </div>
-          )}
+            ))}
+          </div>
         </aside>
       </div>
     </div>
@@ -1802,13 +1618,18 @@ const metricData = [
   ["口語表達", "10%", "78", "amber"],
 ];
 
-function Report({ go, free = false }: { go: (p: Page) => void; free?: boolean }) {
+function Report({ go, free = false, target }: {
+  go: (p: Page) => void; free?: boolean; target?: ApplicationTarget;
+}) {
+  const reportContext = target
+    ? `${target.school} · ${target.department}`
+    : `${free ? "免費版基礎面試" : "國立臺灣大學 · 資訊管理學系"}　·　2026 年 3 月 8 日`;
   return (
     <AppShell page="history" go={go}>
       <PageTitle
         eyebrow="面試分析報告"
         title={free ? "基礎練習完成" : "你的準備，正在穩定進步"}
-        desc={`${free ? "免費版基礎面試" : "國立臺灣大學 · 資訊管理學系"}　·　2026 年 3 月 8 日`}
+        desc={reportContext}
         action={
           <div className="title-actions">
             <Button variant="secondary" onClick={() => go("dashboard")}>
@@ -2292,7 +2113,7 @@ function History({ go }: { go: (p: Page) => void }) {
   );
 }
 
-function Settings({ go }: { go: (p: Page) => void }) {
+function Settings({ go, schools }: { go: (p: Page) => void; schools: ApplicationTarget[] }) {
   const [tab, setTab] = useState("基本資料");
   return (
     <AppShell page="settings" go={go}>
@@ -2353,29 +2174,21 @@ function Settings({ go }: { go: (p: Page) => void }) {
             <>
               <div className="settings-heading">
                 <h2>申請校系管理</h2>
-                <p>目前已建立 2 / 6 組申請目標。</p>
+                <p>目前已建立 {schools.length} / 6 組申請目標。</p>
               </div>
               <div className="setting-schools">
-                <div>
-                  <span>臺大</span>
-                  <p>
-                    <strong>國立臺灣大學</strong>
-                    <small>資訊管理學系</small>
-                  </p>
-                  <Button variant="secondary" icon="edit">
-                    編輯
-                  </Button>
-                </div>
-                <div>
-                  <span>政大</span>
-                  <p>
-                    <strong>國立政治大學</strong>
-                    <small>資訊管理學系</small>
-                  </p>
-                  <Button variant="secondary" icon="edit">
-                    編輯
-                  </Button>
-                </div>
+                {schools.map(({ school, department }, index) => (
+                  <div key={index}>
+                    <span>{schoolShortNames[school] ?? school.slice(0, 2)}</span>
+                    <p>
+                      <strong>{school}</strong>
+                      <small>{department}</small>
+                    </p>
+                    <Button variant="secondary" icon="edit" onClick={() => go("profile")}>
+                      編輯
+                    </Button>
+                  </div>
+                ))}
               </div>
               <Button variant="secondary" icon="plus" onClick={() => go("profile")}>
                 新增申請校系
@@ -2413,7 +2226,19 @@ function Settings({ go }: { go: (p: Page) => void }) {
 
 export default function App() {
   const [page, setPage] = useState<Page>("landing");
+  const [schools, setSchools] = useState(loadApplicationTargets);
+  const [interviewTarget, setInterviewTarget] = useState<ApplicationTarget>();
+  useEffect(() => {
+    try {
+      localStorage.setItem(applicationTargetsKey, JSON.stringify(schools));
+    } catch {
+      // In this session the profile and upload page still share the same targets.
+    }
+  }, [schools]);
   const go = (next: Page) => {
+    if (next !== "interview" && !(next === "report" && page === "interview")) {
+      setInterviewTarget(undefined);
+    }
     setPage(next);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -2428,26 +2253,29 @@ export default function App() {
       case "dashboard":
         return <Dashboard go={go} />;
       case "profile":
-        return <Profile go={go} />;
+        return <Profile go={go} schools={schools} setSchools={setSchools} />;
       case "upload":
-        return <Upload go={go} />;
+        return <Upload go={go} schools={schools} />;
       case "analysis":
         return <Analysis go={go} />;
       case "prepare":
-        return <Prepare go={go} />;
+        return <Prepare go={go} schools={schools} onStart={(target) => {
+          setInterviewTarget(target);
+          go("interview");
+        }} />;
       case "interview":
-        return <Interview go={go} />;
+        return <Interview go={go} target={interviewTarget} />;
       case "freeInterview":
         return <Interview go={go} free />;
       case "report":
-        return <Report go={go} />;
+        return <Report go={go} target={interviewTarget} />;
       case "freeReport":
         return <Report go={go} free />;
       case "history":
         return <History go={go} />;
       case "settings":
-        return <Settings go={go} />;
+        return <Settings go={go} schools={schools} />;
     }
-  }, [page]);
+  }, [page, schools, interviewTarget]);
   return view;
 }

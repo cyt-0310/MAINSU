@@ -5,4 +5,4 @@ Start-Process powershell -ArgumentList '-NoExit', '-ExecutionPolicy', 'Bypass', 
 Start-Process powershell -ArgumentList '-NoExit', '-ExecutionPolicy', 'Bypass', '-File', (Join-Path $here 'start-frontend.ps1')
 Write-Host '已開啟後端與前端視窗；約 15 秒後自動打開網頁。要停止時，關掉那兩個視窗即可。'
 Start-Sleep -Seconds 15
-Start-Process 'http://localhost:8443'
+Start-Process 'http://127.0.0.1:8445'

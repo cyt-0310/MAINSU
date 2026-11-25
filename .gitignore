@@ -15,3 +15,10 @@ MAINSU-upload/github-share/outputs/
 # 前端
 MAINSU_web/node_modules/
 MAINSU_web/dist/
+
+# Local preview logs and API key setup
+/backend-preview.err
+/backend-preview.log
+/frontend-preview.err
+/frontend-preview.log
+/set-openai-key.ps1

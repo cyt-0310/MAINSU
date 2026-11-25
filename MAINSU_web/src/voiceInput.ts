@@ -59,6 +59,7 @@ export function startVoiceInput({
   let stopTimeout: number | undefined;
   let finalText = "";
   let preview = "";
+  let prior = "";
   recognition.lang = "zh-TW";
   recognition.continuous = continuous;
   recognition.interimResults = true;
@@ -73,7 +74,7 @@ export function startVoiceInput({
     if (finished) return;
     release();
     if (abort) recognition.abort();
-    onEnd(finalText || (stopping ? preview : ""), error);
+    onEnd([prior, finalText || preview].filter(Boolean).join(" "), error);
   }
 
   recognition.onstart = onStart;
@@ -81,10 +82,15 @@ export function startVoiceInput({
     const segments = Array.from(results);
     finalText = segments.filter((result) => result.isFinal).map((result) => result[0].transcript.trim()).join(" ").trim();
     preview = segments.map((result) => result[0].transcript.trim()).join(" ").trim();
-    onText(preview);
+    onText([prior, preview].filter(Boolean).join(" "));
   };
-  recognition.onerror = ({ error }) => finish(recognitionError(error), true);
-  recognition.onend = () => finish();
+  recognition.onerror = ({ error }) => { if (error === "no-speech" && continuous && !stopping) return; finish(recognitionError(error), true); };
+  recognition.onend = () => {
+    if (continuous && !stopping && !finished) {
+      prior = [prior, finalText || preview].filter(Boolean).join(" "); finalText = preview = "";
+      try { recognition.start(); } catch { finish("語音辨識已中斷，請重試。"); }
+    } else finish();
+  };
   try {
     recognition.start();
   } catch {

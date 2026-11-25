@@ -55,13 +55,38 @@ class RetryTests(unittest.TestCase):
         self.assertNotIn('private', str(caught.exception))
 
     def test_bad_request_and_quota_not_retried(self):
-        for code in (400, 403, 429):
+        for code in (400, 403):
             with patch('urllib.request.urlopen', side_effect=unavailable(code)) as request, \
                  patch('interview_gap_detection.api_retry.time.sleep') as sleep:
                 with self.assertRaises(RuntimeError):
                     retry_transient(lambda: GeminiRESTClient('fake').generate('text', Result, 'test', 5))
             self.assertEqual(request.call_count, 1)
             sleep.assert_not_called()
+
+    def test_fallback_retries_exactly_then_returns_openai_result(self):
+        from unittest.mock import Mock
+        from types import SimpleNamespace
+        client = Mock()
+        client.responses.parse.side_effect = [TemporaryServiceError('busy')] * 3 + [SimpleNamespace(status='completed', output_parsed=Result(message='ok'))]
+        with patch.dict(os.environ, {'LLM_PROVIDER':'gemini','OPENAI_API_KEY':'fake','OPENAI_MODEL':'test'}), \
+             patch.object(llm_client, '_call_gemini_once', side_effect=TemporaryServiceError('busy')) as gemini, \
+             patch.object(llm_client, 'get_client', return_value=client), \
+             patch('interview_gap_detection.api_retry.time.sleep') as sleep:
+            self.assertEqual(llm_client.call_llm('test', Result).message, 'ok')
+        self.assertEqual(gemini.call_count, 4)
+        self.assertEqual(client.responses.parse.call_count, 4)
+        self.assertEqual([c.args[0] for c in sleep.call_args_list], [2,4,8,2,4,8])
+
+    def test_fallback_exhaustion_and_missing_key(self):
+        for key in ('', 'fake'):
+            with patch.dict(os.environ, {'LLM_PROVIDER':'gemini','OPENAI_API_KEY':key,'OPENAI_MODEL':'test'}), \
+                 patch.object(llm_client, '_call_gemini_once', side_effect=TemporaryServiceError('busy')), \
+                 patch.object(llm_client, '_call_openai_once', side_effect=TemporaryServiceError('busy')) as openai, \
+                 patch('interview_gap_detection.api_retry.time.sleep') as sleep:
+                with self.assertRaises(TemporaryServiceError):
+                    llm_client.call_llm('test', Result)
+                self.assertEqual(openai.call_count, 4 if key else 0)
+                self.assertEqual([c.args[0] for c in sleep.call_args_list], [2,4,8] * (2 if key else 1))
 
     def test_sdk_503_uses_same_retry_policy(self):
         from types import SimpleNamespace

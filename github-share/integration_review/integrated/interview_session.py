@@ -13,7 +13,7 @@ class InterviewSession:
     def __init__(self, topics, services, clock=time.monotonic):
         if not 2 <= len(topics) <= 3:
             raise ValueError('Require intro and 1-2 portfolio event topics')
-        if topics[0]['type'] != '自我介紹' or any(t['type'] != '學習歷程' for t in topics[1:]):
+        if topics[0]['type'] != '自我介紹' or any(t['type'] not in ('學習歷程', '常見問題') for t in topics[1:]):
             raise ValueError('Only intro and portfolio events are allowed')
         self.topics, self.services, self.clock = topics, services, clock
         self.started = clock()

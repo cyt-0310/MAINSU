@@ -95,12 +95,30 @@ def portfolio_record(directory):
     return {**record, **status}
 
 
+def document_path(directory, document):
+    source = document.get('source')
+    if source:
+        return path_for(source['portfolio']) / (source['file'] + '.pdf')
+    return directory / (document['id'] + '.pdf')
+
+
 def save_submission(school, department, documents):
     key = school_id(school, department)
     directory = path_for(key)
     if directory.exists():
         raise FileExistsError(directory)
-    for _, name, data in documents:
+    # Existing immutable submissions can share the original PDF, even if the
+    # student chooses to upload the same bytes rather than selecting a reference.
+    known = {}
+    for manifest_path in directory.parent.glob('*/submission.json'):
+        for entry in read_json(manifest_path).get('files', []):
+            original = document_path(manifest_path.parent, entry)
+            if original.is_file():
+                known.setdefault(sha256(original.read_bytes()).digest(),
+                                 {'portfolio': original.parent.name, 'file': original.stem})
+    documents = [(category, name, data, source or known.get(sha256(data).digest()))
+                 for category, name, data, source in documents]
+    for _, name, data, source in documents:
         try:
             with PDF_LOCK:
                 with pdfium.PdfDocument(BytesIO(data)) as pdf:
@@ -113,10 +131,17 @@ def save_submission(school, department, documents):
         staged = Path(temp) / 'submission'
         staged.mkdir()
         manifest = []
-        for number, (category, name, data) in enumerate(documents, 1):
+        for number, (category, name, data, source) in enumerate(documents, 1):
             file_id = str(number)
-            (staged / f'{file_id}.pdf').write_bytes(data)
-            manifest.append({'id': file_id, 'category': category, 'name': name, 'size': len(data)})
+            entry = {'id': file_id, 'category': category, 'name': name, 'size': len(data)}
+            digest = sha256(data).digest()
+            source = source or known.get(digest)
+            if source:
+                entry['source'] = source
+            else:
+                (staged / f'{file_id}.pdf').write_bytes(data)
+                known[digest] = {'portfolio': key, 'file': file_id}
+            manifest.append(entry)
         write_json(staged / 'submission.json', {
             'id': key, 'school': school, 'department': department, 'files': manifest,
             'submittedAt': datetime.now(timezone.utc).isoformat(),
@@ -160,13 +185,14 @@ def analyze(directory):
         for number, document in enumerate(record['files'], 1):
             name = document['name']
             set_status(directory, 'parsing', f'解析 PDF（{number}/{len(record["files"])}）')
-            destination = directory / f'parsed-{document["id"]}'
+            original = document_path(directory, document)
+            destination = original.parent / f'parsed-{original.stem}'
             if not destination.exists():
                 with TemporaryDirectory(prefix='.parse-', dir=directory) as temp:
                     output = Path(temp) / 'parsed'
                     subprocess.run([
                         sys.executable, '-X', 'utf8', str(ROOT / 'docling_pdf' / 'parse_pdf.py'),
-                        str(directory / f'{document["id"]}.pdf'), '--output', str(output),
+                        str(original), '--output', str(output),
                     ], check=True, timeout=600, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                     load_portfolio_events(next(output.glob('*.events.json')))
                     output.rename(destination)
@@ -209,15 +235,19 @@ async def portfolios(request):
     try:
         if int(request.headers.get('content-length', '0')) > MAX_FILES * LIMIT + 65536:
             return response({'error': '備審檔案超過總大小限制。'}, 413)
-        async with request.form(max_files=MAX_FILES, max_fields=2) as form:
+        async with request.form(max_files=MAX_FILES, max_fields=3) as form:
             school = clean_target(form.get('school'))
             department = clean_target(form.get('department'))
-            if any(key not in {*SLOTS, 'school', 'department'} for key in form):
+            if any(key not in {*SLOTS, 'school', 'department', 'reuse'} for key in form):
                 raise ValueError('備審資料有未支援的欄位。')
             documents = []
+            references = json.loads(form.get('reuse', '[]'))
+            if not isinstance(references, list) or len(references) > MAX_FILES:
+                raise ValueError('選用的檔案資料不正確。')
             for slot, maximum in SLOTS.items():
                 uploads = form.getlist(slot)
-                if len(uploads) > maximum or (slot == 'statement' and not uploads):
+                selected = [r for r in references if isinstance(r, dict) and r.get('category') == slot]
+                if len(uploads) + len(selected) > maximum or (slot == 'statement' and not (uploads or selected)):
                     raise ValueError('學習歷程自述必須 1 份，多元表現最多 10 份，課程學習成果最多 3 份。')
                 for upload in uploads:
                     if not isinstance(upload, UploadFile):
@@ -226,11 +256,19 @@ async def portfolios(request):
                     data = await upload.read(LIMIT + 1)
                     if not name.lower().endswith('.pdf') or len(name) > 200 or not data.startswith(b'%PDF-') or len(data) > LIMIT:
                         raise ValueError('每份備審必須是有效 PDF，大小上限為 5 MB。')
-                    documents.append((slot, name, data))
+                    documents.append((slot, name, data, None))
+                for ref in selected:
+                    origin = path_for(ref.get('portfolio', ''))
+                    original = next((f for f in read_json(origin / 'submission.json')['files']
+                                     if f['id'] == ref.get('file') and f['category'] == slot), None)
+                    if original is None:
+                        raise ValueError('找不到選用的備審檔案。')
+                    source = original.get('source') or {'portfolio': origin.name, 'file': original['id']}
+                    documents.append((slot, original['name'], document_path(origin, original).read_bytes(), source))
         return response(await run_in_threadpool(save_submission, school, department, documents), 201)
     except FileExistsError:
         return response({'error': '此校系已提交備審，可在校系列表查看。'}, 409)
-    except (ValueError, HTTPException) as error:
+    except (ValueError, HTTPException, FileNotFoundError) as error:
         return response({'error': error.detail if isinstance(error, HTTPException) else str(error)}, 400)
 
 
@@ -249,7 +287,7 @@ async def portfolio_action(request):
     file = next((file for file in record['files'] if file['id'] == file_id), None)
     if file is None:
         return response({'error': '找不到此檔案。'}, 404)
-    return FileResponse(directory / f'{file_id}.pdf', filename=file['name'], media_type='application/pdf',
+    return FileResponse(document_path(directory, file), filename=file['name'], media_type='application/pdf',
                         headers={'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff'})
 
 

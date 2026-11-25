@@ -7,6 +7,10 @@
     "check_aspects": ["動機", "個人特質", "經歷亮點"],
     "question": "請用大約 1 分鐘做個自我介紹，並說明你為什麼想就讀{department}。"
   },
+  "common_questions": [
+    {"title": "科系認識與動機", "question": "你對{department}的了解為何？哪些課程或領域吸引你？"},
+    {"title": "學習規劃", "question": "如果進入{department}，你希望如何規劃大學四年的學習？"}
+  ],
   "max_events": 2,
   "event_priority": {
     "專業相關": 0,

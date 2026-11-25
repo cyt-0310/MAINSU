@@ -25,7 +25,8 @@ foreach ($name in 'GEMINI_API_KEY', 'OPENAI_API_KEY', 'OPENAI_MODEL', 'LLM_PROVI
         if ($saved) { Set-Item "env:$name" $saved }
     }
 }
-if ($env:LLM_FALLBACK -eq 'openai' -and $env:OPENAI_API_KEY -and $env:OPENAI_MODEL) { Write-Host "Gemini 忙碌時會自動改用 OpenAI（$($env:OPENAI_MODEL)）" }
+if (-not $env:OPENAI_MODEL) { $env:OPENAI_MODEL = 'gpt-4o-mini' }
+if ($env:OPENAI_API_KEY -and $env:OPENAI_MODEL) { Write-Host "Gemini 忙碌時會自動改用 OpenAI（$($env:OPENAI_MODEL)）" }
 
 if (-not $env:LLM_PROVIDER) { $env:LLM_PROVIDER = 'gemini' }
 if (-not $env:GEMINI_TRANSPORT) { $env:GEMINI_TRANSPORT = 'rest' }
@@ -35,4 +36,4 @@ if ($env:LLM_PROVIDER -eq 'gemini' -and -not $env:GEMINI_API_KEY) {
 }
 
 Write-Host '後端啟動中：http://127.0.0.1:8000  （按 Ctrl+C 停止）'
-& $py -m uvicorn api_server:app --app-dir $app --host 127.0.0.1 --port 8000
+& $py -m uvicorn api_server:app --app-dir $app --host 127.0.0.1 --port 8000 --reload --reload-dir $app

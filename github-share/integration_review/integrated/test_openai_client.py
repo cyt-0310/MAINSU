@@ -62,7 +62,7 @@ class OpenAIClientTests(unittest.TestCase):
             with patch.dict(os.environ, {'OPENAI_API_KEY': 'fake-for-test'}):
                 self.assertIs(llm_client.get_client(), self.client)
         self.assertEqual(factory.call_args.kwargs['timeout'], 30)
-        self.assertEqual(factory.call_args.kwargs['max_retries'], 1)
+        self.assertEqual(factory.call_args.kwargs['max_retries'], 0)
 
 
 if __name__ == '__main__':

@@ -15,9 +15,12 @@ class GeminiClientTests(unittest.TestCase):
     def setUp(self):
         self.environment = patch.dict(os.environ, {'LLM_PROVIDER': 'gemini', 'GEMINI_MODEL': 'gemini-test',
                                                    'GEMINI_TRANSPORT': 'sdk',
-                                                   'OPENAI_MODEL': 'unused-openai-model'})
+                                                   'OPENAI_MODEL': 'unused-openai-model', 'OPENAI_API_KEY': ''})
         self.environment.start()
         self.addCleanup(self.environment.stop)
+        sleeper = patch('interview_gap_detection.api_retry.time.sleep')
+        sleeper.start()
+        self.addCleanup(sleeper.stop)
         self.old = llm_client._gemini_client
         self.client = Mock()
         llm_client._gemini_client = self.client

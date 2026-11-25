@@ -73,17 +73,17 @@ class GeminiRESTClient:
                 504: 'Google 服務處理逾時',
             }
             description = diagnostic or descriptions.get(code, 'API 請求失敗')
-            error_type = TemporaryServiceError if code in (500, 502, 503, 504) else RuntimeError
-            message = f'Gemini HTTP {code}：{description}。未切換其他服務。'
+            error_type = TemporaryServiceError if code in (429, 500, 502, 503, 504) else RuntimeError
+            message = f'Gemini HTTP {code}：{description}。'
             if error_type is TemporaryServiceError:
                 raise error_type(message, code) from None
             raise error_type(message) from None
         except urllib.error.URLError as error:
             if isinstance(error.reason, TimeoutError):
-                raise RuntimeError(f'Gemini REST 連線逾時（單次等待 {timeout:g} 秒）；這不代表金鑰無效。') from None
-            raise RuntimeError('Gemini REST 網路或 TLS 連線失敗；尚未取得有效的模型回覆。') from None
+                raise TemporaryServiceError('Gemini 連線逾時。', 503) from None
+            raise TemporaryServiceError('Gemini 連線逾時或網路服務暫時無法使用。', 503) from None
         except TimeoutError:
-            raise RuntimeError(f'Gemini REST 連線逾時（單次等待 {timeout:g} 秒）；這不代表金鑰無效。') from None
+            raise TemporaryServiceError('Gemini 連線逾時或網路服務暫時無法使用。', 503) from None
         except (json.JSONDecodeError, UnicodeDecodeError):
             raise RuntimeError('Gemini REST 回應不是有效 JSON，未採用該次結果') from None
         if not isinstance(data, dict):

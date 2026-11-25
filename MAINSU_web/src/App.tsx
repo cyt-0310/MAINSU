@@ -1,6 +1,12 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { PortfolioManager, type ApplicationTarget } from "./PortfolioManager";
 import { startVoiceInput, type VoiceInput } from "./voiceInput";
+import { VoiceInterview, VoiceHistory, ResumeInterviews, type Session } from "./VoiceInterview";
+import { monitorAudio } from "./speechMetrics";
+import { scores, grade, oralParts, mean, isTextSession } from "./reportScores";
+import { FollowupAnalysis } from "./FollowupAnalysis";
+import { reportText } from "./reportText";
+import { SearchSelect, schoolCatalog, schoolNames } from "./SchoolSearch";
 
 type Page =
   | "landing"
@@ -275,7 +281,7 @@ function Brand({ compact = false }: { compact?: boolean }) {
 
 const appNav: { page: Page; label: string; icon: IconName }[] = [
   { page: "dashboard", label: "總覽", icon: "home" },
-  { page: "profile", label: "申請資料", icon: "user" },
+  { page: "profile", label: "申請校系", icon: "user" },
   { page: "upload", label: "備審資料", icon: "upload" },
   { page: "history", label: "面試紀錄", icon: "clock" },
   { page: "settings", label: "帳號設定", icon: "settings" },
@@ -290,6 +296,7 @@ function AppShell({
   go: (page: Page) => void;
   children: ReactNode;
 }) {
+  const [,refreshProfile]=useState(0); useEffect(()=>{const update=()=>refreshProfile(n=>n+1);window.addEventListener("mainsu-profile-updated",update);return ()=>window.removeEventListener("mainsu-profile-updated",update);},[]);
   return (
     <div className="app-shell">
       <aside className="sidebar">
@@ -310,22 +317,10 @@ function AppShell({
             </button>
           ))}
         </nav>
-        <div className="plan-card">
-          <span className="plan-icon">
-            <Icon name="spark" size={18} />
-          </span>
-          <Badge tone="purple">完整版</Badge>
-          <strong>讓每次練習更有方向</strong>
-          <p>本月尚有 4 場完整面試</p>
-          <button onClick={() => go("prepare")}>
-            開始練習 <Icon name="arrow" size={15} />
-          </button>
-        </div>
         <div className="side-user">
-          <span className="avatar">陳</span>
           <div>
-            <strong>陳語晴</strong>
-            <small>yuching@example.com</small>
+            <strong>{loadProfile().name||"尚未設定姓名"}</strong>
+            <small title={loadProfile().email}>{loadProfile().email||"尚未設定信箱"}</small>
           </div>
           <button onClick={() => go("landing")} aria-label="登出">
             <Icon name="logout" size={18} />
@@ -333,18 +328,6 @@ function AppShell({
         </div>
       </aside>
       <main className="app-main">
-        <header className="topbar">
-          <div>
-            <span className="status-dot" /> 服務運作正常
-          </div>
-          <div className="top-actions">
-            <button className="icon-button" aria-label="通知">
-              <span className="notification-dot" />
-              <Icon name="alert" size={19} />
-            </button>
-            <Badge tone="purple">完整版方案</Badge>
-          </div>
-        </header>
         <div className="page-content">{children}</div>
       </main>
     </div>
@@ -623,7 +606,16 @@ function Auth({ mode, go }: { mode: "login" | "register"; go: (p: Page) => void 
     e.preventDefault();
     const data = new FormData(e.target as HTMLFormElement);
     if (!(data.get("email") as string)?.includes("@")) setError("請輸入有效的電子郵件格式");
-    else go("dashboard");
+    else {
+      const previous=loadProfile();
+      const email=String(data.get("email")).trim();
+      if(previous.email && previous.email.toLowerCase()!==email.toLowerCase()) {
+        setError("此瀏覽器已綁定原本的電子郵件，無法變更。");
+        return;
+      }
+      saveProfile({name:String(data.get("name")||previous.name),email:previous.email||email});
+      go("dashboard");
+    }
   };
   return (
     <div className="auth-page">
@@ -730,176 +722,78 @@ const PageTitle = ({
   </div>
 );
 
-function Dashboard({ go }: { go: (p: Page) => void }) {
+type DashboardReport = { id: string; target?: ApplicationTarget; completedAt?: string; answers: {duration: number}[]; summary?: {topics?: {title?: string; reasoning?: string}[]} };
+type DashboardPortfolio = ApplicationTarget & { id:string; status:string; files:{id:string}[]; message?:string };
+const profileKey = "mainsu.profile.v1";
+function loadProfile(): {name:string;email:string} {
+  try { const data = JSON.parse(localStorage.getItem(profileKey)||"{}"); return {name:typeof data.name==="string"?data.name:"",email:typeof data.email==="string"?data.email:""}; } catch { return {name:"",email:""}; }
+}
+function saveProfile(value:{name:string;email:string}) { try {const email=loadProfile().email||value.email;localStorage.setItem(profileKey,JSON.stringify({...value,email})); window.dispatchEvent(new Event("mainsu-profile-updated"));} catch {} }
+function loadReports(): DashboardReport[] {
+  try { const data = JSON.parse(localStorage.getItem("mainsu.voice.reports.v1")||"[]"); return Array.isArray(data)?data.filter((r:DashboardReport)=>r?.id&&Array.isArray(r.answers)):[]; } catch {return [];}
+}
+function usePortfolioData() {
+  const [portfolios,setPortfolios]=useState<DashboardPortfolio[]|null>(null);
+  const [status,setStatus]=useState<"loading"|"ready"|"error">("loading");
+  useEffect(()=>{
+    const controller=new AbortController();
+    async function refresh(){
+      try {
+        const response=await fetch("/api/portfolios",{signal:controller.signal});
+        if(!response.ok)throw Error();
+        const records=await response.json();
+        if(!Array.isArray(records))throw Error();
+        if(!controller.signal.aborted){setPortfolios(records);setStatus("ready");}
+      }catch{if(!controller.signal.aborted){setPortfolios(null);setStatus("error");}}
+    }
+    void refresh(); const timer=window.setInterval(refresh,5000);
+    return ()=>{controller.abort();clearInterval(timer);};
+  },[]);
+  return {portfolios,status};
+}
+const targetMatches=(a:ApplicationTarget,b:ApplicationTarget)=>[a.school,a.department].map(x=>x.normalize("NFKC").replace(/\s/g,"").replace(/臺/g,"台")).join("|") === [b.school,b.department].map(x=>x.normalize("NFKC").replace(/\s/g,"").replace(/臺/g,"台")).join("|");
+function Dashboard({ go, schools, onResume }: { go: (p: Page) => void; schools: ApplicationTarget[]; onResume:(target:ApplicationTarget,id:string)=>void }) {
+  const profile=loadProfile();
+  const reports=loadReports();
+  const {portfolios,status}=usePortfolioData();
+  const now=new Date();
+  const hour=now.getHours();
+  const greeting=hour<12?"早安":hour<18?"午安":"晚安";
+  const [selected,setSelected]=useState(0);
+  const target=schools[selected]??schools[0];
+  const targetReports=target?reports.filter(r=>r.target&&targetMatches(r.target,target)):[];
+  const targetScores=targetReports.map(r=>scores(r as Session).total).filter((n):n is number=>n!==null);
+  const best=targetScores.length?Math.max(...targetScores):null;
+  const recent=[...reports].sort((a,b)=>(b.completedAt||"").localeCompare(a.completedAt||""))[0];
+  const matching=target?portfolios?.filter(p=>targetMatches(p,target)):portfolios;
+  const latestPortfolio=matching?.[0];
+  const statusText:Record<string,string>={ready:"分析完成",queued:"等待分析",parsing:"解析中",analyzing:"分析中",failed:"分析失敗"};
   return (
     <AppShell page="dashboard" go={go}>
-      <PageTitle
-        eyebrow="2026 年 3 月 10 日，星期二"
-        title="早安，語晴"
-        desc="距離臺灣大學面試還有 24 天，今天也一起穩定前進。"
-        action={
-          <Button icon="plus" onClick={() => go("prepare")}>
-            開始新的模擬面試
-          </Button>
-        }
-      />
+      <PageTitle eyebrow={now.toLocaleDateString("zh-TW",{year:"numeric",month:"long",day:"numeric",weekday:"long"})} title={profile.name?greeting+"，"+profile.name:greeting+"，歡迎使用 MAINSU"} desc="選擇你的申請校系，開始面試準備。" action={<Button icon="plus" onClick={()=>go("prepare")}>開始新的模擬面試</Button>}/>
+      <ResumeInterviews onResume={onResume} onFree={()=>go("freeInterview")}/>
       <div className="dashboard-grid">
         <Card className="target-card">
-          <div className="card-head">
-            <div>
-              <Badge tone="blue">主要目標</Badge>
-              <h2>國立臺灣大學</h2>
-              <p>資訊管理學系</p>
-            </div>
-            <span className="school-logo">臺大</span>
-          </div>
-          <div className="target-meta">
-            <span>
-              <Icon name="clock" size={17} />
-              <i>面試日期</i>
-              <strong>4 月 3 日</strong>
-            </span>
-            <span>
-              <Icon name="mic" size={17} />
-              <i>練習次數</i>
-              <strong>5 次</strong>
-            </span>
-            <span>
-              <Icon name="chart" size={17} />
-              <i>最佳成績</i>
-              <strong>86 分</strong>
-            </span>
-          </div>
-          <button onClick={() => go("profile")}>
-            管理申請校系 <Icon name="chevron" size={16} />
-          </button>
+          <div className="card-head"><div><Badge tone="blue">申請目標</Badge><h2>{target?.school??"尚未設定申請校系"}</h2><p>{target?.department??"請先新增你的申請目標"}</p></div>{target&&<span className="school-logo">{schoolShortNames[target.school]??target.school.slice(0,2)}</span>}</div>
+          {schools.length>1&&<label className="prep-target">切換校系<select value={selected} onChange={e=>setSelected(Number(e.target.value))}>{schools.map((s,i)=><option value={i} key={i}>{i+1}. {s.school} · {s.department}</option>)}</select></label>}
+          <div className="target-meta"><span><Icon name="mic" size={17}/><i>已完成練習</i><strong>{targetReports.length} 次</strong></span><span><Icon name="chart" size={17}/><i>最佳成績</i><strong>{best===null?"尚無評分":Math.round(best*10)/10+" 分"}</strong></span></div>
+          <button onClick={()=>go("profile")}>管理申請校系 <Icon name="chevron" size={16}/></button>
         </Card>
-        <Card className="plan-status">
-          <div className="card-head">
-            <div>
-              <Badge tone="purple">完整版</Badge>
-              <h2>本月練習額度</h2>
-            </div>
-            <span className="donut">
-              4<small>場</small>
-            </span>
-          </div>
-          <Progress value={40} color="purple" />
-          <p>已使用 2 場，共 6 場完整面試</p>
-          <small>額度將於 4 月 1 日更新</small>
-        </Card>
+        <Card className="plan-status"><div className="card-head"><div><Badge tone="purple">練習紀錄</Badge><h2>已完成面試</h2></div></div><h2>{reports.length} 場</h2><p>個人化面試 {reports.filter(r=>!r.id.startsWith("free-")).length} 場 · 免費練習 {reports.filter(r=>r.id.startsWith("free-")).length} 場</p></Card>
       </div>
-      <div className="section-row">
-        <h2>快速開始</h2>
-        <span>選擇適合今天的練習方式</span>
-      </div>
+      <div className="section-row"><h2>快速開始</h2><span>選擇適合今天的練習方式</span></div>
       <div className="quick-grid">
-        <button className="quick-card premium" onClick={() => go("prepare")}>
-          <span className="feature-icon purple">
-            <Icon name="spark" />
-          </span>
-          <Badge tone="purple">推薦</Badge>
-          <h3>完整 AI 模擬面試</h3>
-          <p>依備審資料產生個人化問題，包含動態追問與深度報告。</p>
-          <span className="quick-meta">
-            <i>
-              <Icon name="clock" size={15} /> 10～20 分鐘
-            </i>
-            <strong>
-              開始準備 <Icon name="arrow" size={16} />
-            </strong>
-          </span>
-        </button>
-        <button className="quick-card" onClick={() => go("freeInterview")}>
-          <span className="feature-icon blue">
-            <Icon name="mic" />
-          </span>
-          <Badge tone="gray">免費版</Badge>
-          <h3>快速基礎練習</h3>
-          <p>3 題常見問題，不使用備審與追問，適合暖身。</p>
-          <span className="quick-meta">
-            <i>
-              <Icon name="clock" size={15} /> 最多 8 分鐘
-            </i>
-            <strong>
-              今日剩餘 2 場 <Icon name="arrow" size={16} />
-            </strong>
-          </span>
-        </button>
+        <button className="quick-card premium" onClick={()=>go("prepare")}><span className="feature-icon purple"><Icon name="spark"/></span><Badge tone="purple">個人化</Badge><h3>完整 AI 模擬面試</h3><p>依備審資料產生個人化問題，包含動態追問與分析報告。</p><span className="quick-meta"><i><Icon name="clock" size={15}/>10～20 分鐘</i><strong>開始準備 <Icon name="arrow" size={16}/></strong></span></button>
+        <button className="quick-card" onClick={()=>go("freeInterview")}><span className="feature-icon blue"><Icon name="mic"/></span><Badge tone="gray">免費版</Badge><h3>快速基礎練習</h3><p>使用內建練習題熟悉語音作答。</p><span className="quick-meta"><i><Icon name="clock" size={15}/>基礎練習</i><strong>開始練習 <Icon name="arrow" size={16}/></strong></span></button>
       </div>
       <div className="dashboard-bottom">
-        <Card>
-          <div className="card-title">
-            <div>
-              <h2>最近一次面試</h2>
-              <p>3 月 8 日 · 完整版</p>
-            </div>
-            <button onClick={() => go("report")}>
-              查看完整報告 <Icon name="chevron" size={15} />
-            </button>
-          </div>
-          <div className="recent-score">
-            <span>
-              <strong>86</strong>
-              <small>/ 100</small>
-            </span>
-            <div>
-              <Badge tone="green">表現優良</Badge>
-              <h3>整體回答穩定，經驗描述具體</h3>
-              <p>若能加強申請動機與科系課程的連結，說服力會更完整。</p>
-            </div>
-          </div>
-          <div className="metric-row">
-            {[
-              ["完整度", "88", 88],
-              ["相關度", "82", 82],
-              ["備審一致性", "91", 91],
-              ["口語表達", "78", 78],
-            ].map((x) => (
-              <div key={x[0] as string}>
-                <span>
-                  {x[0]}
-                  <strong>{x[1]}</strong>
-                </span>
-                <Progress value={x[2] as number} />
-              </div>
-            ))}
-          </div>
-        </Card>
-        <Card className="docs-card">
-          <div className="card-title">
-            <div>
-              <h2>備審資料</h2>
-              <p>臺大資訊管理學系</p>
-            </div>
-            <Badge tone="green">
-              <Icon name="check" size={14} />
-              分析完成
-            </Badge>
-          </div>
-          <div className="doc-count">
-            <span>
-              <Icon name="file" size={24} />
-            </span>
-            <div>
-              <strong>8 份文件</strong>
-              <small>辨識 12 個學習事件</small>
-            </div>
-          </div>
-          <button onClick={() => go("analysis")}>
-            查看分析結果 <Icon name="arrow" size={16} />
-          </button>
-        </Card>
+  <Card className="recent-interview-card"><div className="card-title"><div><h2>最近一次面試</h2><p>{recent?.completedAt?new Date(recent.completedAt).toLocaleDateString("zh-TW"):"尚無完成日期"}</p></div>{recent&&<button className="recent-link" onClick={()=>go("history")}>查看面試紀錄 <Icon name="chevron" size={15}/></button>}</div>{recent?(()=>{const marks=scores(recent as Session);const duration=recent.answers.reduce((n,a)=>n+a.duration,0);return <><div className="recent-interview-main">{!isTextSession(recent as Session)&&<div className="recent-interview-score"><strong>{marks.total===null?"—":Math.round(marks.total)}</strong><small>總分 / 100</small></div>}<div className="recent-interview-info"><h3>{recent.target?`${recent.target.school} · ${recent.target.department}`:"免費基礎練習"}</h3><p>{recent.answers.length} 題 · {Math.floor(duration/60)} 分 {Math.round(duration%60)} 秒</p><Badge tone={marks.total===null?"gray":"purple"}>{isTextSession(recent as Session)?"文字面試":marks.total===null?"評分尚未完成":`${grade(marks.total)} 等第`}</Badge></div></div><div className="recent-interview-metrics">{[{name:"完整度",value:marks.completeness},{name:"相關度",value:marks.relevance},{name:"一致性",value:marks.consistency},{name:"口語",value:marks.oral}].filter(m=>!isTextSession(recent as Session)||m.name!=="口語").map(m=><div key={m.name}><small>{m.name}</small><strong>{m.value===null?"—":Math.round(m.value)}</strong></div>)}</div></>})():<p>完成第一場模擬面試後，報告將顯示在這裡。</p>}</Card>
+        <Card className="docs-card"><div className="card-title"><div><h2>備審資料</h2><p>{target?target.school+" · "+target.department:"全部校系"}</p></div><Badge tone={latestPortfolio?.status==="ready"?"green":"gray"}>{status==="loading"?"載入中":status==="error"?"無法連線":latestPortfolio?statusText[latestPortfolio.status]??latestPortfolio.status:"尚未上傳"}</Badge></div><div className="doc-count"><span><Icon name="file" size={24}/></span><div><strong>{status==="ready"?(matching??[]).reduce((n,p)=>n+p.files.length,0)+" 份文件":"—"}</strong></div></div><button onClick={()=>go("upload")}>管理備審資料 <Icon name="arrow" size={16}/></button></Card>
       </div>
     </AppShell>
   );
 }
-
 const applicationTargetsKey = "mainsu.applicationTargets";
-const defaultApplicationTargets: ApplicationTarget[] = [
-  { school: "國立臺灣大學", department: "資訊管理學系" },
-  { school: "國立政治大學", department: "資訊管理學系" },
-];
 const schoolShortNames: Record<string, string> = {
   國立臺灣大學: "臺大",
   國立政治大學: "政大",
@@ -921,119 +815,37 @@ function loadApplicationTargets(): ApplicationTarget[] {
   } catch {
     // The profile can still be used in this session when browser storage is unavailable.
   }
-  return defaultApplicationTargets;
+  return [];
 }
 
-function Profile({
-  go, schools, setSchools,
-}: {
-  go: (p: Page) => void;
-  schools: ApplicationTarget[];
-  setSchools: React.Dispatch<React.SetStateAction<ApplicationTarget[]>>;
-}) {
-  const [saved, setSaved] = useState(true);
-  return (
-    <AppShell page="profile" go={go}>
-      <PageTitle
-        eyebrow="申請資料"
-        title="建立你的申請目標"
-        desc="校系會一對一配對，最多可建立 6 組申請目標。"
-        action={
-          <span className={`save-state ${saved ? "" : "saving"}`}>
-            <Icon name={saved ? "check" : "refresh"} size={15} />
-            {saved ? "所有變更已儲存" : "正在儲存變更…"}
-          </span>
-        }
-      />
-      <Card className="form-card">
-        <div className="form-section">
-          <div className="form-section-title">
-            <span>1</span>
-            <div>
-              <h2>基本資料</h2>
-              <p>面試中會以此稱呼你</p>
-            </div>
-          </div>
-          <label>
-            姓名或暱稱 <small>必填</small>
-            <input
-              defaultValue="陳語晴"
-              onChange={() => {
-                setSaved(false);
-                setTimeout(() => setSaved(true), 800);
-              }}
-            />
-          </label>
-        </div>
-        <div className="form-divider" />
-        <div className="form-section">
-          <div className="form-section-title">
-            <span>2</span>
-            <div>
-              <h2>申請學校與科系</h2>
-              <p>請確認校系配對正確，之後仍可修改</p>
-            </div>
-          </div>
-          <div className="school-list">
-            {schools.map((s, i) => (
-              <div className="school-item" key={i}>
-                <span className="item-index">{i + 1}</span>
-                <label>
-                  申請學校
-                  <select
-                    value={s.school}
-                    onChange={(e) =>
-                      setSchools((v) => v.map((x, j) => (j === i ? { ...x, school: e.target.value } : x)))
-                    }
-                  >
-                    <option>國立臺灣大學</option>
-                    <option>國立政治大學</option>
-                    <option>國立清華大學</option>
-                    <option>輔仁大學</option>
-                  </select>
-                </label>
-                <label>
-                  申請科系
-                  <select
-                    value={s.department}
-                    onChange={(e) =>
-                      setSchools((v) => v.map((x, j) => (j === i ? { ...x, department: e.target.value } : x)))
-                    }
-                  >
-                    <option>資訊管理學系</option>
-                    <option>企業管理學系</option>
-                    <option>經濟學系</option>
-                  </select>
-                </label>
-                <button
-                  aria-label="移除校系"
-                  onClick={() => setSchools((v) => v.filter((_, j) => j !== i))}
-                >
-                  <Icon name="trash" size={18} />
-                </button>
-              </div>
-            ))}
-          </div>
-          <button
-            className="add-school"
-            disabled={schools.length >= 6}
-            onClick={() => setSchools((v) => [...v, { school: "國立清華大學", department: "企業管理學系" }])}
-          >
-            <Icon name="plus" size={18} />
-            新增申請校系 <small>{schools.length} / 6</small>
-          </button>
-        </div>
-        <div className="form-actions">
-          <Button variant="secondary" onClick={() => go("dashboard")}>
-            稍後再說
-          </Button>
-          <Button onClick={() => go("upload")}>
-            儲存並繼續 <Icon name="arrow" size={17} />
-          </Button>
-        </div>
-      </Card>
-    </AppShell>
-  );
+function Profile({go, schools, setSchools}:{go:(p:Page)=>void;schools:ApplicationTarget[];setSchools:React.Dispatch<React.SetStateAction<ApplicationTarget[]>>}) {
+  const [adding,setAdding]=useState(false);
+  const [draft,setDraft]=useState<ApplicationTarget>({school:"",department:""});
+  const duplicate=schools.some(s=>targetMatches(s,draft));
+  const ready=!!draft.school&&!!draft.department&&schoolCatalog[draft.school]?.includes(draft.department)&&!duplicate;
+  function move(index:number,step:number){setSchools(prev=>{const next=index+step;if(next<0||next>=prev.length)return prev;const ordered=[...prev];[ordered[index],ordered[next]]=[ordered[next],ordered[index]];return ordered;});}
+  function cancel(){setAdding(false);setDraft({school:"",department:""});}
+  function save(){if(!ready||schools.length>=6)return;setSchools(prev=>prev.length>=6||prev.some(s=>targetMatches(s,draft))?prev:[...prev,{...draft}]);cancel();}
+  return <AppShell page="profile" go={go}>
+    <PageTitle eyebrow="申請校系" title="建立你的申請目標" desc="最多可建立 6 組申請校系，儲存後不可變更。"/>
+    <Card className="form-card">
+      <div className="form-section">
+        <div className="form-section-title"><span>1</span><div><h2>申請學校與科系</h2><p>依你的申請優先順序排列；第一志願會顯示在總覽，使用箭頭調整順序。</p></div></div>
+        <div className="school-list">{schools.map((s,i)=><div className="school-item saved-school-item" key={`${s.school}|${s.department}|${i}`}>
+          <span className="item-index" title={`第 ${i+1} 志願`}>{i+1}</span>
+          <div className="saved-school-field"><small>申請學校</small><strong>{s.school}</strong></div>
+          <div className="saved-school-field"><small>申請科系</small><strong>{s.department}</strong></div>
+          <div className="school-order-actions"><button type="button" aria-label={`將第 ${i+1} 志願上移`} title="上移" disabled={i===0} onClick={()=>move(i,-1)}>↑</button><button type="button" aria-label={`將第 ${i+1} 志願下移`} title="下移" disabled={i===schools.length-1} onClick={()=>move(i,1)}>↓</button></div>
+        </div>)}</div>
+        {adding?<div className="school-add-panel"><div><h3>新增申請校系</h3><p>請確認學校與科系，儲存後不可修改。</p></div><div className="school-add-fields">
+          <SearchSelect label="學校" kind="school" options={schoolNames} value={draft.school} onSelect={school=>setDraft({school,department:""})}/>
+          <SearchSelect key={draft.school} label="科系" kind="department" options={schoolCatalog[draft.school]??[]} value={draft.department} disabled={!draft.school} onSelect={department=>setDraft(v=>({...v,department}))}/>
+        </div>{duplicate&&draft.department&&<p role="alert" className="field-error">此校系已新增。</p>}
+        <div className="form-actions"><Button variant="secondary" onClick={cancel}>取消</Button><Button disabled={!ready} onClick={save}>確認儲存</Button></div></div>:<button className="add-school" disabled={schools.length>=6} onClick={()=>{setDraft({school:"",department:""});setAdding(true);}}><Icon name="plus" size={18}/>新增申請校系 <small>{schools.length} / 6</small></button>}
+      </div>
+      <div className="form-actions"><Button variant="secondary" onClick={()=>go("dashboard")}>返回總覽</Button><Button disabled={adding||!schools.length} onClick={()=>go("upload")}>管理備審資料 <Icon name="arrow" size={17}/></Button></div>
+    </Card>
+  </AppShell>;
 }
 
 function Upload({ go, schools }: { go: (p: Page) => void; schools: ApplicationTarget[] }) {
@@ -1236,37 +1048,51 @@ function Prepare({
 }: {
   go: (p: Page) => void;
   schools: ApplicationTarget[];
-  onStart: (target: ApplicationTarget) => void;
+  onStart: (target: ApplicationTarget, mode: "voice" | "text", noPortfolio?:boolean) => void;
 }) {
   const [selection, setSelection] = useState("");
-  const [mic, setMic] = useState<"idle" | "testing" | "passed" | "text">("idle");
+  const [mic, setMic] = useState<"idle" | "testing" | "passed">("idle");
+  const [answerMode,setAnswerMode]=useState<"voice"|"text"|null>(null);
   const [micMessage, setMicMessage] = useState("");
   const test = useRef<VoiceInput | null>(null);
+  const meter = useRef<Awaited<ReturnType<typeof monitorAudio>> | null>(null);
+  const [micLevel, setMicLevel] = useState(0);
   const target = selection === "" ? undefined : schools[Number(selection)];
-  const ready = mic === "passed" || mic === "text";
-  useEffect(() => () => test.current?.cancel(), []);
+  const {portfolios,status}=usePortfolioData();
+  const portfolio=target?portfolios?.find(p=>targetMatches(p,target)):undefined;
+  const [missingPrompt,setMissingPrompt]=useState(false);
+  const [retryState,setRetryState]=useState("");
+  const [retryStarted,setRetryStarted]=useState(false);
+  useEffect(()=>{setMissingPrompt(false);setRetryState("");setRetryStarted(false);},[selection]);
+  useEffect(()=>{if(portfolio?.status!=="failed")setRetryStarted(false);},[portfolio?.status]);
+  async function retryPortfolio(){
+    if(!portfolio)return;
+    setRetryStarted(true);setRetryState("已送出重新分析，請等待完成。");
+    try{const res=await fetch(`/api/portfolios/${portfolio.id}/retry`,{method:"POST"});if(!res.ok)throw Error();}catch{setRetryStarted(false);setRetryState("重新分析失敗，請再試一次。");}finally{window.setTimeout(()=>setRetryStarted(false),6000);}
+  }
+  const ready = answerMode === "text" || (answerMode === "voice" && mic === "passed");
+  useEffect(() => () => { test.current?.cancel(); meter.current?.stop(); }, []);
   useEffect(() => {
     if (mic !== "testing") return;
     const timeout = window.setTimeout(() => test.current?.stop(), 12000);
     return () => window.clearTimeout(timeout);
   }, [mic]);
 
-  function testMicrophone() {
+  async function testMicrophone() {
     setMicMessage("請允許麥克風權限，然後說一句話。");
     setMic("testing");
     try {
+      meter.current = await monitorAudio(setMicLevel);
       test.current = startVoiceInput({
         continuous: false,
         onStart: () => setMicMessage("請說一句話，例如「我準備好面試了」。"),
         onText: () => {},
         onEnd(text, error) {
-          test.current = null;
-          setMic(text ? "passed" : "idle");
+          test.current = null; meter.current?.stop(); meter.current = null; setMic(text ? "passed" : "idle");
           setMicMessage(text ? `已辨識到：${text}` : error ?? "沒有辨識到語音，請再試一次。");
         },
       });
-    } catch (error) {
-      setMic("idle");
+    } catch (error) { meter.current?.stop(); meter.current = null; setMic("idle");
       setMicMessage(error instanceof Error ? error.message : "麥克風測試失敗。");
     }
   }
@@ -1275,7 +1101,7 @@ function Prepare({
       <PageTitle
         eyebrow="面試前準備"
         title="確認設定，準備開始"
-        desc="選擇這次要練習的校系，再完成設備測試。"
+        desc="選擇本次面試校系與作答方式，再開始面試。"
       />
       <div className="prep-steps">
         <span className={target ? "done" : "active"}>
@@ -1284,7 +1110,7 @@ function Prepare({
         </span>
         <b />
         <span className={target ? "active" : undefined}>
-          <i>2</i>確認規則
+          <i>2</i>確認作答方式
         </span>
         <b />
         <span>
@@ -1318,7 +1144,9 @@ function Prepare({
                   ))}
                 </select>
               </label>
-            ) : <p className="prep-target">請先到「申請資料」新增校系。</p>}
+            ) : <p className="prep-target">請先到「申請校系」新增校系。</p>}
+            {target&&status==="ready"&&portfolio&&portfolio.status!=="ready"&&<div className="rules-note" role="alert">{portfolio.status==="failed"&&!retryStarted?<><p>此校系的備審分析失敗，請重新分析後再開始模擬面試。</p><Button onClick={()=>void retryPortfolio()}>重新分析</Button></>:<p>此校系的備審資料正在分析中，請待分析完成後再開始模擬面試。</p>}{retryState&&<p>{retryState}</p>}<Button variant="secondary" onClick={()=>go("upload")}>返回備審管理</Button></div>}
+            {target&&status==="ready"&&!portfolio&&<div className="rules-note">此校系尚未上傳備審資料。<Button variant="secondary" onClick={()=>go("upload")}>前往上傳</Button></div>}
             <div className="rule-grid">
               {[
                 ["clock", "預估時間", "約 10～20 分鐘"],
@@ -1351,41 +1179,20 @@ function Prepare({
           <Card>
             <div className="card-title">
               <div>
-                <h2>設備測試</h2>
-                <p>語音作答會使用瀏覽器的語音辨識服務。</p>
+                <h2>選擇作答方式</h2>
+                <p>請在開始面試前選定本場作答方式。</p>
               </div>
             </div>
-            <div className="device-row">
-              <span className={`device-icon ${mic === "passed" ? "success" : ""}`}>
-                <Icon name="mic" />
-              </span>
-              <div>
-                <strong>麥克風</strong>
-                <p role="status">{micMessage || "尚未進行測試"}</p>
-              </div>
-              <Button variant={mic === "passed" ? "secondary" : "primary"} onClick={testMicrophone} disabled={mic === "testing"}>
-                {mic === "testing" ? "測試中" : mic === "passed" ? "重新測試" : "測試麥克風"}
-              </Button>
+            <div className="answer-mode-options" role="group" aria-label="作答方式">
+              <button type="button" aria-pressed={answerMode==="voice"} onClick={()=>setAnswerMode("voice")}><Icon name="mic"/><strong>語音面試</strong><small>語音作答，提供整體評估與口語分析。</small></button>
+              <button type="button" aria-pressed={answerMode==="text"} onClick={()=>{test.current?.cancel();meter.current?.stop();meter.current=null;test.current=null;setMic("idle");setMicMessage("");setAnswerMode("text");}}><Icon name="file"/><strong>文字面試</strong><small>文字作答，提供內容分析與改善建議。</small></button>
             </div>
-            <div className="device-row">
-              <span className={`device-icon ${mic === "text" ? "success" : ""}`}>
-                <Icon name="file" />
-              </span>
-              <div>
-                <strong>
-                  文字作答
-                </strong>
-                <p>{mic === "text" ? "已選擇文字作答" : "也可以用鍵盤輸入回答。"}</p>
-              </div>
-              <Button variant="secondary" onClick={() => {
-                test.current?.cancel();
-                test.current = null;
-                setMicMessage("");
-                setMic("text");
-              }}>
-                使用文字作答
-              </Button>
-            </div>
+            {answerMode==="text"&&<div className="rules-note" role="alert"><strong>文字面試評分說明</strong><p>本場面試不提供總分、等第、口語評分及面部行為分析；仍提供完整度、相關度、一致性（有適用備審證據時）與改善建議。</p></div>}
+            {answerMode==="voice"&&<div className="device-row">
+              <span className={`device-icon ${mic==="passed"?"success":""}`}><Icon name="mic"/></span>
+              <div><strong>麥克風測試</strong><p role="status">{micMessage||"尚未進行測試"}</p><meter min={0} max={100} value={micLevel}/></div>
+              <Button variant={mic==="passed"?"secondary":"primary"} onClick={testMicrophone} disabled={mic==="testing"}>{mic==="testing"?"測試中":mic==="passed"?"重新測試":"測試麥克風"}</Button>
+            </div>}
           </Card>
         </div>
         <Card className="ready-card">
@@ -1409,13 +1216,15 @@ function Prepare({
               裝置電量充足
             </li>
           </ul>
-          <Button className="full" disabled={!target || !ready} onClick={() => {
-            if (target && ready) onStart(target);
+          <Button className="full" disabled={!target || !ready || status!=="ready" || (!!portfolio&&portfolio.status!=="ready")} onClick={() => {
+            if (target && ready) {if(!portfolio)setMissingPrompt(true);else onStart(target, answerMode!);}
           }} icon="play">
             開始模擬面試
           </Button>
-          {!target ? <small>請先選擇面試校系</small> : !ready && <small>請測試麥克風或選擇文字作答</small>}
-          <p className="simulation-note">本場使用練習題，會顯示你實際提交的文字。</p>
+          {missingPrompt&&target&&!portfolio&&<div role="alert" className="rules-note"><p>此校系尚未上傳備審資料，若繼續面試，本次只會依自我介紹及校系常見題庫提問，不包含備審相關問題。</p><Button variant="secondary" onClick={()=>go("upload")}>前往上傳</Button><Button onClick={()=>onStart(target,answerMode!,true)}>繼續面試</Button><Button variant="secondary" onClick={()=>setMissingPrompt(false)}>取消</Button></div>}
+          {status==="error"&&<p role="alert">無法確認備審狀態，請等待重新連線。</p>}
+          {!target ? <small>請先選擇面試校系</small> : !ready && <small>請先選擇作答方式；語音面試須完成麥克風測試</small>}
+          <p className="simulation-note">語音僅用於模擬及分析；原始音訊不永久保存。</p>
         </Card>
       </div>
     </AppShell>
@@ -1618,516 +1427,96 @@ const metricData = [
   ["口語表達", "10%", "78", "amber"],
 ];
 
-function Report({ go, free = false, target }: {
-  go: (p: Page) => void; free?: boolean; target?: ApplicationTarget;
-}) {
-  const reportContext = target
-    ? `${target.school} · ${target.department}`
-    : `${free ? "免費版基礎面試" : "國立臺灣大學 · 資訊管理學系"}　·　2026 年 3 月 8 日`;
-  return (
-    <AppShell page="history" go={go}>
-      <PageTitle
-        eyebrow="面試分析報告"
-        title={free ? "基礎練習完成" : "你的準備，正在穩定進步"}
-        desc={reportContext}
-        action={
-          <div className="title-actions">
-            <Button variant="secondary" onClick={() => go("dashboard")}>
-              返回總覽
-            </Button>
-            <Button onClick={() => go(free ? "freeInterview" : "prepare")} icon="refresh">
-              重新練習
-            </Button>
-          </div>
-        }
-      />
-      <div className="simulation-report">
-        <Icon name="alert" size={18} />
-        <span>這是使用模擬資料產生的示範報告，並非真實 AI 評分或偵測結果。</span>
-      </div>
-      <div className="report-summary">
-        <Card className="score-card">
-          <div className="big-score">
-            <span>
-              <strong>{free ? "—" : "86"}</strong>
-              {!free && <small>/ 100</small>}
-            </span>
-          </div>
-          <div>
-            <Badge tone="green">{free ? "已完成" : "表現優良"}</Badge>
-            <h2>{free ? "完成 3 題基礎練習" : "整體表現穩定，回答具體有層次"}</h2>
-            <p>
-              {free
-                ? "你能清楚傳達申請動機。以下基礎回饋可作為下一次練習方向。"
-                : "善於以具體行動說明經驗，且與備審內容一致。若能更明確連結科系課程，說服力會更完整。"}
-            </p>
-          </div>
-        </Card>
-        <div className="stat-cards">
-          <Card>
-            <Icon name="clock" />
-            <span>
-              <small>面試時間</small>
-              <strong>{free ? "06:42" : "14:36"}</strong>
-            </span>
-          </Card>
-          <Card>
-            <Icon name="mic" />
-            <span>
-              <small>完成題數</small>
-              <strong>{free ? "3 / 3" : "11 題"}</strong>
-            </span>
-          </Card>
-          <Card>
-            <Icon name="chart" />
-            <span>
-              <small>{free ? "今日剩餘" : "面試等第"}</small>
-              <strong>{free ? "2 場" : "A"}</strong>
-            </span>
-          </Card>
-        </div>
-      </div>
-      {!free ? (
-        <>
-          <Card className="metrics-card">
-            <div className="card-title">
-              <div>
-                <h2>四大評分指標</h2>
-                <p>總分依文件指定權重計算</p>
-              </div>
-              <Badge tone="gray">加權總分 86</Badge>
-            </div>
-            <div className="metric-detail">
-              {metricData.map((m) => (
-                <div key={m[0]}>
-                  <div>
-                    <span>
-                      {m[0]} <small>權重 {m[1]}</small>
-                    </span>
-                    <strong>{m[2]}</strong>
-                  </div>
-                  <Progress value={Number(m[2])} color={m[3] as "blue"} />
-                </div>
-              ))}
-            </div>
-          </Card>
-          <div className="report-grid">
-            <Card>
-              <div className="card-title">
-                <div>
-                  <h2>回答完整度</h2>
-                  <p>回答是否涵蓋足夠資訊與深度</p>
-                </div>
-                <strong className="section-score">88</strong>
-              </div>
-              {[
-                ["個人特質完整度", 92],
-                ["深度邏輯完整度", 84],
-                ["經驗內容完整度", 87],
-              ].map((x) => (
-                <div className="submetric" key={x[0]}>
-                  <span>
-                    {x[0]}
-                    <strong>{x[1]}</strong>
-                  </span>
-                  <Progress value={x[1] as number} />
-                </div>
-              ))}
-            </Card>
-            <Card>
-              <div className="card-title">
-                <div>
-                  <h2>口語表達</h2>
-                  <p>根據語音辨識資料分析</p>
-                </div>
-                <strong className="section-score amber">78</strong>
-              </div>
-              <div className="speech-grid">
-                <span>
-                  <small>平均語速</small>
-                  <strong>每分鐘 186 字</strong>
-                  <Badge tone="green">適中</Badge>
-                </span>
-                <span>
-                  <small>明顯停頓</small>
-                  <strong>7 次</strong>
-                  <Badge tone="amber">可改善</Badge>
-                </span>
-                <span>
-                  <small>常見贅字</small>
-                  <strong>「然後」12 次</strong>
-                </span>
-                <span>
-                  <small>時間掌握</small>
-                  <strong>3 題接近上限</strong>
-                </span>
-              </div>
-            </Card>
-          </div>
-          <Card className="topic-analysis">
-            <div className="card-title">
-              <div>
-                <h2>各主題分析</h2>
-                <p>檢視每個主題的回答表現與追問流程</p>
-              </div>
-            </div>
-            <table>
-              <thead>
-                <tr>
-                  <th>主題名稱</th>
-                  <th>回答時間</th>
-                  <th>追問次數</th>
-                  <th>相關度</th>
-                  <th>追問終止原因</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>
-                    <strong>自我介紹</strong>
-                    <small>主問題 1 題</small>
-                  </td>
-                  <td>01:18</td>
-                  <td>0 次</td>
-                  <td>
-                    <Badge tone="green">高</Badge>
-                  </td>
-                  <td>資訊完整，進入下一主題</td>
-                </tr>
-                <tr>
-                  <td>
-                    <strong>個人經驗與能力</strong>
-                    <small>主問題 1 題</small>
-                  </td>
-                  <td>05:42</td>
-                  <td>2 次</td>
-                  <td>
-                    <Badge tone="green">高</Badge>
-                  </td>
-                  <td>已達追問次數上限</td>
-                </tr>
-                <tr>
-                  <td>
-                    <strong>申請動機與科系連結</strong>
-                    <small>主問題 1 題</small>
-                  </td>
-                  <td>04:26</td>
-                  <td>1 次</td>
-                  <td>
-                    <Badge tone="amber">中</Badge>
-                  </td>
-                  <td>核心資訊已補充</td>
-                </tr>
-              </tbody>
-            </table>
-          </Card>
-          <div className="report-grid">
-            <Card>
-              <div className="card-title">
-                <div>
-                  <h2>回答問題分析</h2>
-                  <p>內容品質與備審資料對照</p>
-                </div>
-              </div>
-              <div className="quality-list">
-                <p>
-                  <span className="ok">
-                    <Icon name="check" size={15} />
-                  </span>
-                  <i>
-                    <strong>是否離題</strong>
-                    <small>11 題皆未明顯偏離題目</small>
-                  </i>
-                  <Badge tone="green">正常</Badge>
-                </p>
-                <p>
-                  <span className="warn">
-                    <Icon name="clock" size={15} />
-                  </span>
-                  <i>
-                    <strong>是否超時</strong>
-                    <small>1 題在時間結束時自動送出</small>
-                  </i>
-                  <Badge tone="amber">1 題</Badge>
-                </p>
-                <p>
-                  <span className="ok">
-                    <Icon name="check" size={15} />
-                  </span>
-                  <i>
-                    <strong>備審內容是否矛盾</strong>
-                    <small>未發現明顯矛盾</small>
-                  </i>
-                  <Badge tone="green">一致</Badge>
-                </p>
-              </div>
-              <button className="source-link">
-                查看對應備審來源 <Icon name="arrow" size={15} />
-              </button>
-            </Card>
-            <Card>
-              <div className="card-title">
-                <div>
-                  <h2>面部行為分析</h2>
-                  <p>獨立呈現，不納入總分</p>
-                </div>
-                <Badge tone="blue">本次已完成偵測</Badge>
-              </div>
-              <div className="face-grid">
-                {[
-                  ["眼神方向", "正視畫面 78%"],
-                  ["眨眼", "平均每分鐘 14 次"],
-                  ["嘴唇相關行為", "未見明顯異常"],
-                  ["頭部朝向", "大多保持正向"],
-                  ["是否出現在畫面", "可辨識時間 96%"],
-                ].map((x) => (
-                  <span key={x[0]}>
-                    <small>{x[0]}</small>
-                    <strong>{x[1]}</strong>
-                  </span>
-                ))}
-              </div>
-              <p className="privacy-note">
-                <Icon name="shield" size={15} />
-                此區僅描述系統偵測到的畫面行為，不代表人格或能力判斷。
-              </p>
-            </Card>
-          </div>
-        </>
-      ) : (
-        <Card className="free-feedback">
-          <div className="card-title">
-            <div>
-              <h2>本次回答紀錄</h2>
-              <p>免費版僅提供文字紀錄、回答時間與基礎回饋</p>
-            </div>
-            <Badge tone="gray">未使用備審與動態追問</Badge>
-          </div>
-          {[
-            ["自我介紹", "01:52", "回答能聚焦個人特質，例子具體。"],
-            ["申請動機／校系認識", "02:14", "提到課程特色，建議再連結未來學習目標。"],
-            ["常見面試問題", "02:36", "回答切題，但結尾可以更精簡。"],
-          ].map((x, i) => (
-            <div className="free-answer" key={x[0]}>
-              <span>{i + 1}</span>
-              <div>
-                <strong>{x[0]}</strong>
-                <p>
-                  「
-                  {i === 0
-                    ? "教授您好，我是陳語晴。我喜歡從生活中發現問題，並嘗試用資料找到改善的方法……"
-                    : "我選擇資訊管理學系，是因為希望結合資訊技術與組織管理……"}
-                  」
-                </p>
-                <small>
-                  <Icon name="clock" size={13} />
-                  {x[1]}　·　基礎相關度：{i === 1 ? "中" : "高"}
-                </small>
-              </div>
-              <p className="feedback-note">{x[2]}</p>
-            </div>
-          ))}
-        </Card>
-      )}
-      <Card className="advice-card">
-        <div className="card-title">
-          <div>
-            <h2>下一步改善建議</h2>
-            <p>把回饋轉成可以執行的練習</p>
-          </div>
-          <Badge tone="purple">
-            <Icon name="spark" size={13} />
-            模擬建議
-          </Badge>
-        </div>
-        <div className="advice-grid">
-          <div className="good">
-            <span>
-              <Icon name="check" />
-            </span>
-            <h3>回答優點</h3>
-            <ul>
-              <li>能用具體情境說明個人特質</li>
-              <li>語速穩定，重點表達清楚</li>
-            </ul>
-          </div>
-          <div className="improve">
-            <span>
-              <Icon name="arrow" />
-            </span>
-            <h3>需要改善</h3>
-            <ul>
-              <li>申請動機可增加校系專屬連結</li>
-              <li>減少「然後」等連接詞重複</li>
-            </ul>
-          </div>
-          <div className="practice">
-            <span>
-              <Icon name="refresh" />
-            </span>
-            <h3>具體練習</h3>
-            <ul>
-              <li>用 60 秒說明「為何是這個科系」</li>
-              <li>錄音後刪除不影響語意的贅字</li>
-            </ul>
-          </div>
-          {!free && (
-            <div className="content">
-              <span>
-                <Icon name="file" />
-              </span>
-              <h3>建議補強的經驗</h3>
-              <ul>
-                <li>補充個人負責比例與決策依據</li>
-                <li>說明專案成果如何驗證</li>
-              </ul>
-            </div>
-          )}
-        </div>
-      </Card>
-      <div className="report-actions">
-        <Button variant="secondary" onClick={() => go("history")}>
-          查看面試紀錄
-        </Button>
-        <Button onClick={() => go(free ? "freeInterview" : "prepare")} icon="refresh">
-          再練習一次
-        </Button>
-      </div>
-    </AppShell>
-  );
+function Report({go,free=false,session:initial}:{go:(p:Page)=>void;free?:boolean;session?:Session}) {
+  const [session,setSession]=useState(initial);
+  const [reviewState,setReviewState]=useState<"idle"|"loading"|"failed">("idle");
+  const [reviewError,setReviewError]=useState("");
+  async function review(){if(!session||free)return;setReviewState("loading");setReviewError("");const url=`/api/voice-interviews/${session.id}`;const save=(result:Session)=>{const updated={...result,completedAt:session.completedAt??result.completedAt,dateEstimated:session.completedAt?session.dateEstimated:result.dateEstimated};setSession(updated);const stored:Session[]=JSON.parse(localStorage.getItem("mainsu.voice.reports.v1")||"[]");localStorage.setItem("mainsu.voice.reports.v1",JSON.stringify([updated,...stored.filter(x=>x.id!==updated.id)]));return updated;};try{const existing=await fetch(url);if(existing.ok){const current=save(await existing.json());if(current.reportReview?.complete){setReviewState("idle");return;}}const res=await fetch(`${url}/review`,{method:"POST"});if(!res.ok){const data=await res.json().catch(()=>({}));throw Error(data.error||"AI 評分暫時失敗");}save(await res.json());setReviewState("idle");}catch(e){setReviewError(e instanceof Error?e.message:"AI 評分暫時失敗");try{const partial=await fetch(url);if(partial.ok)save(await partial.json());}catch{}setReviewState("failed");}}
+  useEffect(()=>{if(session?.finished&&!free&&!session.reportReview?.complete)void review();},[session?.id]);
+  useEffect(()=>{
+    if(!initial?.finished||free||!initial.reportReview?.complete||initial.answers.some(a=>a.analysisScores))return;
+    const controller=new AbortController();
+    void fetch(`/api/voice-interviews/${initial.id}`,{signal:controller.signal}).then(async res=>{
+      if(!res.ok)return;const data:Session=await res.json();
+      if(controller.signal.aborted||!data.answers.some(a=>a.analysisScores))return;
+      const updated={...data,completedAt:initial.completedAt??data.completedAt,dateEstimated:initial.completedAt?initial.dateEstimated:data.dateEstimated,reportReview:data.reportReview??initial.reportReview};
+      setSession(updated);
+      try{const stored:Session[]=JSON.parse(localStorage.getItem("mainsu.voice.reports.v1")||"[]");localStorage.setItem("mainsu.voice.reports.v1",JSON.stringify(stored.map(x=>x.id===updated.id?updated:x)));}catch{}
+    }).catch(()=>{});
+    return()=>controller.abort();
+  },[initial?.id,free]);
+  const textMode=!!session&&isTextSession(session);
+  const marks=session?scores(session):{total:null,completeness:null,relevance:null,consistency:null,oral:null};
+  const display=(v:number|null)=>v===null?"未評估":Math.round(v*10)/10;
+  const reviewRows=session?.reportReview?.questions??[];
+  const answers=session?.answers??[];const topics=session?.summary?.topics??[];
+  const duration=session?.summary?.elapsed_seconds??answers.reduce((n,a)=>n+a.duration,0);
+  const fmt=(seconds:number)=>`${String(Math.floor(seconds/60)).padStart(2,"0")}:${String(Math.floor(seconds%60)).padStart(2,"0")}`;
+  const avg=(values:(number|null|undefined)[])=>{const v=values.filter((x):x is number=>typeof x==="number"&&Number.isFinite(x));return v.length?Math.round(v.reduce((a,b)=>a+b,0)/v.length):null;};
+  const dimensions=[{key:"trait",label:"個人特質完整度"},{key:"depth",label:"深度邏輯完整度"},{key:"exp",label:"經驗內容完整度"}];
+  const dimensionScores=dimensions.map(d=>({...d,score:avg(topics.map(t=>t.scores?.[d.key]))}));
+  const completeness=avg(dimensionScores.map(d=>d.score));
+  const relevance=avg(topics.map(t=>typeof t.relevance_score==="number"?t.relevance_score*100:null));
+  const speeches=answers.filter(a=>a.metrics?.sufficient).map(a=>a.metrics!);
+  const rates=avg(speeches.map(m=>m.rate));const pauses=speeches.reduce((n,m)=>n+m.pauses.length,0);
+  const fillers:Record<string,number>={};speeches.forEach(m=>Object.entries(m.fillers).forEach(([w,n])=>{fillers[w]=(fillers[w]||0)+n;}));
+  const issues=topics.flatMap(t=>t.consistency_issues??[]);const timeout=answers.filter(a=>a.timedOut).length;
+  const gapNames:Record<string,string>={trait:"個人特質",depth:"深度邏輯",exp:"經驗內容"};
+  const gapSuggestions:Record<string,string>={trait:"補充你展現的能力或態度，並舉出具體行為。",depth:"說明你為什麼做出這個決定、比較過哪些方案及背後理由。",exp:"補充情境、你的具體行動、成果與反思。"};
+  const gaps=[...new Set(topics.flatMap(t=>t.gaps??[]))];
+  const reportContext=session?.target?`${session.target.school} · ${session.target.department}`:free?"免費基礎練習":"面試紀錄";
+  if(!session)return <AppShell page="history" go={go}><PageTitle eyebrow="面試分析報告" title="尚未選擇面試紀錄"/><Button onClick={()=>go("history")}>查看面試紀錄</Button></AppShell>;
+  return <AppShell page="history" go={go}>
+    <PageTitle eyebrow="面試分析報告" title={free?"基礎練習完成":"你的面試分析報告"} desc={reportContext+(session.completedAt?` · ${new Date(session.completedAt).toLocaleDateString("zh-TW")}`:"")} action={<div className="title-actions"><Button variant="secondary" onClick={()=>go("history")}>返回面試紀錄</Button><Button onClick={()=>go(free?"freeInterview":"prepare")} icon="plus">開始新面試</Button></div>}/>
+    <div className="report-summary"><Card className="score-card">{!textMode&&<div className="big-score" style={{background:`conic-gradient(#d85b92 ${marks.total??0}%, #f2e9f0 0)`}}><span><strong>{free?"—":marks.total===null?"—":Math.round(marks.total*10)/10}</strong>{!free&&<small>/ 100</small>}</span></div>}<div><Badge tone="green">{session.finished?"已完成":"未完成"}</Badge><h2>本次面試結果</h2><p>{session.summary?.termination_reason||"本次作答紀錄已保存。"} {!free&&"練習評分僅供參考。"}</p></div></Card><div className="stat-cards"><Card><Icon name="clock"/><span><small>作答時間</small><strong>{fmt(duration)}</strong></span></Card><Card><Icon name="mic"/><span><small>作答題數</small><strong>{answers.length} 題</strong></span></Card>{!textMode&&<Card><Icon name="chart"/><span><small>面試等第</small><strong>{free?"不適用":grade(marks.total)}</strong></span></Card>}</div></div>
+    {!free&&<><Card className="metrics-card"><div className="card-title"><div><h2>{textMode?"回答內容分析":"四大評分指標"}</h2></div>{!textMode&&<Badge tone="gray">{marks.total===null?"等待評分":`加權總分 ${display(marks.total)}`}</Badge>}</div><div className="metric-detail">{[{label:"回答完整度",weight:"45%",value:marks.completeness},{label:"回答相關度",weight:"25%",value:marks.relevance},{label:"備審一致性",weight:"20%",value:marks.consistency},{label:"口語表達",weight:"10%",value:marks.oral}].filter(m=>!textMode||m.label!=="口語表達").map(m=><div key={m.label}><div><span>{m.label} {!textMode&&<small>權重 {m.weight}</small>}</span><strong>{m.value===null?(session.reportReview?.complete?"不適用／無有效資料":"等待評分"):display(m.value)}</strong></div>{m.value!==null&&<Progress value={m.value}/>}</div>)}</div><p className="privacy-note">{textMode?"文字面試不提供總分、等第或口語評分。":"不適用的指標不計入總分，其餘權重按比例調整。"}</p>{reviewState==="loading"&&<p role="status">正在產生逐題評分與改善建議…</p>}{reviewState==="failed"&&<p role="alert">{reviewError||"AI 評分暫時失敗，原始回答均已保存。"}<Button variant="secondary" onClick={()=>void review()}>重試評分</Button></p>}</Card>
+    <FollowupAnalysis session={session}/>
+    <div className="report-grid"><Card><div className="card-title"><div><h2>回答完整度</h2><p>各主題最後一輪累積分析的平均</p></div><strong className="section-score">{completeness??"—"}</strong></div>{dimensionScores.map(d=><div className="submetric" key={d.key}><span>{d.label}<strong>{d.score??"未評估"}</strong></span>{d.score!==null&&<Progress value={d.score}/>}</div>)}</Card>{!textMode&&<Card><div className="card-title"><div><h2>口語表達</h2><p>根據語音辨識資料分析</p></div><strong className="section-score">{marks.oral===null?"—":Math.round(marks.oral)}</strong></div><div className="speech-grid"><span><small>平均語速</small><strong>{rates===null?"未評估":`每分鐘 ${rates} 字`}</strong></span><span><small>停頓次數</small><strong>{speeches.length?`${pauses} 次`:"未評估"}</strong></span><span><small>常見贅字</small><strong>{speeches.length?Object.entries(fillers).filter(([,n])=>n).map(([w,n])=>`${w} ${n} 次`).join("、")||"未辨識到":"未評估"}</strong></span><span><small>超時提醒</small><strong>{timeout} 題</strong></span></div></Card>}</div>
+    <div className="report-grid report-grid-single">{issues.length>0&&<Card><div className="card-title"><div><h2>備審一致性待核對</h2><p>{issues.length} 處待確認</p></div></div>{issues.map((item,i)=><p key={i} className="privacy-note">{reportText(item.note||item.issue_type||'請核對備審資料')} {item.portfolio_sources?.length?`（來源頁碼：${item.portfolio_sources.map(x=>x.page).filter(Boolean).join("、")}）`:""}</p>)}</Card>}{!textMode&&<Card><div className="card-title"><div><h2>面部行為分析</h2><p>獨立呈現，不計入總分</p></div></div><div className="face-grid">{["眼神方向","眨眼","嘴部微表情","頭部朝向","是否出現在畫面"].map(x=><span key={x}><small>{x}</small><strong>未評估</strong></span>)}</div></Card>}</div></>}
+    {free&&<Card className="topic-analysis report-answer-card"><div className="card-title"><div><h2>逐題作答紀錄</h2><p>完整保留每題題目、原始回答與作答時間</p></div><Badge tone="purple">{answers.length} 題</Badge></div>{answers.map((a,i)=>{const result=reviewRows.find(x=>x.number===i+1);const oral=oralParts(a);const advice=result?.advice||(a.gaps?.length?a.gaps.map(g=>gapSuggestions[g]||"補充具體內容。").join(" "):a.timedOut?"先回答核心問題，再簡短補充例子，避免超時。":"建議先說明核心結論，再補充具體作法與結果。");const body=<><h3>{a.question}</h3><h4>學生回答</h4><p className="report-answer-text">{a.text||"未作答"}</p><div className="report-answer-scores">{!free&&<><span>相關度：{result?.relevance==null?"未評估":`${result.relevance} 分`}</span><span>一致性：{result?.consistency==null?(!result?"等待評分":result.consistencyStatus==="pending"?"待核對":result.consistencyStatus==="not_applicable"?"不適用":"未評估"):`${result.consistency} 分`}</span></>}{oral&&<span>口語：{display(oral.total)} 分</span>}</div>{a.metrics&&<p className="privacy-note">語音資料：{a.metrics.sufficient?`語速 ${a.metrics.rate??"未評估"} 字/分鐘 · 停頓 ${a.metrics.pauses.length} 次`:"資料不足，未評估"}</p>}<div className="report-question-advice"><h4>改善建議{!result?"（初步）":""}</h4><p>{advice}</p></div></>;return <section key={i} className="report-answer-item">{a.kind==="followup"?<details><summary className="followup-summary"><div className="followup-index">第 {i+1} 題 <span>追問</span></div><div className="followup-title">{a.question}</div><span className="followup-chevron" aria-hidden="true"><Icon name="chevron" size={18}/></span></summary>{body}</details>:<><div className="report-answer-heading"><Badge tone="purple">第 {i+1} 題{a.kind==="restate"?" · 重述":" · 主問題"}</Badge><span>{fmt(a.duration)} · {a.mode==="voice"?"語音作答":"文字作答"}{a.timedOut?" · 超時":""}</span></div>{body}</>}</section>;})}{!answers.length&&<p>尚無作答紀錄。</p>}</Card>}
+  </AppShell>;
 }
 
-function History({ go }: { go: (p: Page) => void }) {
-  const [grid, setGrid] = useState(false);
-  const records = [
-    ["2026 / 03 / 08", "國立臺灣大學", "資訊管理學系", "完整版", "14:36", "86"],
-    ["2026 / 03 / 05", "國立政治大學", "資訊管理學系", "免費版", "06:42", "—"],
-    ["2026 / 02 / 27", "國立臺灣大學", "資訊管理學系", "完整版", "16:08", "81"],
-    ["2026 / 02 / 20", "國立清華大學", "科技管理學院", "免費版", "07:15", "—"],
-  ];
-  return (
-    <AppShell page="history" go={go}>
-      <PageTitle
-        eyebrow="面試紀錄"
-        title="每一次練習，都留下進步軌跡"
-        desc="回顧過往回答與分析報告，找到下一次的練習重點。"
-        action={
-          <Button icon="plus" onClick={() => go("prepare")}>
-            開始新的面試
-          </Button>
-        }
-      />
-      <div className="history-stats">
-        <Card>
-          <span>
-            <Icon name="mic" />
-          </span>
-          <div>
-            <small>累積面試</small>
-            <strong>8 場</strong>
-          </div>
-        </Card>
-        <Card>
-          <span>
-            <Icon name="clock" />
-          </span>
-          <div>
-            <small>累積練習</small>
-            <strong>1 小時 42 分</strong>
-          </div>
-        </Card>
-        <Card>
-          <span>
-            <Icon name="chart" />
-          </span>
-          <div>
-            <small>最佳成績</small>
-            <strong>86 分</strong>
-          </div>
-        </Card>
-        <Card>
-          <span>
-            <Icon name="arrow" />
-          </span>
-          <div>
-            <small>近三次進步</small>
-            <strong className="green-text">+ 7 分</strong>
-          </div>
-        </Card>
-      </div>
-      <Card className="history-card">
-        <div className="history-toolbar">
-          <div>
-            <button className="active">全部</button>
-            <button>完整版</button>
-            <button>免費版</button>
-          </div>
-          <div className="view-switch">
-            <button className={!grid ? "active" : ""} onClick={() => setGrid(false)}>
-              <Icon name="list" size={17} />
-            </button>
-            <button className={grid ? "active" : ""} onClick={() => setGrid(true)}>
-              <Icon name="grid" size={17} />
-            </button>
-          </div>
-        </div>
-        <div className={grid ? "record-grid" : "record-list"}>
-          {records.map((r, i) => (
-            <div className="record-row" key={r[0] + i}>
-              <span className="record-date">
-                <strong>{r[0]}</strong>
-                <small>{i === 0 ? "最近一次" : ""}</small>
-              </span>
-              <span className="record-school">
-                <i className="school-mini">{r[1].slice(2, 4)}</i>
-                <span>
-                  <strong>{r[1]}</strong>
-                  <small>{r[2]}</small>
-                </span>
-              </span>
-              <Badge tone={r[3] === "完整版" ? "purple" : "gray"}>{r[3]}</Badge>
-              <span className="record-time">
-                <Icon name="clock" size={15} />
-                {r[4]}
-              </span>
-              <span className="record-score">
-                {r[5] !== "—" && (
-                  <>
-                    <strong>{r[5]}</strong>
-                    <small>/100</small>
-                  </>
-                )}{" "}
-                {r[5] === "—" && <small>基礎回饋</small>}
-              </span>
-              <Button
-                variant="secondary"
-                onClick={() => go(r[3] === "完整版" ? "report" : "freeReport")}
-              >
-                查看報告
-              </Button>
-            </div>
-          ))}
-        </div>
-      </Card>
-    </AppShell>
-  );
+function GrowthTrend({records}:{records:Session[]}){
+  const [filter,setFilter]=useState("all");const labels=[...new Set(records.filter(r=>r.target).map(r=>`${r.target!.school} · ${r.target!.department}`))];
+  const rows=records.filter(r=>!r.id.startsWith("free-")&&(filter==="all"||`${r.target?.school} · ${r.target?.department}`===filter)).sort((a,b)=>(a.completedAt||"").localeCompare(b.completedAt||""));
+  const series=[{key:"total",name:"總分",color:"#8153b7"},{key:"completeness",name:"完整度",color:"#3b82b6"},{key:"relevance",name:"相關度",color:"#d55b8c"},{key:"consistency",name:"一致性",color:"#2c9a83"},{key:"oral",name:"口語",color:"#d39a35"}] as const;
+  const points=rows.map(r=>scores(r));const x=(i:number)=>rows.length===1?350:45+i*610/Math.max(1,rows.length-1);const y=(n:number)=>210-n*1.8;
+  return <Card className="growth-card"><div className="card-title"><div><h2>歷史成長趨勢</h2><p>比較個人化面試歷次成績與各項指標</p></div><select aria-label="篩選校系" value={filter} onChange={e=>setFilter(e.target.value)}><option value="all">全部校系</option>{labels.map(l=><option key={l}>{l}</option>)}</select></div>{rows.length?<>{rows.length>1?<div className="growth-chart"><svg viewBox="0 0 700 245" role="img" aria-label="歷次面試分數走勢">{[0,25,50,75,100].map(n=><g key={n}><text x="7" y={y(n)+4} fontSize="13" fill="#84768d">{n}</text><line x1="45" x2="655" y1={y(n)} y2={y(n)} stroke="#e7dfea"/></g>)}{series.map(line=><g key={line.key}>{points.map((p,i)=>{const v=p[line.key],prior=i?points[i-1][line.key]:null;return v===null?null:<g key={i}>{prior!==null&&<line x1={x(i-1)} y1={y(prior)} x2={x(i)} y2={y(v)} stroke={line.color} strokeWidth="2.5"/>}<circle cx={x(i)} cy={y(v)} r="4" fill={line.color}><title>{`${line.name}：${Math.round(v)} 分`}</title></circle></g>;})}</g>)}{rows.map((r,i)=><text key={r.id} x={x(i)} y="230" textAnchor="middle" fontSize="13" fill="#84768d">{i+1}</text>)}</svg></div>:<div className="growth-first"><Icon name="chart" size={24}/><div><strong>已建立第一筆成長基準</strong><p>完成下一次面試後，即可比較分數變化。</p></div></div>}<div className="growth-legend">{series.map(l=><span key={l.key}><i style={{background:l.color}}/>{l.name}</span>)}</div><div style={{overflowX:"auto"}}><table className="growth-table"><thead><tr><th>場次／日期</th><th>校系</th>{series.map(l=><th key={l.key}>{l.name}</th>)}</tr></thead><tbody>{rows.map((r,i)=><tr key={r.id}><td title={r.dateEstimated?"舊紀錄的最後保存日期":"面試完成日期"}>{i+1} · {r.completedAt?new Date(r.completedAt).toLocaleDateString("zh-TW"):"未記錄"}</td><td>{r.target?.school} · {r.target?.department}</td>{series.map(l=><td key={l.key}>{points[i][l.key]===null?"—":Math.round(points[i][l.key]!)}</td>)}</tr>)}</tbody></table></div>{points.some(p=>series.some(l=>p[l.key]===null))&&<small>— 表示尚無評分或該面試模式不提供此項。</small>}</>:<p>目前尚無本校系完成的個人化面試。</p>}</Card>;
 }
-
-function Settings({ go, schools }: { go: (p: Page) => void; schools: ApplicationTarget[] }) {
+function History({go,onSelect}:{go:(p:Page)=>void;onSelect:(session:Session)=>void}) {
+  const [records,setRecords]=useState(()=>loadReports() as Session[]);
+  useEffect(()=>{let live=true;void Promise.all(records.filter(r=>!r.completedAt&&!r.id.startsWith("free-")).map(async r=>{try{const res=await fetch(`/api/voice-interviews/${r.id}`);if(!res.ok)return null;const data:Session=await res.json();return data.completedAt?{id:r.id,completedAt:data.completedAt,dateEstimated:data.dateEstimated}:null;}catch{return null;}})).then(updates=>{if(!live||!updates.some(Boolean))return;const dates=new Map(updates.filter(x=>x!==null).map(x=>[x!.id,x!]));const merge=(r:Session)=>dates.has(r.id)?{...r,...dates.get(r.id)}:r;setRecords(prev=>prev.map(merge));try{const stored:Session[]=JSON.parse(localStorage.getItem("mainsu.voice.reports.v1")||"[]");localStorage.setItem("mainsu.voice.reports.v1",JSON.stringify(stored.map(merge)));}catch{}});return()=>{live=false;};},[]);
+  const duration=records.reduce((sum,r)=>sum+r.answers.reduce((n,a)=>n+(Number.isFinite(a.duration)?a.duration:0),0),0);
+  return <AppShell page="history" go={go}>
+    <PageTitle eyebrow="面試紀錄" title="回顧你的練習" desc="查看歷次面試報告與成長趨勢。" action={<Button icon="plus" onClick={()=>go("prepare")}>開始新的模擬面試</Button>}/>
+    <div className="history-stats">
+      <Card><span><Icon name="mic"/></span><div><small>累積面試</small><strong>{records.length} 場</strong></div></Card>
+      <Card><span><Icon name="clock"/></span><div><small>累積作答</small><strong>{Math.floor(duration/60)} 分 {Math.round(duration%60)} 秒</strong></div></Card>
+      <Card><span><Icon name="chart"/></span><div><small>最佳成績</small><strong>{records.map(r=>scores(r).total).filter((x):x is number=>x!==null).length?Math.round(Math.max(...records.map(r=>scores(r).total??-1))):"尚無評分"}</strong></div></Card>
+    </div>
+    <GrowthTrend records={records}/>
+    {records.length?<VoiceHistory records={records} onSelect={onSelect}/>:<Card><h2>尚無面試紀錄</h2><p>完成面試後即可查看逐題報告。</p><Button onClick={()=>go("prepare")}>開始練習</Button></Card>}
+  </AppShell>;
+}
+function Settings({ go, needsName, onSaved }: { go: (p: Page) => void; needsName?:boolean; onSaved:()=>void }) {
   const [tab, setTab] = useState("基本資料");
+  const [name,setName]=useState(loadProfile().name);
+  const [message,setMessage]=useState("");
+  function saveName(){if(!name.trim()){setMessage("請輸入姓名或暱稱。");return;}saveProfile({...loadProfile(),name:name.trim()});setMessage("已儲存變更。");onSaved();}
   return (
     <AppShell page="settings" go={go}>
       <PageTitle
         eyebrow="帳號設定"
         title="管理你的帳號"
-        desc="更新個人資料、申請校系與登入設定。"
+        desc="更新姓名或暱稱與登入設定。"
       />
       <div className="settings-layout">
         <Card className="settings-nav">
-          {["基本資料", "申請校系管理", "帳號與安全"].map((x) => (
+          {["基本資料", "帳號與安全"].map((x) => (
             <button className={tab === x ? "active" : ""} onClick={() => setTab(x)} key={x}>
               <Icon
-                name={x === "基本資料" ? "user" : x === "申請校系管理" ? "school" : "shield"}
+                name={x === "基本資料" ? "user" : "shield"}
                 size={18}
               />
               {x}
@@ -2147,52 +1536,21 @@ function Settings({ go, schools }: { go: (p: Page) => void; schools: Application
                 <h2>基本資料</h2>
                 <p>這些資訊會顯示在你的學習空間中。</p>
               </div>
-              <div className="profile-avatar">
-                <span>陳</span>
-                <div>
-                  <Button variant="secondary">更換頭像</Button>
-                  <small>支援 JPG、PNG，檔案上限 2MB</small>
-                </div>
-              </div>
+              {needsName&&<p className="name-required-notice" role="alert">開始或接續面試前，請先輸入姓名或暱稱並儲存。</p>}
               <div className="settings-form">
                 <label>
-                  姓名或暱稱
-                  <input defaultValue="陳語晴" />
+                  姓名或暱稱（必填）
+                  <input value={name} required onChange={e=>{setName(e.target.value);setMessage("");}} />
                 </label>
                 <label>
                   電子郵件
-                  <input defaultValue="yuching@example.com" disabled />
-                  <small>如需變更電子郵件，請聯絡客服。</small>
+                  <input value={loadProfile().email} readOnly aria-readonly="true" />
+                  <small>電子郵件為帳號識別資料，不可變更。</small>
                 </label>
               </div>
               <div className="form-actions">
-                <Button>儲存變更</Button>
+                <span role="status">{message}</span><Button onClick={saveName}>{needsName?"儲存並繼續面試":"儲存變更"}</Button>
               </div>
-            </>
-          )}
-          {tab === "申請校系管理" && (
-            <>
-              <div className="settings-heading">
-                <h2>申請校系管理</h2>
-                <p>目前已建立 {schools.length} / 6 組申請目標。</p>
-              </div>
-              <div className="setting-schools">
-                {schools.map(({ school, department }, index) => (
-                  <div key={index}>
-                    <span>{schoolShortNames[school] ?? school.slice(0, 2)}</span>
-                    <p>
-                      <strong>{school}</strong>
-                      <small>{department}</small>
-                    </p>
-                    <Button variant="secondary" icon="edit" onClick={() => go("profile")}>
-                      編輯
-                    </Button>
-                  </div>
-                ))}
-              </div>
-              <Button variant="secondary" icon="plus" onClick={() => go("profile")}>
-                新增申請校系
-              </Button>
             </>
           )}
           {tab === "帳號與安全" && (
@@ -2207,7 +1565,7 @@ function Settings({ go, schools }: { go: (p: Page) => void; schools: Application
                 </span>
                 <div>
                   <strong>登入密碼</strong>
-                  <p>上次更新於 2026 年 1 月 12 日</p>
+                  
                 </div>
                 <Button variant="secondary">變更密碼</Button>
               </div>
@@ -2226,8 +1584,13 @@ function Settings({ go, schools }: { go: (p: Page) => void; schools: Application
 
 export default function App() {
   const [page, setPage] = useState<Page>("landing");
+  const [pendingInterview,setPendingInterview]=useState<Page>();
   const [schools, setSchools] = useState(loadApplicationTargets);
   const [interviewTarget, setInterviewTarget] = useState<ApplicationTarget>();
+  const [resumeId,setResumeId] = useState<string>();
+  const [selectedReport,setSelectedReport] = useState<Session>();
+  const [interviewMode, setInterviewMode] = useState<"voice" | "text">("voice");
+  const [noPortfolio,setNoPortfolio]=useState(false);
   useEffect(() => {
     try {
       localStorage.setItem(applicationTargetsKey, JSON.stringify(schools));
@@ -2236,6 +1599,10 @@ export default function App() {
     }
   }, [schools]);
   const go = (next: Page) => {
+    if((next==="prepare"||next==="interview"||next==="freeInterview")&&!loadProfile().name.trim()){
+      setPendingInterview(next);setPage("settings");window.scrollTo({top:0});return;
+    }
+    setPendingInterview(undefined);
     if (next !== "interview" && !(next === "report" && page === "interview")) {
       setInterviewTarget(undefined);
     }
@@ -2251,7 +1618,7 @@ export default function App() {
       case "register":
         return <Auth mode="register" go={go} />;
       case "dashboard":
-        return <Dashboard go={go} />;
+        return <Dashboard go={go} schools={schools} onResume={(target,id)=>{setInterviewMode("voice");setInterviewTarget(target);setResumeId(id);go("interview");}} />;
       case "profile":
         return <Profile go={go} schools={schools} setSchools={setSchools} />;
       case "upload":
@@ -2259,23 +1626,26 @@ export default function App() {
       case "analysis":
         return <Analysis go={go} />;
       case "prepare":
-        return <Prepare go={go} schools={schools} onStart={(target) => {
+        return <Prepare go={go} schools={schools} onStart={(target, mode, withoutPortfolio) => {
+          setInterviewMode(mode);
+          setNoPortfolio(!!withoutPortfolio);
+          setResumeId(undefined);
           setInterviewTarget(target);
           go("interview");
         }} />;
       case "interview":
-        return <Interview go={go} target={interviewTarget} />;
+        return <VoiceInterview target={interviewTarget} mode={interviewMode} noPortfolio={noPortfolio} resumeId={resumeId} onExit={() => go("dashboard")} renderReport={session=><Report go={go} session={session} free={session.id.startsWith("free-")}/>} />;
       case "freeInterview":
-        return <Interview go={go} free />;
+        return <VoiceInterview free mode="voice" onExit={() => go("dashboard")} renderReport={session=><Report go={go} session={session} free={session.id.startsWith("free-")}/>} />;
       case "report":
-        return <Report go={go} target={interviewTarget} />;
+        return <Report go={go} session={selectedReport} free={selectedReport?.id.startsWith("free-")} />;
       case "freeReport":
-        return <Report go={go} free />;
+        return <Report go={go} free session={selectedReport} />;
       case "history":
-        return <History go={go} />;
+        return <History go={go} onSelect={session=>{setSelectedReport(session);go("report");}} />;
       case "settings":
-        return <Settings go={go} schools={schools} />;
+        return <Settings go={go} needsName={!!pendingInterview} onSaved={()=>{if(pendingInterview)go(pendingInterview);}} />;
     }
-  }, [page, schools, interviewTarget]);
+  }, [page, schools, interviewTarget, interviewMode, noPortfolio, resumeId, selectedReport, pendingInterview]);
   return view;
 }

@@ -13,6 +13,7 @@ type Page =
   | "login"
   | "register"
   | "dashboard"
+  | "plans"
   | "profile"
   | "upload"
   | "analysis"
@@ -31,6 +32,7 @@ type IconName =
   | "file"
   | "mic"
   | "chart"
+  | "wallet"
   | "home"
   | "user"
   | "upload"
@@ -90,6 +92,12 @@ function Icon({
     chart: (
       <>
         <path d="M4 19V9M10 19V5M16 19v-7M22 19H2" />
+      </>
+    ),
+    wallet: (
+      <>
+        <path d="M20 8V6a2 2 0 0 0-2-2H6a3 3 0 0 0 0 6h14a1 1 0 0 1 1 1v7a2 2 0 0 1-2 2H6a3 3 0 0 1-3-3V7" />
+        <path d="M21 13h-4a2 2 0 0 0 0 4h4" />
       </>
     ),
     home: (
@@ -284,6 +292,7 @@ const appNav: { page: Page; label: string; icon: IconName }[] = [
   { page: "profile", label: "申請校系", icon: "user" },
   { page: "upload", label: "備審資料", icon: "upload" },
   { page: "history", label: "面試紀錄", icon: "clock" },
+  { page: "plans", label: "購買方案", icon: "wallet" },
   { page: "settings", label: "帳號設定", icon: "settings" },
 ];
 
@@ -334,6 +343,13 @@ function AppShell({
   );
 }
 
+const pointPackages = [
+  { points: 5, bonus: 1 },
+  { points: 10, bonus: 3 },
+];
+const pricePerPoint = 30;
+const currentPlan = { label: "付費版", tone: "purple" } as const;
+
 function Landing({ go }: { go: (page: Page) => void }) {
   return (
     <div className="landing">
@@ -365,9 +381,9 @@ function Landing({ go }: { go: (page: Page) => void }) {
               都更接近<span>理想校系</span>
             </h1>
             <p>
-              從備審資料出發，AI 模擬教授真實提問與動態追問。
+              選擇申請校系，先用基本題庫熟悉大學個人申請二階面試。
               <br />
-              不只陪你練習，更讓你知道如何進步。
+              個人化面試會依備審出題、根據作答追問，並在結束後提供改善建議。
             </p>
             <div className="hero-actions">
               <Button icon="arrow" onClick={() => go("register")}>
@@ -385,13 +401,13 @@ function Landing({ go }: { go: (page: Page) => void }) {
             </div>
             <div className="trust-row">
               <span>
-                <Icon name="check" size={16} /> 免費開始
+                <Icon name="check" size={16} /> 免費版每日 3 次
               </span>
               <span>
-                <Icon name="check" size={16} /> 不需信用卡
+                <Icon name="check" size={16} /> 免費版每場最多 15 分鐘
               </span>
               <span>
-                <Icon name="shield" size={16} /> 資料安全保護
+                <Icon name="chart" size={16} /> 面試後查看逐題回饋
               </span>
             </div>
           </div>
@@ -401,7 +417,7 @@ function Landing({ go }: { go: (page: Page) => void }) {
                 <span />
                 <span />
                 <span />
-                <small>AI 模擬面試進行中</small>
+                <small>AI 模擬面試範例</small>
               </div>
               <div className="mock-body">
                 <div className="mock-professor">
@@ -433,15 +449,14 @@ function Landing({ go }: { go: (page: Page) => void }) {
             <div className="floating-card fc-one">
               <Icon name="file" />
               <div>
-                <small>備審分析完成</small>
-                <strong>辨識 12 個學習事件</strong>
+                <small>備審資料分析</small>
+                <strong>依學習經歷出題</strong>
               </div>
-              <Icon name="check" />
             </div>
             <div className="floating-card fc-two">
               <span>86</span>
               <div>
-                <small>本次面試表現</small>
+                <small>評分範例</small>
                 <strong>表現優良</strong>
               </div>
             </div>
@@ -452,7 +467,7 @@ function Landing({ go }: { go: (page: Page) => void }) {
           <div className="section-heading">
             <Badge tone="blue">核心特色</Badge>
             <h2>把練習，變成真正有效的準備</h2>
-            <p>不提供制式答案，而是從你的經歷出發，打造專屬面試情境。</p>
+            <p>個人化面試會結合申請校系與備審資料，從你的學習經歷出題。</p>
           </div>
           <div className="feature-grid">
             <Card>
@@ -460,7 +475,7 @@ function Landing({ go }: { go: (page: Page) => void }) {
                 <Icon name="file" size={26} />
               </span>
               <h3>備審資料智慧分析</h3>
-              <p>整理學習歷程中的重要事件、能力與成果，找出你與申請科系的真實連結。</p>
+              <p>從備審 PDF 整理學習事件，保留原文與頁碼，供出題與一致性檢核使用。</p>
               <div className="mini-tags">
                 <span>學習經歷</span>
                 <span>個人特質</span>
@@ -472,7 +487,7 @@ function Landing({ go }: { go: (page: Page) => void }) {
                 <Icon name="mic" size={26} />
               </span>
               <h3>AI 動態追問</h3>
-              <p>依回答的完整度、相關度與一致性判斷後續問題，還原真實面試節奏。</p>
+              <p>先判斷是否切題，再依個人特質、深度邏輯與經驗內容的缺口，一次生成一題追問。</p>
               <div className="branch-demo">
                 <i>主問題</i>
                 <span />
@@ -484,7 +499,7 @@ function Landing({ go }: { go: (page: Page) => void }) {
                 <Icon name="chart" size={26} />
               </span>
               <h3>個人化分析報告</h3>
-              <p>從四大指標看見表現，以清楚、具體的練習建議持續改善。</p>
+              <p>提供作答優點、一致性檢核與改善建議。總分依完整度 45%、相關度 25%、一致性 20%、口語表達 10% 計算，面部行為另列分析。</p>
               <div className="score-bars">
                 <span>
                   <i style={{ width: "86%" }} />
@@ -507,10 +522,10 @@ function Landing({ go }: { go: (page: Page) => void }) {
           </div>
           <div className="steps">
             {[
-              ["01", "建立申請資料", "選擇你的目標學校與科系", "school"],
-              ["02", "上傳備審資料", "PDF 安全上傳並選擇對應校系", "upload"],
-              ["03", "進行模擬面試", "在引導下完成語音回答", "mic"],
-              ["04", "取得分析報告", "掌握優勢與下一步練習方向", "chart"],
+              ["01", "登入並選擇校系", "登入後選擇要練習的學校與科系。", "school"],
+              ["02", "選擇練習方式", "免費版使用基本題庫。個人化面試需提供學習歷程自述，可選附多元表現與課程學習成果。每檔限 PDF、5 MB 以內。", "upload"],
+              ["03", "進行模擬面試", "從自我介紹開始，依序回答主問題和追問。", "mic"],
+              ["04", "取得分析報告", "查看逐題切題提醒、作答優點及改善建議。", "chart"],
             ].map((s, i) => (
               <div className="step" key={s[0]}>
                 <span className="step-number">{s[0]}</span>
@@ -528,9 +543,30 @@ function Landing({ go }: { go: (page: Page) => void }) {
         <section className="section plans-section" id="plans">
           <div className="section-heading">
             <Badge tone="blue">選擇方案</Badge>
-            <h2>先免費試試，再決定要不要更深入</h2>
+            <h2>個人化面試與免費練習</h2>
           </div>
           <div className="pricing-grid">
+            <Card className="price-card featured">
+              <Badge tone="purple">付費版</Badge>
+              <h3>個人化備審模擬面試</h3>
+              <p>每場使用 1 點</p>
+              <strong className="price">{pointPackages[0].points} 點 NT${pointPackages[0].points * pricePerPoint}</strong>
+              <ul>
+                {[
+                  pointPackages.map(({ points, bonus }) => `買 ${points} 點送 ${bonus} 點，共 ${points + bonus} 點`).join("，"),
+                  "每人最多上傳 6 組備審資料，可沿用既有資料",
+                  "每場 10～20 分鐘，2～3 個大主題，最多 15 題（含追問）",
+                  "每單元 1 題主問題、最多 2 次動態追問，自我介紹最多追問 1 次",
+                  "檢核回答與備審的一致性，提供加權總分、A～E 等第與逐題改善建議",
+                  "報告另列面部行為分析，總分只採計四項評分指標",
+                ].map((x) => (
+                  <li key={x}>
+                    <Icon name="check" size={16} />
+                    {x}
+                  </li>
+                ))}
+              </ul>
+            </Card>
             <Card className="price-card">
               <Badge tone="gray">免費版</Badge>
               <h3>基礎模擬面試</h3>
@@ -540,7 +576,14 @@ function Landing({ go }: { go: (page: Page) => void }) {
                 免費開始
               </Button>
               <ul>
-                {["每日最多 3 場", "每場 3 題主問題", "最長 8 分鐘", "基礎相關度與口語回饋"].map(
+                {[
+                  "每帳號每日 3 次，每場最多 15 分鐘",
+                  "固定自我介紹 1 題、校系常見題 2～3 題",
+                  "依回答關鍵字追問，自我介紹最多 1 次，其他單元最多 2 次",
+                  "使用麥克風作答，鏡頭關閉",
+                  "逐題提供切題提醒、1 項優點與 1 項改善建議",
+                  "使用系統題庫，報告省略加權總分與 A～E 等第",
+                ].map(
                   (x) => (
                     <li key={x}>
                       <Icon name="check" size={16} />
@@ -548,30 +591,6 @@ function Landing({ go }: { go: (page: Page) => void }) {
                     </li>
                   ),
                 )}
-                <li className="muted">不含備審分析與動態追問</li>
-              </ul>
-            </Card>
-            <Card className="price-card featured">
-              <span className="recommended">最推薦</span>
-              <Badge tone="purple">完整版</Badge>
-              <h3>個人化深度練習</h3>
-              <p>適合進入面試衝刺階段</p>
-              <strong className="price">依方案選擇</strong>
-              <Button onClick={() => go("register")}>體驗完整功能</Button>
-              <ul>
-                {[
-                  "備審 PDF 智慧分析",
-                  "2～3 個個人化主題",
-                  "每題最多 2 次動態追問",
-                  "10～20 分鐘完整面試",
-                  "四大指標與深度分析報告",
-                  "支援攝影機行為偵測",
-                ].map((x) => (
-                  <li key={x}>
-                    <Icon name="check" size={16} />
-                    {x}
-                  </li>
-                ))}
               </ul>
             </Card>
           </div>
@@ -722,6 +741,41 @@ const PageTitle = ({
   </div>
 );
 
+function PointBalance() {
+  return (
+    <span className="point-balance">
+      剩餘點數 <strong aria-label="目前無法取得點數餘額">—</strong>
+    </span>
+  );
+}
+
+function PurchasePlans({ go }: { go: (page: Page) => void }) {
+  return (
+    <AppShell page="plans" go={go}>
+      <PageTitle
+        title="購買方案"
+        desc="個人化備審模擬面試每場使用 1 點。"
+        action={<Button variant="secondary" onClick={() => go("dashboard")}>返回總覽</Button>}
+      />
+      <div className="purchase-status">
+        <span>目前方案</span>
+        <Badge tone={currentPlan.tone}>{currentPlan.label}</Badge>
+        <PointBalance />
+      </div>
+      <div className="pricing-grid purchase-plans">
+        {pointPackages.map(({ points, bonus }) => (
+          <Card className="price-card" key={points}>
+            <Badge tone="purple">加贈 {bonus} 點</Badge>
+            <h2>{points} 點方案</h2>
+            <strong className="price">NT${points * pricePerPoint}</strong>
+            <p>含贈點共 {points + bonus} 點，可練習 {points + bonus} 場個人化面試。</p>
+          </Card>
+        ))}
+      </div>
+    </AppShell>
+  );
+}
+
 type DashboardReport = { id: string; target?: ApplicationTarget; completedAt?: string; answers: {duration: number}[]; summary?: {topics?: {title?: string; reasoning?: string}[]} };
 type DashboardPortfolio = ApplicationTarget & { id:string; status:string; files:{id:string}[]; message?:string };
 const profileKey = "mainsu.profile.v1";
@@ -755,6 +809,7 @@ const targetMatches=(a:ApplicationTarget,b:ApplicationTarget)=>[a.school,a.depar
 function Dashboard({ go, schools, onResume }: { go: (p: Page) => void; schools: ApplicationTarget[]; onResume:(target:ApplicationTarget,id:string)=>void }) {
   const profile=loadProfile();
   const reports=loadReports();
+  const freePracticeCount = reports.filter(report => report.id.startsWith("free-")).length;
   const {portfolios,status}=usePortfolioData();
   const now=new Date();
   const hour=now.getHours();
@@ -772,15 +827,60 @@ function Dashboard({ go, schools, onResume }: { go: (p: Page) => void; schools: 
     <AppShell page="dashboard" go={go}>
       <PageTitle eyebrow={now.toLocaleDateString("zh-TW",{year:"numeric",month:"long",day:"numeric",weekday:"long"})} title={profile.name?greeting+"，"+profile.name:greeting+"，歡迎使用 MAINSU"} desc="選擇你的申請校系，開始面試準備。" action={<Button icon="plus" onClick={()=>go("prepare")}>開始新的模擬面試</Button>}/>
       <ResumeInterviews onResume={onResume} onFree={()=>go("freeInterview")}/>
-      <div className="dashboard-grid">
-        <Card className="target-card">
-          <div className="card-head"><div><Badge tone="blue">申請目標</Badge><h2>{target?.school??"尚未設定申請校系"}</h2><p>{target?.department??"請先新增你的申請目標"}</p></div>{target&&<span className="school-logo">{schoolShortNames[target.school]??target.school.slice(0,2)}</span>}</div>
-          {schools.length>1&&<label className="prep-target">切換校系<select value={selected} onChange={e=>setSelected(Number(e.target.value))}>{schools.map((s,i)=><option value={i} key={i}>{i+1}. {s.school} · {s.department}</option>)}</select></label>}
-          <div className="target-meta"><span><Icon name="mic" size={17}/><i>已完成練習</i><strong>{targetReports.length} 次</strong></span><span><Icon name="chart" size={17}/><i>最佳成績</i><strong>{best===null?"尚無評分":Math.round(best*10)/10+" 分"}</strong></span></div>
-          <button onClick={()=>go("profile")}>管理申請校系 <Icon name="chevron" size={16}/></button>
-        </Card>
-        <Card className="plan-status"><div className="card-head"><div><Badge tone="purple">練習紀錄</Badge><h2>已完成面試</h2></div></div><h2>{reports.length} 場</h2><p>個人化面試 {reports.filter(r=>!r.id.startsWith("free-")).length} 場 · 免費練習 {reports.filter(r=>r.id.startsWith("free-")).length} 場</p></Card>
-      </div>
+      <Card className="dashboard-overview">
+        <div className="dashboard-overview-header">
+          <div className="dashboard-target">
+            {target && (
+              <span className="school-logo" aria-hidden="true">
+                {schoolShortNames[target.school] ?? target.school.slice(0, 2)}
+              </span>
+            )}
+            <div>
+              <Badge tone="blue">申請目標</Badge>
+              <h2>{target?.school ?? "尚未設定申請校系"}</h2>
+              <p>{target?.department ?? "請先新增你的申請目標"}</p>
+            </div>
+          </div>
+          <div className="dashboard-target-actions">
+            {schools.length > 1 && (
+              <label className="prep-target dashboard-target-switch">
+                切換校系
+                <select value={selected} onChange={event => setSelected(Number(event.target.value))}>
+                  {schools.map((school, index) => (
+                    <option value={index} key={index}>{school.school} · {school.department}</option>
+                  ))}
+                </select>
+              </label>
+            )}
+            <button className="dashboard-manage-target" onClick={() => go("profile")}>
+              管理申請校系 <Icon name="chevron" size={16} />
+            </button>
+          </div>
+          <div className="dashboard-plan">
+            <span>目前方案</span>
+            <Badge tone={currentPlan.tone}>{currentPlan.label}</Badge>
+            <PointBalance />
+            <Button variant="secondary" className="dashboard-plans-link" onClick={() => go("plans")}>購買方案</Button>
+          </div>
+        </div>
+        <dl className="dashboard-overview-stats">
+          <div>
+            <dt>本校系已完成</dt>
+            <dd>{targetReports.length} 次</dd>
+          </div>
+          <div>
+            <dt>本校系最佳成績</dt>
+            <dd>{best === null ? "尚無評分" : Math.round(best * 10) / 10 + " 分"}</dd>
+          </div>
+          <div className="dashboard-all-practice">
+            <dt>全部練習紀錄</dt>
+            <dd>
+              {reports.length} 場
+              <small>個人化面試 {reports.length - freePracticeCount} 場 · 免費練習 {freePracticeCount} 場</small>
+            </dd>
+          </div>
+        </dl>
+      </Card>
       <div className="section-row"><h2>快速開始</h2><span>選擇適合今天的練習方式</span></div>
       <div className="quick-grid">
         <button className="quick-card premium" onClick={()=>go("prepare")}><span className="feature-icon purple"><Icon name="spark"/></span><Badge tone="purple">個人化</Badge><h3>完整 AI 模擬面試</h3><p>依備審資料產生個人化問題，包含動態追問與分析報告。</p><span className="quick-meta"><i><Icon name="clock" size={15}/>10～20 分鐘</i><strong>開始準備 <Icon name="arrow" size={16}/></strong></span></button>
@@ -1619,6 +1719,8 @@ export default function App() {
         return <Auth mode="register" go={go} />;
       case "dashboard":
         return <Dashboard go={go} schools={schools} onResume={(target,id)=>{setInterviewMode("voice");setInterviewTarget(target);setResumeId(id);go("interview");}} />;
+      case "plans":
+        return <PurchasePlans go={go} />;
       case "profile":
         return <Profile go={go} schools={schools} setSchools={setSchools} />;
       case "upload":

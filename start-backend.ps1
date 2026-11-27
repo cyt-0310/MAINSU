@@ -12,14 +12,14 @@ if (-not (Test-Path $py)) {
     & $py -m pip install --upgrade pip
 }
 
-& $py -c 'import starlette, uvicorn, python_multipart, pypdfium2, openai, docling, sentence_transformers'
+& $py -c 'import starlette, uvicorn, python_multipart, pypdfium2, openai, docling, sentence_transformers, psycopg'
 if ($LASTEXITCODE -ne 0) {
     & $py -m pip install -r (Join-Path $app 'requirements-ai.txt') -r (Join-Path $app 'requirements-web.txt') -r (Join-Path $root 'docling_pdf\requirements.txt')
     if ($LASTEXITCODE -ne 0) { throw '後端套件安裝失敗。' }
 }
 
 # 讀取用 [Environment]::SetEnvironmentVariable(..., 'User') 存過的設定（Neon 連線字串、Gemini 金鑰）
-foreach ($name in 'GEMINI_API_KEY', 'OPENAI_API_KEY', 'OPENAI_MODEL', 'LLM_PROVIDER', 'GEMINI_MODEL', 'LLM_FALLBACK') {
+foreach ($name in 'GEMINI_API_KEY', 'OPENAI_API_KEY', 'OPENAI_MODEL', 'LLM_PROVIDER', 'GEMINI_MODEL', 'LLM_FALLBACK', 'NEON_DATABASE_URL') {
     if (-not (Get-Item "env:$name" -ErrorAction SilentlyContinue)) {
         $saved = [Environment]::GetEnvironmentVariable($name, 'User')
         if ($saved) { Set-Item "env:$name" $saved }

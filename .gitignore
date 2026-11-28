@@ -15,6 +15,12 @@ MAINSU-upload/github-share/outputs/
 # 前端
 MAINSU_web/node_modules/
 MAINSU_web/dist/
+node_modules/
+
+# 真實備審的解析與分析結果（含學生資料與本機路徑）
+**/parsed_*/
+**/prepared_*/
+.sync.json
 
 # Local preview logs and API key setup
 /backend-preview.err

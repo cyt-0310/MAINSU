@@ -36,31 +36,39 @@ powershell -ExecutionPolicy Bypass -File .\start-frontend.ps1
 - PDF 解析（Docling + EasyOCR）較慢，一份 PDF 可能需要數分鐘。
 - 作答：輸入文字後按 **Enter 送出**，**Shift + Enter 換行**；時間到會自動送出目前文字。
 
-## 資料與隱私
+## 資料存放（Neon 資料庫）
 
-上傳的 PDF、解析結果、題庫與面試紀錄都存在 `MAINSU-upload/github-share/web_data/`，已列入 `.gitignore`。
-不要提交金鑰、真實備審或問答紀錄。`outputs/` 裡現有的真實解析檔也已排除，請勿上傳到 GitHub。
-
-## Neon 資料庫同步（選用）
-
-設定 `NEON_DATABASE_URL` 後（一次性，存在 Windows 使用者環境變數，不放進專案）：
+所有資料都以 Neon 為準，所以任何一台電腦執行 `start-all.ps1`、登入同一個帳號，看到的內容都一樣。
+每台電腦都要設定同一個 `NEON_DATABASE_URL`（一次性，存在 Windows 使用者環境變數，不放進專案）：
 
 ```powershell
 [Environment]::SetEnvironmentVariable('NEON_DATABASE_URL', (Get-Clipboard).Trim(), 'User')
 ```
 
-後端會在背景把結果寫進 Neon（程式在 `integration_review/integrated/neon_store.py`）：
-
-| 時機 | 寫入的表格 |
+| 資料 | 資料表 |
 |---|---|
-| 分析完成 | `portfolios`、`documents`、`document_blocks`、`events`、`event_sources`、`retrieval_chunks`（含向量） |
-| 開始面試／每答一題 | `interview_sessions`、`interview_units`、`interview_questions`、`answers`、`evaluations`、`completeness_items`、`consistency_findings` |
-| 面試結束 | 以上更新＋`reports` |
+| 帳號、登入狀態、重設密碼驗證碼 | `users`、`auth_sessions`、`password_reset_codes` |
+| 面試報告與申請校系（網頁端） | `user_app_state` |
+| 備審 PDF、解析結果、題庫與檢索資料 | `web_portfolio_files`（程式：`web_store.py`；JSON 以 gzip 壓縮） |
+| 面試過程紀錄 | `web_interview_records` |
 
-- 本機 `web_data/` 仍是主要資料；Neon 寫入失敗不會中斷分析或面試，網頁會顯示「Neon 同步失敗」。
-- 網站還沒有登入功能，所以使用預設使用者「示範使用者」與校系（`MAINSU_SCHOOL_NAME`，預設「未指定學校」＋ settings.json 的科系）。
-- 每次分析會新增一筆 `portfolios`；同一場面試重複同步時會覆寫該場資料，不會重複新增。
-- 尚未寫入：`question_bank`、`speech_metrics`、`face_events`、`free_usage_records`（文字版沒有對應資料）。
+- `MAINSU-upload/github-share/web_data/` 只是本機副本：檔案寫入後立刻上傳，讀取前若資料庫有較新的版本就先下載。可以整個刪掉，需要時會自動從資料庫取回。
+- 備審分析在上傳的那台電腦執行，每分鐘回報一次進度；其他電腦超過 15 分鐘沒收到進度才會顯示「分析已中斷」。
+- 舊版只存在本機、但已標記擁有者的備審與面試，該帳號登入後會自動上傳一次。
+- Neon 免費版有 0.5 GB 空間。
+- 不要提交金鑰、真實備審或問答紀錄；`web_data/` 和 `outputs/` 都已列入 `.gitignore`。
+
+## 忘記密碼（Gmail 寄驗證碼）
+
+需要一個開了兩步驟驗證的 Gmail 帳號，並建立「應用程式密碼」（Google 帳戶 → 安全性 → 應用程式密碼）。
+複製應用程式密碼後，在 PowerShell 執行（存在 Windows 使用者環境變數，不放進專案）：
+
+```powershell
+[Environment]::SetEnvironmentVariable('MAINSU_SMTP_USER', '你的帳號@gmail.com', 'User')
+[Environment]::SetEnvironmentVariable('MAINSU_SMTP_PASSWORD', (Get-Clipboard).Trim(), 'User')
+```
+
+設定後重新執行 `start-backend.ps1`。驗證碼 15 分鐘內有效、可試 5 次、每分鐘最多寄一次；重設成功會登出所有電腦。
 
 ## API 一覽
 
@@ -80,6 +88,30 @@ powershell -ExecutionPolicy Bypass -File .\start-frontend.ps1
 
 分析回答時若模型服務出錯，後端會還原狀態，網頁可直接「重新送出」，不會重複記錄。
 
+## 帳號（註冊／登入）
+
+帳號存在 Neon 的 `users`，登入狀態存在 `auth_sessions`（30 天，瀏覽器只拿到 HttpOnly cookie，資料庫存它的 SHA-256）。
+程式在 `integration_review/integrated/web_auth.py`，需要 `NEON_DATABASE_URL`。
+
+- 密碼以 scrypt 雜湊後儲存，不會存明碼。
+- 面試報告與申請校系會同步到 `user_app_state`，在別台電腦登入後自動載回。
+- 登出會清除這台電腦上的個人資料。
+- 備審與面試都綁定帳號：每個人只看得到、只能取用自己的；同一校系每個帳號各能上傳一次。未登入的請求一律回 401。
+- 備審與面試都存在 Neon（見下方「資料存放」），換電腦登入也看得到。
+- 綁定前上傳、沒有記錄擁有者的舊備審與舊面試，任何帳號都看不到。
+
+| 方法 | 路徑 | 說明 |
+|---|---|---|
+| POST | `/api/auth/register` | `{name, email, password}` 註冊並登入 |
+| POST | `/api/auth/login` | `{email, password}` 登入 |
+| POST | `/api/auth/logout` | 登出 |
+| GET／PATCH | `/api/auth/me` | 目前使用者／修改姓名 `{name}` |
+| POST | `/api/auth/password` | `{currentPassword, newPassword}` 變更密碼，並登出其他電腦 |
+| POST | `/api/auth/forgot` | `{email}` 寄出 6 位數驗證碼（不論信箱是否註冊，回應都一樣） |
+| POST | `/api/auth/reset` | `{email, code, newPassword}` 用驗證碼重設密碼並登入 |
+| GET | `/api/me/state` | 取得同步的報告與校系 |
+| PUT | `/api/me/state/{reports\|targets}` | `{value: [...]}` 上傳同步資料 |
+
 ## 尚未串接（仍為介面展示）
 
-總覽、申請資料、面試紀錄列表、帳號設定、登入註冊，以及免費版面試／報告。語音、攝影機、口語表達與面部分析在後端沒有對應功能，目前只支援文字作答。
+總覽、申請資料、帳號設定中的「刪除帳號」，以及免費版面試／報告。語音、攝影機、口語表達與面部分析在後端沒有對應功能，目前只支援文字作答。

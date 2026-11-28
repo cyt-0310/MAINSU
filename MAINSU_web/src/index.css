@@ -3271,42 +3271,6 @@
   grid-column: 2;
   grid-row: 3;
 }
-.settings-layout {
-  display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 16px;
-}
-.settings-nav {
-  padding: 10px;
-  height: fit-content;
-}
-.settings-nav button {
-  width: 100%;
-  border: 0;
-  background: transparent;
-  border-radius: 9px;
-  padding: 11px;
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  font-size: 14px;
-  color: #70798e;
-}
-.settings-nav button svg:last-child {
-  margin-left: auto;
-}
-.settings-nav button.active {
-  background: #ffeff5;
-  color: #cd5d8a;
-}
-.settings-nav > div {
-  height: 1px;
-  background: #f3ecef;
-  margin: 8px;
-}
-.settings-nav .logout-button {
-  color: #d6535f;
-}
 .settings-content {
   padding: 27px;
 }
@@ -3670,7 +3634,7 @@
 .voice-professor-screen,.voice-camera-screen { position:relative; aspect-ratio:16/9; min-height:160px; overflow:hidden; border-radius:12px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; background:#e9e4f4; }
 .voice-professor-screen { background:linear-gradient(135deg,#eee9f8,#dcd1ef); }
 .voice-professor-avatar { width:68px;height:68px;border-radius:50%;display:grid;place-items:center;background:#7655b3;color:#fff;font-size:24px;font-weight:750; }
-.voice-professor-screen small,.voice-camera-placeholder small,.voice-camera-controls small { color:#625b73;font-size: 14px; }
+.voice-professor-screen small,.voice-camera-placeholder small { color:#625b73;font-size: 14px; }
 .voice-camera-screen { background:#292538; color:#fff; }
 .voice-camera-screen video { width:100%;height:100%;object-fit:cover;transform:scaleX(-1); }
 .voice-camera-placeholder { position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:15px; }

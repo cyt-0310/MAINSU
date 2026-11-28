@@ -3,6 +3,7 @@ import { startVoiceInput, type VoiceInput } from "./voiceInput";
 import { monitorAudio, readQuestion, type SpeechMetrics } from "./speechMetrics";
 import type { ApplicationTarget } from "./PortfolioManager";
 import { scores } from "./reportScores";
+import { saveFreeReport, workspaceStorage } from "./workspace";
 
 export type Answer = {question:string;text:string;duration:number;timedOut:boolean;metrics?:SpeechMetrics;mode:string;requestId?:string;kind?:string;topicIndex?:number;gaps?:string[];analysisScores?:Record<string,number>|null;targetGap?:string|null;followupReason?:string|null};
 export type TopicSummary = {title:string;reasoning?:string;gaps?:string[];relevance_score?:number|null;relevance_status?:string;termination_reason?:string;status?:string;scores?:Record<string,number>|null;followup_count?:number;restate_count?:number;answer_seconds?:number;timed_out_answers?:number;consistency_issues?:{issue_type?:string;note?:string;portfolio_evidence?:string;answer_evidence?:string;portfolio_sources?:{page?:number}[]}[]};
@@ -14,10 +15,8 @@ const checkpointKey = (id:string)=>`mainsu.voice.draft.${id}`;
 const submissionKey = (id:string)=>`mainsu.voice.pending.${id}`;
 type DraftCheckpoint={question:string;count:number;text:string;elapsed:number;mode:"voice"|"text"};
 type ActiveSession={id:string;target:ApplicationTarget;topicIndex:number;topicCount:number;topicType?:string;questionNumber:number;awaitingRetry:boolean};
-function queued(id:string){const old=readStored<{id:string;answer:Answer}>(pendingKey);return readStored<{id:string;answer:Answer}>(submissionKey(id))||(old?.id===id?old:null);}
-function clearQueue(id:string){localStorage.removeItem(submissionKey(id));if(readStored<{id:string}>(pendingKey)?.id===id)localStorage.removeItem(pendingKey);}
 function sameQuestion(checkpoint:DraftCheckpoint|null,next:Session){return checkpoint?.question===next.pending?.text&&checkpoint?.count===next.answers.length;}
-const reportKey = "mainsu.voice.reports.v1";
+export const pendingFreeReports = "pending-free-reports";
 async function api(url:string, body?:unknown):Promise<Session> {
   const response = await fetch(url, body === undefined ? undefined : {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
   const data = await response.json().catch(()=>null);
@@ -25,8 +24,17 @@ async function api(url:string, body?:unknown):Promise<Session> {
   if (!response.ok || !data) throw new Error(data?.error || "連線失敗，請重新連線。");
   return data;
 }
-function readStored<T>(name:string):T|null {try {return JSON.parse(localStorage.getItem(name)||"null") as T|null;} catch{return null;}}
-export function VoiceInterview({target,free=false,mode,noPortfolio=false,resumeId,onExit,renderReport}:{target?:ApplicationTarget;free?:boolean;mode:"voice"|"text";noPortfolio?:boolean;resumeId?:string;onExit:()=>void;renderReport?:(session:Session)=>React.ReactNode}) {
+export function VoiceInterview({accountId,target,free=false,mode,noPortfolio=false,resumeId,onExit,renderReport}:{accountId:string;target?:ApplicationTarget;free?:boolean;mode:"voice"|"text";noPortfolio?:boolean;resumeId?:string;onExit:()=>void;renderReport?:(session:Session)=>React.ReactNode}) {
+  const storage = workspaceStorage(accountId);
+  const readStored = storage.read;
+  function queued(id: string) {
+    const old = readStored<{ id: string; answer: Answer }>(pendingKey);
+    return readStored<{ id: string; answer: Answer }>(submissionKey(id)) ?? (old?.id === id ? old : null);
+  }
+  function clearQueue(id: string) {
+    storage.remove(submissionKey(id));
+    if (readStored<{ id: string }>(pendingKey)?.id === id) storage.remove(pendingKey);
+  }
   const [session,setSession] = useState<Session|null>(null);
   const [phase,setPhase] = useState("loading");
   const [error,setError] = useState("");
@@ -69,22 +77,31 @@ export function VoiceInterview({target,free=false,mode,noPortfolio=false,resumeI
   const closing = useRef(false);
   const freeQuestions = ["請用一分鐘自我介紹。","你為什麼想申請這個科系？","請分享一次解決問題的經驗。"];
   const finishReport = (next:Session) => {
-    const records = readStored<Session[]>(reportKey)||[];
-    localStorage.setItem(reportKey,JSON.stringify([{...next,completedAt:next.completedAt??new Date().toISOString()},...records.filter(r=>r.id!==next.id)]));
-    if(readStored<{id:string}>(key)?.id===next.id)localStorage.removeItem(key);
-    clearQueue(next.id);localStorage.removeItem(checkpointKey(next.id));if(free)localStorage.removeItem(freeKey);
+    if (free) {
+      const record = { ...next, completedAt: next.completedAt ?? new Date().toISOString() };
+      const pending = readStored<Session[]>(pendingFreeReports) ?? [];
+      storage.write(pendingFreeReports, [record, ...pending.filter(item => item.id !== record.id)]);
+      void saveFreeReport(record, accountId).then(() => {
+        const remaining = readStored<Session[]>(pendingFreeReports) ?? [];
+        storage.write(pendingFreeReports, remaining.filter(item => item.id !== record.id));
+      }).catch(() => {});
+      storage.remove(freeKey);
+    }
+    if (readStored<{ id: string }>(key)?.id === next.id) storage.remove(key);
+    clearQueue(next.id);
+    storage.remove(checkpointKey(next.id));
   };
   function accept(next:Session, initial=false) {
     if(next.finished&&!next.completedAt)next={...next,completedAt:new Date().toISOString()};
     setSession(next);setError(next.error||"");setTimeWarning(false);deadline.current=0;elapsedBase.current=0;
-    if(free&&!next.finished)localStorage.setItem(freeKey,JSON.stringify(next));
+    if(free&&!next.finished)storage.write(freeKey,next);
     const pending=queued(next.id);
     if(pending&&next.answers.some(a=>a.requestId===pending.answer.requestId))clearQueue(next.id);
     const unsent=queued(next.id);
     const checkpoint=readStored<DraftCheckpoint>(checkpointKey(next.id));
     const draftText=next.awaitingRetry?next.answers[next.answers.length-1]?.text||"":unsent?.answer.text||(sameQuestion(checkpoint,next)?checkpoint?.text||"":"");
     if(!next.awaitingRetry&&!unsent&&sameQuestion(checkpoint,next))elapsedBase.current=Math.min(next.remaining,checkpoint!.elapsed);
-    else if(!next.awaitingRetry&&!unsent)localStorage.removeItem(checkpointKey(next.id));
+    else if(!next.awaitingRetry&&!unsent)storage.remove(checkpointKey(next.id));
     setDraft(draftText);latest.current=draftText;
     if(next.finished){stopCamera();finishReport(next);setPhase("report");}
     else if(next.awaitingRetry||unsent){setPhase("retry");}
@@ -99,7 +116,7 @@ export function VoiceInterview({target,free=false,mode,noPortfolio=false,resumeI
       const list=await fetch("/api/voice-interviews/active").then(r=>{if(!r.ok)throw Error("暫時無法取得面試進度，請重試。");return r.json() as Promise<ActiveSession[]>;});
       const saved=list.find(x=>x.id===resumeId);
       const next=saved?await api("/api/voice-interviews/"+saved.id):await api("/api/voice-interviews",{...target,mode,noPortfolio});
-      setResumed(!!saved);localStorage.setItem(key,JSON.stringify({id:next.id,target}));
+      setResumed(!!saved);storage.write(key,{id:next.id,target});
       const checkpoint=readStored<DraftCheckpoint>(checkpointKey(next.id));
       if(next.mode)setModeNow(next.mode);
       else if(sameQuestion(checkpoint,next))setModeNow(checkpoint!.mode);
@@ -116,7 +133,7 @@ export function VoiceInterview({target,free=false,mode,noPortfolio=false,resumeI
     }catch(e){micMonitor.current?.stop();micMonitor.current=null;setMicState("idle");setMicMessage(String(e));}
   }
   useEffect(()=>{if(micState!=="testing")return;const t=window.setTimeout(()=>micTest.current?.stop(),12000);return ()=>clearTimeout(t);},[micState]);
-  function saveDraft(){if(!session?.pending||submitting.current)return;const elapsed=Math.min(session.remaining,elapsedBase.current+(deadline.current?Math.max(0,(performance.now()-begin.current)/1000):0));localStorage.setItem(checkpointKey(session.id),JSON.stringify({question:session.pending.text,count:session.answers.length,text:latest.current,elapsed,mode:modeNow}));}
+  function saveDraft(){if(!session?.pending||submitting.current)return;const elapsed=Math.min(session.remaining,elapsedBase.current+(deadline.current?Math.max(0,(performance.now()-begin.current)/1000):0));storage.write(checkpointKey(session.id),{question:session.pending.text,count:session.answers.length,text:latest.current,elapsed,mode:modeNow});}
   useEffect(()=>{if(!initialized.current){initialized.current=true;void initialize();}},[]);
   useEffect(()=>{closing.current=false;return ()=>{closing.current=true;micTest.current?.cancel();micMonitor.current?.stop();cameraStream.current?.getTracks().forEach(track=>track.stop());voice.current?.cancel();audio.current?.stop();stopSpeech.current?.();};},[]);
   function startClock(){if(deadline.current<=performance.now()){begin.current=performance.now();deadline.current=begin.current+Math.max(0,(session?.remaining||0)-elapsedBase.current)*1000;}const left=deadline.current-performance.now();setTimeWarning(left>0&&left<=30000);setPhase("answering");}
@@ -129,10 +146,10 @@ export function VoiceInterview({target,free=false,mode,noPortfolio=false,resumeI
         const done=answers.length>=freeQuestions.length;
         accept({...session,answers,finished:done,remaining:120,pending:done?null:{text:freeQuestions[answers.length],question_kind:"main"}});return;
       }
-      if(answer)localStorage.setItem(submissionKey(session.id),JSON.stringify({id:session.id,answer:{...answer,requestId:crypto.randomUUID()}}));
+      if(answer)storage.write(submissionKey(session.id),{id:session.id,answer:{...answer,requestId:crypto.randomUUID()}});
       const saved=queued(session.id);
       const next=await api("/api/voice-interviews/"+session.id,session.awaitingRetry?{retryOnly:true}:saved?.answer||{retryOnly:true});
-      clearQueue(session.id);localStorage.removeItem(checkpointKey(session.id));
+      clearQueue(session.id);storage.remove(checkpointKey(session.id));
       accept(next);
     }catch(e){setError(String(e));setPhase("retry");}finally{submitting.current=false;}
   }
@@ -185,7 +202,7 @@ export function VoiceInterview({target,free=false,mode,noPortfolio=false,resumeI
     <main className="voice-room-grid">
       <aside className="voice-room-videos">
         <section className="voice-room-card"><div className="voice-room-label">AI 面試教授 <span>虛擬面試官</span></div><div className="voice-professor-screen"><div className="voice-professor-avatar" aria-hidden="true">AI</div><strong>{phase==="reading"?"正在提問":phase==="analyzing"?"正在分析回答":"AI 教授"}</strong></div></section>
-        <section className="voice-room-card"><div className="voice-room-label">我的攝影機 <span>{cameraOn?"預覽中":"已關閉"}</span></div><div className="voice-camera-screen"><video ref={videoRef} autoPlay muted playsInline style={{visibility:cameraOn?"visible":"hidden"}}/>{!cameraOn&&<div className="voice-camera-placeholder"><strong>攝影機尚未開啟</strong></div>}</div><div className="voice-camera-controls"><button className="voice-action-btn" disabled={cameraBusy} onClick={()=>cameraOn?stopCamera():void startCamera()}>{cameraBusy?"開啟中…":cameraOn?"關閉攝影機":"開啟攝影機"}</button><small>僅本機預覽，不錄影或上傳</small></div>{cameraError&&<p role="alert" className="voice-room-error">{cameraError}</p>}</section>
+        <section className="voice-room-card"><div className="voice-room-label">我的攝影機 <span>{cameraOn?"預覽中":"已關閉"}</span></div><div className="voice-camera-screen"><video ref={videoRef} autoPlay muted playsInline style={{visibility:cameraOn?"visible":"hidden"}}/>{!cameraOn&&<div className="voice-camera-placeholder"><strong>攝影機尚未開啟</strong></div>}</div><div className="voice-camera-controls"><button className="voice-action-btn" disabled={cameraBusy} onClick={()=>cameraOn?stopCamera():void startCamera()}>{cameraBusy?"開啟中…":cameraOn?"關閉攝影機":"開啟攝影機"}</button></div>{cameraError&&<p role="alert" className="voice-room-error">{cameraError}</p>}</section>
       </aside>
       <section className="voice-room-content">
         <div className="voice-room-card voice-stage"><div className="voice-room-label">面試階段 <span>{resumed?"已接續上次面試":"新面試"}</span></div><div className="voice-stage-steps">{Array.from({length:session?.topicCount??3},(_,i)=><div key={i} className={i===topicIndex?"current":i<topicIndex?"done":""}>{i+1}. {i===0?"自我介紹":free?"其他主題":"學習歷程"}</div>)}</div><p>目前：{topicLabel}{session?.topicTitle?` · ${session.topicTitle}`:""}</p></div>
@@ -205,15 +222,14 @@ export function VoiceInterview({target,free=false,mode,noPortfolio=false,resumeI
 
 export function VoiceReport({session,free=false,onExit}:{session:Session;free?:boolean;onExit:()=>void}) { return <div className="answer-panel" style={{width:"min(100%, 1000px)",maxWidth:1000,margin:"32px auto"}}><h1>本場面試報告</h1><p>作答 {session.answers.length} 次 · {free?"免費練習":"個人化面試"}</p>{session.answers.map((a,i)=><section className="card" key={i}><h2>{i+1}. {a.question}</h2><p>{a.text||"未作答"}</p><p>作答 {a.duration.toFixed(1)} 秒 {a.timedOut?"· 超時":""}</p>{a.metrics?<><p>語速：{a.metrics.rate??"資料不足"} 字／分鐘；聲音活動：{a.metrics.audibleSeconds} 秒</p><p>填充詞：{Object.entries(a.metrics.fillers).filter(([,n])=>n).map(([w,n])=>w+" "+n+" 次").join("、")||"未辨識到"}</p><p>停頓估計：{a.metrics.pauses.length} 次，合計 {a.metrics.pauses.reduce((total,p)=>total+p.duration,0).toFixed(1)} 秒（音量門檻估計）</p><p>改善建議：{a.metrics.pauses.length?"練習分段說明，但保留自然思考停頓。":"練習清楚表達重點，避免刻意加快語速。"}</p>{a.metrics.recognitionWarning&&<p>辨識待核對：{a.metrics.recognitionWarning}</p>}{!a.metrics.sufficient&&<p>語音資料不足，不計口語分數。</p>}</>:<p>文字作答，無語音分析資料。</p>}</section>)}{session.summary?.topics?.map((t,i)=><section className="card" key={i}><h3>{t.title}</h3><p>{t.relevance_status||"未評估"} · {t.termination_reason}</p><p>{t.reasoning}</p></section>)}<button className="voice-action-btn" onClick={onExit}>返回總覽</button></div>; }
 
-export function ResumeInterviews({onResume,onFree}:{onResume:(target:ApplicationTarget,id:string)=>void;onFree:()=>void}){
-  const [items,setItems]=useState<ActiveSession[]>([]);const [failed,setFailed]=useState(false);const freeSaved=readStored<Session>(freeKey);
+export function ResumeInterviews({accountId,onResume,onFree}:{accountId:string;onResume:(target:ApplicationTarget,id:string)=>void;onFree:()=>void}){
+  const [items,setItems]=useState<ActiveSession[]>([]);const [failed,setFailed]=useState(false);const freeSaved=workspaceStorage(accountId).read<Session>(freeKey);
   useEffect(()=>{let live=true;fetch("/api/voice-interviews/active").then(r=>{if(!r.ok)throw Error();return r.json();}).then(data=>{if(live)setItems(data);}).catch(()=>{if(live)setFailed(true);});return()=>{live=false;};},[]);
   if(!items.length&&!freeSaved&&!failed)return null;
   return <section className="voice-room-card resume-card"><h2>未完成的面試</h2>{failed&&<p>暫時無法取得面試進度，請重新載入。</p>}{items.map(item=><div className="resume-row" key={item.id}><div><strong>{item.target.school} · {item.target.department}</strong><p>{item.topicType||"面試中"} · 第 {item.questionNumber} 題 · {item.awaitingRetry?"等待分析":"尚未完成"}</p></div><button className="voice-action-btn" onClick={()=>onResume(item.target,item.id)}>繼續上次面試</button></div>)}{freeSaved&&!freeSaved.finished&&<div className="resume-row"><div><strong>免費練習</strong><p>第 {freeSaved.answers.length+1} 題</p></div><button className="voice-action-btn" onClick={onFree}>繼續上次面試</button></div>}</section>;
 }
 
-export function VoiceHistory({onSelect,records:provided}:{onSelect?:(session:Session)=>void;records?:Session[]} = {}) {
-  const [stored] = useState(()=>readStored<Session[]>(reportKey)||[]); const records=provided??stored;
+export function VoiceHistory({onSelect,records}:{onSelect?:(session:Session)=>void;records:Session[]}) {
   const [selected,setSelected] = useState<Session>();
   if(selected)return <VoiceReport session={selected} free={selected.id.startsWith("free-")} onExit={()=>setSelected(undefined)}/>;
   if(!records.length)return null;

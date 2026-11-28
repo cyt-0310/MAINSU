@@ -1,12 +1,16 @@
 """Web adapter for the existing interview state machine; separate durable session files."""
 import math
+import re
+import web_postgres as pg
 from datetime import datetime, timezone
+from interview_gap_detection.answer_content import no_content_reason
 from interview_gap_detection.api_retry import TemporaryServiceError, retry_progress
-from uuid import uuid4
+from uuid import UUID, uuid4
 from threading import Lock
 from starlette.routing import Route
 from starlette.concurrency import run_in_threadpool
-from web_portfolios import DATA, path_for, school_id, clean_target, read_json, write_json, response, portfolio_record
+from web_accounts import workspace
+from web_portfolios import path_for, school_id, clean_target, read_json, write_json, response, portfolio_record
 from interview_gap_detection.config import QUESTION_BANK_CONFIG
 from interview_session import InterviewSession
 from evidence import EvidenceIndex, SentenceEmbedder
@@ -15,12 +19,45 @@ from report_review import question_details, evaluate
 from question_rotation import portfolio_identity, recent_sessions, rotate_questions
 
 LOCK = Lock()
-ROOT = DATA / 'voice_sessions'
 PROGRESS = {}
 
+def session_root():
+    return workspace.get() / 'voice_sessions'
+
 def file_for(key):
-    from uuid import UUID
-    return ROOT / (str(UUID(key)) + '.json')
+    return session_root() / (str(UUID(key)) + '.json')
+
+
+def load_session(key):
+    user = pg.owner.get()
+    if user is not None:
+        return pg.load_interview(user, key)['record']
+    return read_json(file_for(key))
+
+
+def save_session(record):
+    user = pg.owner.get()
+    if user is not None:
+        with pg.connect() as conn:
+            pg.save_interview(conn, user, record)
+        return
+    session_root().mkdir(parents=True, exist_ok=True)
+    write_json(file_for(record['id']), record)
+
+
+def session_records(finished=None):
+    user = pg.owner.get()
+    if user is not None:
+        for row in pg.interviews(user, finished):
+            yield row['record'], row['updated_at'].timestamp()
+        return
+    for path in session_root().glob('*.json'):
+        try:
+            record = read_json(path)
+            if finished is None or bool(record['snapshot']['runtime']['finished']) == finished:
+                yield record, path.stat().st_mtime
+        except (OSError, ValueError, KeyError, TypeError):
+            continue
 
 class WebSession(InterviewSession):
     # The web clock advances only during the recorded answer; retry waits are already excluded.
@@ -48,7 +85,8 @@ def view(record):
     rows = question_details(record)
     answers = [{**answer, **{k: rows[i][k] for k in ('topicIndex','kind','gaps','analysisScores','targetGap','followupReason') if k in rows[i]}} if i < len(rows) else answer for i, answer in enumerate(record['answers'])]
     completed_at = record.get('completedAt')
-    estimated = False
+    estimated = bool(record.get('estimatedCompletedAt'))
+    completed_at = completed_at or record.get('estimatedCompletedAt')
     if runtime['finished'] and not completed_at:
         path = file_for(record['id'])
         if path.is_file():
@@ -62,24 +100,21 @@ def view(record):
             'answers': answers, 'error': record.get('error'), 'summary': record['snapshot']['summary'], 'reportReview': record.get('report_review')}
 
 
-def active_sessions():
+def saved_sessions(finished):
     records = []
-    if ROOT.exists():
-        for path in ROOT.glob('*.json'):
-            try:
-                record = read_json(path)
-                info = view(record)
-                if not info['finished']:
-                    records.append((path.stat().st_mtime, info))
-            except (OSError, ValueError, KeyError, TypeError):
-                continue
+    for record, modified in session_records(finished):
+        try:
+            if 'snapshot' in record:
+                records.append((modified, view(record)))
+        except (OSError, ValueError, KeyError, TypeError):
+            continue
     return [info for _, info in sorted(records, key=lambda row: row[0], reverse=True)]
 
 
 def resume_or_start(payload):
     target = {'school': clean_target(payload.get('school')), 'department': clean_target(payload.get('department'))}
     with LOCK:
-        for info in active_sessions():
+        for info in saved_sessions(False):
             if info['target'] == target and info.get('mode') in (None, payload.get('mode', 'voice')) and info.get('noPortfolio') == bool(payload.get('noPortfolio')):
                 return info
         return start(payload)
@@ -112,19 +147,18 @@ def start(payload):
     identity = None
     if not no_portfolio:
         identity = portfolio_identity(directory)
-        recent = recent_sessions(ROOT, target, identity, lambda t: path_for(school_id(**t)))
+        recent = recent_sessions(session_records(), target, identity, lambda t: path_for(school_id(**t)))
         topics = rotate_questions(topics, recent, target['department'])
     session = InterviewSession(topics, None)
     session.start()
     record = {'id': str(uuid4()), 'target': target, 'mode': mode, 'noPortfolio': no_portfolio, 'portfolioIdentity': identity, 'createdAt': datetime.now(timezone.utc).isoformat(), 'answers': [], 'snapshot': session.snapshot()}
-    ROOT.mkdir(parents=True, exist_ok=True)
-    write_json(file_for(record['id']), record)
+    save_session(record)
     return view(record)
 
 def turn(key, payload):
     with LOCK:
         path = file_for(key)
-        record = read_json(path)
+        record = load_session(key)
         snapshot = record['snapshot']
         runtime = snapshot['runtime']
         if payload.get('retryOnly') and runtime['pending_answer'] is None:
@@ -151,11 +185,13 @@ def turn(key, payload):
                 'duration': duration, 'timedOut': bool(payload.get('timedOut')),
                 'metrics': payload.get('metrics'), 'mode': payload.get('mode'), 'requestId': payload.get('requestId')})
             record['snapshot'] = session.snapshot()
-            write_json(path, record)
+            save_session(record)
         try:
-            PROGRESS[key] = {'state': 'preparing'}
-            with retry_progress(lambda event: PROGRESS.__setitem__(key, event)):
-                session.services = services(None if record.get('noPortfolio') else folder)
+            PROGRESS[path] = {'state': 'preparing'}
+            with retry_progress(lambda event: PROGRESS.__setitem__(path, event)):
+                # Silence and placeholders can be handled without loading the model or evidence index.
+                if not no_content_reason(session.pending_answer['answer']):
+                    session.services = services(None if record.get('noPortfolio') else folder)
                 session.process_answer()
         except Exception as exc:
             record['snapshot'] = session.snapshot()
@@ -167,21 +203,22 @@ def turn(key, payload):
                 message = f'分析失敗（{detail}）。回答已保存，請重新連線或重試。'
             record['error'] = message
             print(f'Interview analysis failed: {type(exc).__name__}, HTTP {code}', flush=True)
-            write_json(path, record)
-            PROGRESS[key] = {'state': 'paused'}
+            save_session(record)
+            PROGRESS[path] = {'state': 'paused'}
             return view(record)
         record.pop('error', None)
         if session.snapshot()['runtime']['finished'] and not record.get('completedAt'):
             record['completedAt'] = datetime.now(timezone.utc).isoformat()
         record['snapshot'] = session.snapshot()
-        write_json(path, record)
-        PROGRESS[key] = {'state': 'idle'}
+        save_session(record)
+        PROGRESS.pop(path, None)
         return view(record)
 
 async def endpoint(request):
     try:
         if request.method == 'GET':
-            return response(view(read_json(file_for(request.path_params['session_id']))))
+            record = await run_in_threadpool(load_session, request.path_params['session_id'])
+            return response(view(record))
         payload = await request.json()
         if 'session_id' in request.path_params:
             return response(await run_in_threadpool(turn, request.path_params['session_id'], payload))
@@ -192,13 +229,58 @@ async def endpoint(request):
         return response({'error': '面試服務暫時無法使用，請重試。'}, 503)
 
 async def active_endpoint(request):
-    sessions = await run_in_threadpool(active_sessions)
+    sessions = await run_in_threadpool(saved_sessions, False)
     return response([{k: info[k] for k in ('id','target','topicIndex','topicCount','topicType','questionNumber','awaitingRetry')} for info in sessions])
 
 
 async def progress_endpoint(request):
-    key = request.path_params['session_id']
-    return response(PROGRESS.get(key, {'state': 'idle'}))
+    try:
+        path = file_for(request.path_params['session_id'])
+        await run_in_threadpool(load_session, request.path_params['session_id'])
+    except (ValueError, FileNotFoundError):
+        return response({'error': '找不到面試紀錄。'}, 404)
+    return response(PROGRESS.get(path, {'state': 'idle'}))
+
+
+async def history_endpoint(request):
+    user = pg.owner.get()
+    if user is not None:
+        rows = await run_in_threadpool(pg.interviews, user, True)
+        return response([view(row['record']) if 'snapshot' in row['record'] else row['record'] for row in rows])
+    reports = await run_in_threadpool(saved_sessions, True)
+    for path in (request.state.workspace / 'free_reports').glob('*.json'):
+        try:
+            reports.append(read_json(path))
+        except (OSError, ValueError):
+            continue
+    return response(reports)
+
+
+async def free_report_endpoint(request):
+    try:
+        raw = await request.body()
+        if len(raw) > 400_000:
+            return response({'error': '面試紀錄超過儲存上限。'}, 413)
+        report = await request.json()
+        if not isinstance(report, dict):
+            raise ValueError
+        key = report.get('id', '')
+        answers = report.get('answers')
+        if (not isinstance(key, str) or not re.fullmatch(r'free-[\da-f-]{36}', key)
+                or report.get('finished') is not True or not isinstance(answers, list) or len(answers) > 15
+                or not all(isinstance(a, dict) and isinstance(a.get('question'), str)
+                           and isinstance(a.get('text'), str) and isinstance(a.get('duration'), (int, float))
+                           and math.isfinite(a['duration']) for a in answers)):
+            raise ValueError
+        if pg.owner.get() is not None:
+            await run_in_threadpool(save_session, report)
+        else:
+            directory = request.state.workspace / 'free_reports'
+            directory.mkdir(parents=True, exist_ok=True)
+            write_json(directory / f'{key}.json', report)
+        return response({'ok': True})
+    except (ValueError, TypeError):
+        return response({'error': '免費面試紀錄格式不正確。'}, 400)
 
 
 REPORT_LOCK = Lock()
@@ -206,17 +288,16 @@ REPORT_LOCK = Lock()
 
 def review_report(key):
     with REPORT_LOCK:
-        path = file_for(key)
-        record = read_json(path)
+        record = load_session(key)
         if not record['snapshot']['finished']:
             raise ValueError('Interview not finished')
         prior = record.get('report_review')
         if not prior or prior.get('version') != 2 or not prior.get('complete'):
             def checkpoint(partial):
                 record['report_review'] = partial
-                write_json(path, record)
+                save_session(record)
             record['report_review'] = evaluate(record, prior if prior and prior.get('version')==2 else None, checkpoint)
-            write_json(path, record)
+            save_session(record)
         return view(record)
 
 
@@ -233,6 +314,8 @@ async def review_endpoint(request):
 
 
 routes = [Route('/api/voice-interviews', endpoint, methods=['POST']),
+          Route('/api/voice-interviews/history', history_endpoint, methods=['GET']),
+          Route('/api/voice-interviews/free-report', free_report_endpoint, methods=['POST']),
           Route('/api/voice-interviews/active', active_endpoint, methods=['GET']),
           Route('/api/voice-interviews/{session_id}/review', review_endpoint, methods=['POST']),
           Route('/api/voice-interviews/{session_id}/progress', progress_endpoint, methods=['GET']),

@@ -1,12 +1,13 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { PortfolioManager, type ApplicationTarget } from "./PortfolioManager";
 import { startVoiceInput, type VoiceInput } from "./voiceInput";
-import { VoiceInterview, VoiceHistory, ResumeInterviews, type Session } from "./VoiceInterview";
+import { VoiceInterview, VoiceHistory, ResumeInterviews, pendingFreeReports, type Session } from "./VoiceInterview";
 import { monitorAudio } from "./speechMetrics";
 import { scores, grade, oralParts, mean, isTextSession } from "./reportScores";
 import { FollowupAnalysis } from "./FollowupAnalysis";
 import { reportText } from "./reportText";
 import { SearchSelect, schoolCatalog, schoolNames } from "./SchoolSearch";
+import { saveFreeReport, workspaceRequest, workspaceStorage, type Account } from "./workspace";
 
 type Page =
   | "landing"
@@ -23,7 +24,8 @@ type Page =
   | "report"
   | "freeReport"
   | "history"
-  | "settings";
+  | "settings"
+  | "logout";
 
 type IconName =
   | "spark"
@@ -305,11 +307,11 @@ function AppShell({
   go: (page: Page) => void;
   children: ReactNode;
 }) {
-  const [,refreshProfile]=useState(0); useEffect(()=>{const update=()=>refreshProfile(n=>n+1);window.addEventListener("mainsu-profile-updated",update);return ()=>window.removeEventListener("mainsu-profile-updated",update);},[]);
+  const profile = useContext(AccountContext);
   return (
     <div className="app-shell">
       <aside className="sidebar">
-        <button onClick={() => go("landing")} className="logo-button">
+        <button onClick={() => go("dashboard")} className="logo-button">
           <Brand />
         </button>
         <nav className="side-nav">
@@ -328,10 +330,10 @@ function AppShell({
         </nav>
         <div className="side-user">
           <div>
-            <strong>{loadProfile().name||"尚未設定姓名"}</strong>
-            <small title={loadProfile().email}>{loadProfile().email||"尚未設定信箱"}</small>
+            <strong>{profile?.name || "尚未設定姓名"}</strong>
+            <small title={profile?.email}>{profile?.email || "尚未設定信箱"}</small>
           </div>
-          <button onClick={() => go("landing")} aria-label="登出">
+          <button onClick={() => go("logout")} aria-label="登出">
             <Icon name="logout" size={18} />
           </button>
         </div>
@@ -619,23 +621,27 @@ function Landing({ go }: { go: (page: Page) => void }) {
   );
 }
 
-function Auth({ mode, go }: { mode: "login" | "register"; go: (p: Page) => void }) {
+function Auth({ mode, go, onAuthenticated }: {
+  mode: "login" | "register";
+  go: (p: Page) => void;
+  onAuthenticated: (account: Account) => void;
+}) {
   const [error, setError] = useState("");
-  const submit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const data = new FormData(e.target as HTMLFormElement);
-    if (!(data.get("email") as string)?.includes("@")) setError("請輸入有效的電子郵件格式");
-    else {
-      const previous=loadProfile();
-      const email=String(data.get("email")).trim();
-      if(previous.email && previous.email.toLowerCase()!==email.toLowerCase()) {
-        setError("此瀏覽器已綁定原本的電子郵件，無法變更。");
-        return;
-      }
-      saveProfile({name:String(data.get("name")||previous.name),email:previous.email||email});
-      go("dashboard");
+  const [submitting, setSubmitting] = useState(false);
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    setSubmitting(true);
+    setError("");
+    try {
+      const account = await workspaceRequest<Account>("/api/account/" + mode, "POST", Object.fromEntries(form));
+      onAuthenticated(account);
+    } catch (error) {
+      setError((error as Error).message);
+    } finally {
+      setSubmitting(false);
     }
-  };
+  }
   return (
     <div className="auth-page">
       <button className="auth-logo" onClick={() => go("landing")}>
@@ -680,6 +686,9 @@ function Auth({ mode, go }: { mode: "login" | "register"; go: (p: Page) => void 
                 <input
                   name="password"
                   type="password"
+                  autoComplete={mode === "register" ? "new-password" : "current-password"}
+                  minLength={mode === "register" ? 8 : undefined}
+                  maxLength={128}
                   placeholder={mode === "register" ? "至少 8 個字元" : "輸入密碼"}
                   required
                 />
@@ -692,12 +701,7 @@ function Auth({ mode, go }: { mode: "login" | "register"; go: (p: Page) => void 
                 我同意<a>使用條款</a>與<a>隱私權政策</a>
               </label>
             )}
-            {mode === "login" && (
-              <button type="button" className="forgot">
-                忘記密碼？
-              </button>
-            )}
-            <Button type="submit" className="full">
+            <Button type="submit" className="full" disabled={submitting}>
               {mode === "login" ? "登入" : "建立免費帳號"}
             </Button>
           </form>
@@ -742,9 +746,19 @@ const PageTitle = ({
 );
 
 function PointBalance() {
+  const account = useContext(AccountContext);
+  const [balance, setBalance] = useState(account?.pointBalance ?? null);
+  useEffect(() => {
+    if (!account) return;
+    let active = true;
+    void workspaceRequest<Account>("/api/account/me", "GET", undefined, account.id).then(profile => {
+      if (active) setBalance(profile.pointBalance);
+    }).catch(() => {});
+    return () => { active = false; };
+  }, [account?.id]);
   return (
     <span className="point-balance">
-      剩餘點數 <strong aria-label="目前無法取得點數餘額">—</strong>
+      剩餘點數 <strong aria-label={balance === null ? "目前無法取得點數餘額" : undefined}>{balance ?? "—"}</strong>
     </span>
   );
 }
@@ -776,16 +790,50 @@ function PurchasePlans({ go }: { go: (page: Page) => void }) {
   );
 }
 
-type DashboardReport = { id: string; target?: ApplicationTarget; completedAt?: string; answers: {duration: number}[]; summary?: {topics?: {title?: string; reasoning?: string}[]} };
 type DashboardPortfolio = ApplicationTarget & { id:string; status:string; files:{id:string}[]; message?:string };
-const profileKey = "mainsu.profile.v1";
-function loadProfile(): {name:string;email:string} {
-  try { const data = JSON.parse(localStorage.getItem(profileKey)||"{}"); return {name:typeof data.name==="string"?data.name:"",email:typeof data.email==="string"?data.email:""}; } catch { return {name:"",email:""}; }
+const AccountContext = createContext<Account | null>(null);
+
+function useInterviewHistory() {
+  const account = useContext(AccountContext);
+  const [records, setRecords] = useState<Session[]>([]);
+  const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
+
+  useEffect(() => {
+    if (!account) return;
+    const storage = workspaceStorage(account.id);
+    const accountId = account.id;
+    const pending = storage.read<Session[]>(pendingFreeReports) ?? [];
+    let active = true;
+
+    async function load() {
+      const results = await Promise.allSettled(pending.map(report => saveFreeReport(report, accountId)));
+      if (!active) return;
+      const uploaded = new Set(pending.filter((_, index) => results[index].status === "fulfilled").map(item => item.id));
+      if (uploaded.size) {
+        const current = storage.read<Session[]>(pendingFreeReports) ?? [];
+        storage.write(pendingFreeReports, current.filter(item => !uploaded.has(item.id)));
+      }
+      try {
+        const reports = await workspaceRequest<Session[]>("/api/voice-interviews/history", "GET", undefined, accountId);
+        const combined = new Map([...pending, ...reports].map(item => [item.id, item]));
+        if (active) {
+          setRecords([...combined.values()].sort((a, b) => (b.completedAt ?? "").localeCompare(a.completedAt ?? "")));
+          setStatus("ready");
+        }
+      } catch {
+        if (active) {
+          setRecords(pending);
+          setStatus("error");
+        }
+      }
+    }
+
+    void load();
+    return () => { active = false; };
+  }, [account?.id]);
+  return { records, status };
 }
-function saveProfile(value:{name:string;email:string}) { try {const email=loadProfile().email||value.email;localStorage.setItem(profileKey,JSON.stringify({...value,email})); window.dispatchEvent(new Event("mainsu-profile-updated"));} catch {} }
-function loadReports(): DashboardReport[] {
-  try { const data = JSON.parse(localStorage.getItem("mainsu.voice.reports.v1")||"[]"); return Array.isArray(data)?data.filter((r:DashboardReport)=>r?.id&&Array.isArray(r.answers)):[]; } catch {return [];}
-}
+
 function usePortfolioData() {
   const [portfolios,setPortfolios]=useState<DashboardPortfolio[]|null>(null);
   const [status,setStatus]=useState<"loading"|"ready"|"error">("loading");
@@ -807,8 +855,8 @@ function usePortfolioData() {
 }
 const targetMatches=(a:ApplicationTarget,b:ApplicationTarget)=>[a.school,a.department].map(x=>x.normalize("NFKC").replace(/\s/g,"").replace(/臺/g,"台")).join("|") === [b.school,b.department].map(x=>x.normalize("NFKC").replace(/\s/g,"").replace(/臺/g,"台")).join("|");
 function Dashboard({ go, schools, onResume }: { go: (p: Page) => void; schools: ApplicationTarget[]; onResume:(target:ApplicationTarget,id:string)=>void }) {
-  const profile=loadProfile();
-  const reports=loadReports();
+  const profile=useContext(AccountContext)!;
+  const { records: reports } = useInterviewHistory();
   const freePracticeCount = reports.filter(report => report.id.startsWith("free-")).length;
   const {portfolios,status}=usePortfolioData();
   const now=new Date();
@@ -826,7 +874,7 @@ function Dashboard({ go, schools, onResume }: { go: (p: Page) => void; schools: 
   return (
     <AppShell page="dashboard" go={go}>
       <PageTitle eyebrow={now.toLocaleDateString("zh-TW",{year:"numeric",month:"long",day:"numeric",weekday:"long"})} title={profile.name?greeting+"，"+profile.name:greeting+"，歡迎使用 MAINSU"} desc="選擇你的申請校系，開始面試準備。" action={<Button icon="plus" onClick={()=>go("prepare")}>開始新的模擬面試</Button>}/>
-      <ResumeInterviews onResume={onResume} onFree={()=>go("freeInterview")}/>
+      <ResumeInterviews accountId={profile.id} onResume={onResume} onFree={()=>go("freeInterview")}/>
       <Card className="dashboard-overview">
         <div className="dashboard-overview-header">
           <div className="dashboard-target">
@@ -893,7 +941,6 @@ function Dashboard({ go, schools, onResume }: { go: (p: Page) => void; schools: 
     </AppShell>
   );
 }
-const applicationTargetsKey = "mainsu.applicationTargets";
 const schoolShortNames: Record<string, string> = {
   國立臺灣大學: "臺大",
   國立政治大學: "政大",
@@ -901,47 +948,56 @@ const schoolShortNames: Record<string, string> = {
   輔仁大學: "輔大",
 };
 
-function loadApplicationTargets(): ApplicationTarget[] {
-  try {
-    const stored = localStorage.getItem(applicationTargetsKey);
-    if (stored !== null) {
-      const parsed: unknown = JSON.parse(stored);
-      if (Array.isArray(parsed)) {
-        return parsed.filter((target): target is ApplicationTarget =>
-          target != null && typeof target.school === "string" && typeof target.department === "string"
-          && target.school.trim() !== "" && target.department.trim() !== "");
-      }
-    }
-  } catch {
-    // The profile can still be used in this session when browser storage is unavailable.
-  }
-  return [];
-}
-
-function Profile({go, schools, setSchools}:{go:(p:Page)=>void;schools:ApplicationTarget[];setSchools:React.Dispatch<React.SetStateAction<ApplicationTarget[]>>}) {
+function Profile({go, schools, setSchools}:{go:(p:Page)=>void;schools:ApplicationTarget[];setSchools:(targets:ApplicationTarget[])=>Promise<void>}) {
   const [adding,setAdding]=useState(false);
   const [draft,setDraft]=useState<ApplicationTarget>({school:"",department:""});
   const duplicate=schools.some(s=>targetMatches(s,draft));
   const ready=!!draft.school&&!!draft.department&&schoolCatalog[draft.school]?.includes(draft.department)&&!duplicate;
-  function move(index:number,step:number){setSchools(prev=>{const next=index+step;if(next<0||next>=prev.length)return prev;const ordered=[...prev];[ordered[index],ordered[next]]=[ordered[next],ordered[index]];return ordered;});}
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
+  async function persist(targets: ApplicationTarget[]) {
+    if (saving) return false;
+    setSaving(true);
+    setSaveError("");
+    try {
+      await setSchools(targets);
+      return true;
+    } catch (error) {
+      setSaveError((error as Error).message);
+      return false;
+    } finally {
+      setSaving(false);
+    }
+  }
+  function move(index: number, step: number) {
+    const next = index + step;
+    if (next < 0 || next >= schools.length) return;
+    const ordered = [...schools];
+    [ordered[index], ordered[next]] = [ordered[next], ordered[index]];
+    void persist(ordered);
+  }
   function cancel(){setAdding(false);setDraft({school:"",department:""});}
-  function save(){if(!ready||schools.length>=6)return;setSchools(prev=>prev.length>=6||prev.some(s=>targetMatches(s,draft))?prev:[...prev,{...draft}]);cancel();}
+  async function save() {
+    if (!ready || schools.length >= 6) return;
+    if (await persist([...schools, draft])) cancel();
+  }
   return <AppShell page="profile" go={go}>
     <PageTitle eyebrow="申請校系" title="建立你的申請目標" desc="最多可建立 6 組申請校系，儲存後不可變更。"/>
     <Card className="form-card">
       <div className="form-section">
         <div className="form-section-title"><span>1</span><div><h2>申請學校與科系</h2><p>依你的申請優先順序排列；第一志願會顯示在總覽，使用箭頭調整順序。</p></div></div>
+        {saveError && <p role="alert">{saveError}</p>}
         <div className="school-list">{schools.map((s,i)=><div className="school-item saved-school-item" key={`${s.school}|${s.department}|${i}`}>
           <span className="item-index" title={`第 ${i+1} 志願`}>{i+1}</span>
           <div className="saved-school-field"><small>申請學校</small><strong>{s.school}</strong></div>
           <div className="saved-school-field"><small>申請科系</small><strong>{s.department}</strong></div>
-          <div className="school-order-actions"><button type="button" aria-label={`將第 ${i+1} 志願上移`} title="上移" disabled={i===0} onClick={()=>move(i,-1)}>↑</button><button type="button" aria-label={`將第 ${i+1} 志願下移`} title="下移" disabled={i===schools.length-1} onClick={()=>move(i,1)}>↓</button></div>
+          <div className="school-order-actions"><button type="button" aria-label={`將第 ${i+1} 志願上移`} title="上移" disabled={saving || i===0} onClick={()=>move(i,-1)}>↑</button><button type="button" aria-label={`將第 ${i+1} 志願下移`} title="下移" disabled={saving || i===schools.length-1} onClick={()=>move(i,1)}>↓</button></div>
         </div>)}</div>
         {adding?<div className="school-add-panel"><div><h3>新增申請校系</h3><p>請確認學校與科系，儲存後不可修改。</p></div><div className="school-add-fields">
           <SearchSelect label="學校" kind="school" options={schoolNames} value={draft.school} onSelect={school=>setDraft({school,department:""})}/>
           <SearchSelect key={draft.school} label="科系" kind="department" options={schoolCatalog[draft.school]??[]} value={draft.department} disabled={!draft.school} onSelect={department=>setDraft(v=>({...v,department}))}/>
         </div>{duplicate&&draft.department&&<p role="alert" className="field-error">此校系已新增。</p>}
-        <div className="form-actions"><Button variant="secondary" onClick={cancel}>取消</Button><Button disabled={!ready} onClick={save}>確認儲存</Button></div></div>:<button className="add-school" disabled={schools.length>=6} onClick={()=>{setDraft({school:"",department:""});setAdding(true);}}><Icon name="plus" size={18}/>新增申請校系 <small>{schools.length} / 6</small></button>}
+        <div className="form-actions"><Button variant="secondary" onClick={cancel}>取消</Button><Button disabled={saving || !ready} onClick={save}>確認儲存</Button></div></div>:<button className="add-school" disabled={schools.length>=6} onClick={()=>{setDraft({school:"",department:""});setAdding(true);}}><Icon name="plus" size={18}/>新增申請校系 <small>{schools.length} / 6</small></button>}
       </div>
       <div className="form-actions"><Button variant="secondary" onClick={()=>go("dashboard")}>返回總覽</Button><Button disabled={adding||!schools.length} onClick={()=>go("upload")}>管理備審資料 <Icon name="arrow" size={17}/></Button></div>
     </Card>
@@ -1531,7 +1587,7 @@ function Report({go,free=false,session:initial}:{go:(p:Page)=>void;free?:boolean
   const [session,setSession]=useState(initial);
   const [reviewState,setReviewState]=useState<"idle"|"loading"|"failed">("idle");
   const [reviewError,setReviewError]=useState("");
-  async function review(){if(!session||free)return;setReviewState("loading");setReviewError("");const url=`/api/voice-interviews/${session.id}`;const save=(result:Session)=>{const updated={...result,completedAt:session.completedAt??result.completedAt,dateEstimated:session.completedAt?session.dateEstimated:result.dateEstimated};setSession(updated);const stored:Session[]=JSON.parse(localStorage.getItem("mainsu.voice.reports.v1")||"[]");localStorage.setItem("mainsu.voice.reports.v1",JSON.stringify([updated,...stored.filter(x=>x.id!==updated.id)]));return updated;};try{const existing=await fetch(url);if(existing.ok){const current=save(await existing.json());if(current.reportReview?.complete){setReviewState("idle");return;}}const res=await fetch(`${url}/review`,{method:"POST"});if(!res.ok){const data=await res.json().catch(()=>({}));throw Error(data.error||"AI 評分暫時失敗");}save(await res.json());setReviewState("idle");}catch(e){setReviewError(e instanceof Error?e.message:"AI 評分暫時失敗");try{const partial=await fetch(url);if(partial.ok)save(await partial.json());}catch{}setReviewState("failed");}}
+  async function review(){if(!session||free)return;setReviewState("loading");setReviewError("");const url=`/api/voice-interviews/${session.id}`;const save=(result:Session)=>{const updated={...result,completedAt:session.completedAt??result.completedAt,dateEstimated:session.completedAt?session.dateEstimated:result.dateEstimated};setSession(updated);return updated;};try{const existing=await fetch(url);if(existing.ok){const current=save(await existing.json());if(current.reportReview?.complete){setReviewState("idle");return;}}const res=await fetch(`${url}/review`,{method:"POST"});if(!res.ok){const data=await res.json().catch(()=>({}));throw Error(data.error||"AI 評分暫時失敗");}save(await res.json());setReviewState("idle");}catch(e){setReviewError(e instanceof Error?e.message:"AI 評分暫時失敗");try{const partial=await fetch(url);if(partial.ok)save(await partial.json());}catch{}setReviewState("failed");}}
   useEffect(()=>{if(session?.finished&&!free&&!session.reportReview?.complete)void review();},[session?.id]);
   useEffect(()=>{
     if(!initial?.finished||free||!initial.reportReview?.complete||initial.answers.some(a=>a.analysisScores))return;
@@ -1541,7 +1597,7 @@ function Report({go,free=false,session:initial}:{go:(p:Page)=>void;free?:boolean
       if(controller.signal.aborted||!data.answers.some(a=>a.analysisScores))return;
       const updated={...data,completedAt:initial.completedAt??data.completedAt,dateEstimated:initial.completedAt?initial.dateEstimated:data.dateEstimated,reportReview:data.reportReview??initial.reportReview};
       setSession(updated);
-      try{const stored:Session[]=JSON.parse(localStorage.getItem("mainsu.voice.reports.v1")||"[]");localStorage.setItem("mainsu.voice.reports.v1",JSON.stringify(stored.map(x=>x.id===updated.id?updated:x)));}catch{}
+
     }).catch(()=>{});
     return()=>controller.abort();
   },[initial?.id,free]);
@@ -1585,8 +1641,10 @@ function GrowthTrend({records}:{records:Session[]}){
   return <Card className="growth-card"><div className="card-title"><div><h2>歷史成長趨勢</h2><p>比較個人化面試歷次成績與各項指標</p></div><select aria-label="篩選校系" value={filter} onChange={e=>setFilter(e.target.value)}><option value="all">全部校系</option>{labels.map(l=><option key={l}>{l}</option>)}</select></div>{rows.length?<>{rows.length>1?<div className="growth-chart"><svg viewBox="0 0 700 245" role="img" aria-label="歷次面試分數走勢">{[0,25,50,75,100].map(n=><g key={n}><text x="7" y={y(n)+4} fontSize="13" fill="#84768d">{n}</text><line x1="45" x2="655" y1={y(n)} y2={y(n)} stroke="#e7dfea"/></g>)}{series.map(line=><g key={line.key}>{points.map((p,i)=>{const v=p[line.key],prior=i?points[i-1][line.key]:null;return v===null?null:<g key={i}>{prior!==null&&<line x1={x(i-1)} y1={y(prior)} x2={x(i)} y2={y(v)} stroke={line.color} strokeWidth="2.5"/>}<circle cx={x(i)} cy={y(v)} r="4" fill={line.color}><title>{`${line.name}：${Math.round(v)} 分`}</title></circle></g>;})}</g>)}{rows.map((r,i)=><text key={r.id} x={x(i)} y="230" textAnchor="middle" fontSize="13" fill="#84768d">{i+1}</text>)}</svg></div>:<div className="growth-first"><Icon name="chart" size={24}/><div><strong>已建立第一筆成長基準</strong><p>完成下一次面試後，即可比較分數變化。</p></div></div>}<div className="growth-legend">{series.map(l=><span key={l.key}><i style={{background:l.color}}/>{l.name}</span>)}</div><div style={{overflowX:"auto"}}><table className="growth-table"><thead><tr><th>場次／日期</th><th>校系</th>{series.map(l=><th key={l.key}>{l.name}</th>)}</tr></thead><tbody>{rows.map((r,i)=><tr key={r.id}><td title={r.dateEstimated?"舊紀錄的最後保存日期":"面試完成日期"}>{i+1} · {r.completedAt?new Date(r.completedAt).toLocaleDateString("zh-TW"):"未記錄"}</td><td>{r.target?.school} · {r.target?.department}</td>{series.map(l=><td key={l.key}>{points[i][l.key]===null?"—":Math.round(points[i][l.key]!)}</td>)}</tr>)}</tbody></table></div>{points.some(p=>series.some(l=>p[l.key]===null))&&<small>— 表示尚無評分或該面試模式不提供此項。</small>}</>:<p>目前尚無本校系完成的個人化面試。</p>}</Card>;
 }
 function History({go,onSelect}:{go:(p:Page)=>void;onSelect:(session:Session)=>void}) {
-  const [records,setRecords]=useState(()=>loadReports() as Session[]);
-  useEffect(()=>{let live=true;void Promise.all(records.filter(r=>!r.completedAt&&!r.id.startsWith("free-")).map(async r=>{try{const res=await fetch(`/api/voice-interviews/${r.id}`);if(!res.ok)return null;const data:Session=await res.json();return data.completedAt?{id:r.id,completedAt:data.completedAt,dateEstimated:data.dateEstimated}:null;}catch{return null;}})).then(updates=>{if(!live||!updates.some(Boolean))return;const dates=new Map(updates.filter(x=>x!==null).map(x=>[x!.id,x!]));const merge=(r:Session)=>dates.has(r.id)?{...r,...dates.get(r.id)}:r;setRecords(prev=>prev.map(merge));try{const stored:Session[]=JSON.parse(localStorage.getItem("mainsu.voice.reports.v1")||"[]");localStorage.setItem("mainsu.voice.reports.v1",JSON.stringify(stored.map(merge)));}catch{}});return()=>{live=false;};},[]);
+  const { records, status } = useInterviewHistory();
+  if (status !== "ready" && !records.length) {
+    return <AppShell page="history" go={go}><p role="status">{status === "loading" ? "正在載入面試紀錄…" : "無法讀取面試紀錄，請重新整理後再試。"}</p></AppShell>;
+  }
   const duration=records.reduce((sum,r)=>sum+r.answers.reduce((n,a)=>n+(Number.isFinite(a.duration)?a.duration:0),0),0);
   return <AppShell page="history" go={go}>
     <PageTitle eyebrow="面試紀錄" title="回顧你的練習" desc="查看歷次面試報告與成長趨勢。" action={<Button icon="plus" onClick={()=>go("prepare")}>開始新的模擬面試</Button>}/>
@@ -1599,85 +1657,60 @@ function History({go,onSelect}:{go:(p:Page)=>void;onSelect:(session:Session)=>vo
     {records.length?<VoiceHistory records={records} onSelect={onSelect}/>:<Card><h2>尚無面試紀錄</h2><p>完成面試後即可查看逐題報告。</p><Button onClick={()=>go("prepare")}>開始練習</Button></Card>}
   </AppShell>;
 }
-function Settings({ go, needsName, onSaved }: { go: (p: Page) => void; needsName?:boolean; onSaved:()=>void }) {
-  const [tab, setTab] = useState("基本資料");
-  const [name,setName]=useState(loadProfile().name);
-  const [message,setMessage]=useState("");
-  function saveName(){if(!name.trim()){setMessage("請輸入姓名或暱稱。");return;}saveProfile({...loadProfile(),name:name.trim()});setMessage("已儲存變更。");onSaved();}
+function Settings({ go, needsName, onSaved, onAccount }: {
+  go: (p: Page) => void;
+  needsName?: boolean;
+  onSaved: () => void;
+  onAccount: (account: Account) => void;
+}) {
+  const account = useContext(AccountContext)!;
+  const [name, setName] = useState(account.name);
+  const [message, setMessage] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  async function saveName() {
+    if (!name.trim()) { setMessage("請輸入姓名或暱稱。"); return; }
+    setSaving(true);
+    try {
+      onAccount(await workspaceRequest<Account>("/api/account/me", "PATCH", { name: name.trim() }, account.id));
+      setMessage("已儲存變更。");
+      onSaved();
+    } catch (error) {
+      setMessage((error as Error).message);
+    } finally {
+      setSaving(false);
+    }
+  }
+
   return (
     <AppShell page="settings" go={go}>
       <PageTitle
         eyebrow="帳號設定"
         title="管理你的帳號"
-        desc="更新姓名或暱稱與登入設定。"
+        desc="更新姓名或暱稱。"
+        action={<Button variant="secondary" icon="logout" onClick={() => go("logout")}>登出</Button>}
       />
-      <div className="settings-layout">
-        <Card className="settings-nav">
-          {["基本資料", "帳號與安全"].map((x) => (
-            <button className={tab === x ? "active" : ""} onClick={() => setTab(x)} key={x}>
-              <Icon
-                name={x === "基本資料" ? "user" : "shield"}
-                size={18}
-              />
-              {x}
-              <Icon name="chevron" size={15} />
-            </button>
-          ))}
-          <div />
-          <button className="logout-button" onClick={() => go("landing")}>
-            <Icon name="logout" size={18} />
-            登出
-          </button>
-        </Card>
-        <Card className="settings-content">
-          {tab === "基本資料" && (
-            <>
-              <div className="settings-heading">
-                <h2>基本資料</h2>
-                <p>這些資訊會顯示在你的學習空間中。</p>
-              </div>
-              {needsName&&<p className="name-required-notice" role="alert">開始或接續面試前，請先輸入姓名或暱稱並儲存。</p>}
-              <div className="settings-form">
-                <label>
-                  姓名或暱稱（必填）
-                  <input value={name} required onChange={e=>{setName(e.target.value);setMessage("");}} />
-                </label>
-                <label>
-                  電子郵件
-                  <input value={loadProfile().email} readOnly aria-readonly="true" />
-                  <small>電子郵件為帳號識別資料，不可變更。</small>
-                </label>
-              </div>
-              <div className="form-actions">
-                <span role="status">{message}</span><Button onClick={saveName}>{needsName?"儲存並繼續面試":"儲存變更"}</Button>
-              </div>
-            </>
-          )}
-          {tab === "帳號與安全" && (
-            <>
-              <div className="settings-heading">
-                <h2>帳號與安全</h2>
-                <p>管理密碼與帳號安全設定。</p>
-              </div>
-              <div className="security-row">
-                <span>
-                  <Icon name="shield" />
-                </span>
-                <div>
-                  <strong>登入密碼</strong>
-                  
-                </div>
-                <Button variant="secondary">變更密碼</Button>
-              </div>
-              <div className="danger-zone">
-                <h3>刪除帳號</h3>
-                <p>刪除後，所有面試紀錄與備審資料將無法復原。</p>
-                <Button variant="danger">刪除我的帳號</Button>
-              </div>
-            </>
-          )}
-        </Card>
-      </div>
+      <Card className="settings-content">
+        <div className="settings-heading">
+          <h2>基本資料</h2>
+          <p>這些資訊會顯示在你的學習空間中。</p>
+        </div>
+        {needsName&&<p className="name-required-notice" role="alert">開始或接續面試前，請先輸入姓名或暱稱並儲存。</p>}
+        <div className="settings-form">
+          <label>
+            姓名或暱稱（必填）
+            <input value={name} required onChange={e=>{setName(e.target.value);setMessage("");}} />
+          </label>
+          <label>
+            電子郵件
+            <input value={account.email} readOnly aria-readonly="true" />
+            <small>電子郵件為帳號識別資料，不可變更。</small>
+          </label>
+        </div>
+        <div className="form-actions">
+          <span role="status">{message}</span><Button onClick={saveName} disabled={saving}>{needsName?"儲存並繼續面試":"儲存變更"}</Button>
+        </div>
+      </Card>
     </AppShell>
   );
 }
@@ -1685,21 +1718,47 @@ function Settings({ go, needsName, onSaved }: { go: (p: Page) => void; needsName
 export default function App() {
   const [page, setPage] = useState<Page>("landing");
   const [pendingInterview,setPendingInterview]=useState<Page>();
-  const [schools, setSchools] = useState(loadApplicationTargets);
+  const [account, setAccount] = useState<Account | null>(null);
+  const [accountError, setAccountError] = useState("");
+  const schools = account?.targets ?? [];
+  async function setSchools(targets: ApplicationTarget[]) {
+    if (!account) return;
+    setAccount(await workspaceRequest<Account>("/api/account/me", "PATCH", { targets }, account.id));
+  }
+  function onAuthenticated(profile: Account) {
+    setAccountError("");
+    setAccount(profile);
+    setPage("dashboard");
+    window.scrollTo({ top: 0 });
+  }
   const [interviewTarget, setInterviewTarget] = useState<ApplicationTarget>();
   const [resumeId,setResumeId] = useState<string>();
   const [selectedReport,setSelectedReport] = useState<Session>();
   const [interviewMode, setInterviewMode] = useState<"voice" | "text">("voice");
   const [noPortfolio,setNoPortfolio]=useState(false);
   useEffect(() => {
-    try {
-      localStorage.setItem(applicationTargetsKey, JSON.stringify(schools));
-    } catch {
-      // In this session the profile and upload page still share the same targets.
-    }
-  }, [schools]);
+    let current = true;
+    void workspaceRequest<Account>("/api/account/me").then(profile => {
+      if (current) onAuthenticated(profile);
+    }).catch(() => {});
+    return () => { current = false; };
+  }, []);
   const go = (next: Page) => {
-    if((next==="prepare"||next==="interview"||next==="freeInterview")&&!loadProfile().name.trim()){
+    if (next === "logout") {
+      void workspaceRequest("/api/account/logout", "POST").then(() => {
+        setAccount(null);
+        setAccountError("");
+        setSelectedReport(undefined);
+        setResumeId(undefined);
+        setInterviewTarget(undefined);
+        setPendingInterview(undefined);
+        setPage("landing");
+        window.scrollTo({ top: 0 });
+      }).catch(error => setAccountError(error.message));
+      return;
+    }
+    if (!account && next !== "landing" && next !== "login" && next !== "register") next = "login";
+    if((next==="prepare"||next==="interview"||next==="freeInterview")&&!account?.name.trim()){
       setPendingInterview(next);setPage("settings");window.scrollTo({top:0});return;
     }
     setPendingInterview(undefined);
@@ -1709,14 +1768,14 @@ export default function App() {
     setPage(next);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-  const view = useMemo(() => {
+  function view() {
     switch (page) {
       case "landing":
         return <Landing go={go} />;
       case "login":
-        return <Auth mode="login" go={go} />;
+        return <Auth mode="login" go={go} onAuthenticated={onAuthenticated} />;
       case "register":
-        return <Auth mode="register" go={go} />;
+        return <Auth mode="register" go={go} onAuthenticated={onAuthenticated} />;
       case "dashboard":
         return <Dashboard go={go} schools={schools} onResume={(target,id)=>{setInterviewMode("voice");setInterviewTarget(target);setResumeId(id);go("interview");}} />;
       case "plans":
@@ -1736,9 +1795,9 @@ export default function App() {
           go("interview");
         }} />;
       case "interview":
-        return <VoiceInterview target={interviewTarget} mode={interviewMode} noPortfolio={noPortfolio} resumeId={resumeId} onExit={() => go("dashboard")} renderReport={session=><Report go={go} session={session} free={session.id.startsWith("free-")}/>} />;
+        return <VoiceInterview accountId={account!.id} target={interviewTarget} mode={interviewMode} noPortfolio={noPortfolio} resumeId={resumeId} onExit={() => go("dashboard")} renderReport={session=><Report go={go} session={session} free={session.id.startsWith("free-")}/>} />;
       case "freeInterview":
-        return <VoiceInterview free mode="voice" onExit={() => go("dashboard")} renderReport={session=><Report go={go} session={session} free={session.id.startsWith("free-")}/>} />;
+        return <VoiceInterview accountId={account!.id} free mode="voice" onExit={() => go("dashboard")} renderReport={session=><Report go={go} session={session} free={session.id.startsWith("free-")}/>} />;
       case "report":
         return <Report go={go} session={selectedReport} free={selectedReport?.id.startsWith("free-")} />;
       case "freeReport":
@@ -1746,8 +1805,11 @@ export default function App() {
       case "history":
         return <History go={go} onSelect={session=>{setSelectedReport(session);go("report");}} />;
       case "settings":
-        return <Settings go={go} needsName={!!pendingInterview} onSaved={()=>{if(pendingInterview)go(pendingInterview);}} />;
+        return <Settings go={go} onAccount={setAccount} needsName={!!pendingInterview} onSaved={()=>{if(pendingInterview)go(pendingInterview);}} />;
     }
-  }, [page, schools, interviewTarget, interviewMode, noPortfolio, resumeId, selectedReport, pendingInterview]);
-  return view;
+  }
+  return <AccountContext.Provider value={account} key={account?.id}>
+    {accountError && <p role="alert">{accountError}</p>}
+    {view()}
+  </AccountContext.Provider>;
 }

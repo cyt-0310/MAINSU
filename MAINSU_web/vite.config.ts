@@ -6,6 +6,14 @@ import path from "node:path";
 
 import siteConfiguration from "./.figma/make/site.json";
 
+const apiProxy = {
+  "/api": {
+    target: "http://127.0.0.1:8000",
+    // The backend compares the browser's Origin with the incoming Host.
+    changeOrigin: false,
+  },
+};
+
 // Vite config — https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   // .figma/make/deploy-preview passes `--mode development` for cached-preview builds.
@@ -35,7 +43,7 @@ export default defineConfig(({ mode }) => {
       host: process.env.FIGMA_DEV_SERVER_HOST || "127.0.0.1",
       port: parseInt(process.env.PORT || "8445"),
       strictPort: true,
-      proxy: { "/api": "http://127.0.0.1:8000" },
+      proxy: apiProxy,
       watch: {
         ignored: ["**/.figma/**"],
       },
@@ -43,7 +51,7 @@ export default defineConfig(({ mode }) => {
     preview: {
       host: process.env.FIGMA_DEV_SERVER_HOST || "127.0.0.1",
       port: parseInt(process.env.PORT || "8445"),
-      proxy: { "/api": "http://127.0.0.1:8000" },
+      proxy: apiProxy,
     },
   };
 });

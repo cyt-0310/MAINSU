@@ -1,5 +1,5 @@
 """九-①、雙軌語意相關度 (Vector 70% + Cross-Encoder 30%)。"""
-import sys
+import logging
 
 import numpy as np
 
@@ -10,6 +10,7 @@ from .config import (
 
 _vector_model = None
 _cross_model = None
+log = logging.getLogger(__name__)
 
 
 def load_models():
@@ -17,14 +18,14 @@ def load_models():
     global _vector_model, _cross_model
     if _vector_model is None:
         from sentence_transformers import SentenceTransformer, CrossEncoder
-        print("🤖 正在載入雙軌語意模型 (Vector + Cross-Encoder)...")
+        log.info("Loading the vector and cross-encoder relevance models.")
         try:
-            _vector_model = SentenceTransformer(VECTOR_MODEL_NAME)
-            _cross_model = CrossEncoder(CROSS_MODEL_NAME)
-            print("✅ 雙軌語意模型載入成功！\n")
-        except Exception as e:
-            print(f"⚠️ 模型載入失敗，請確認已安裝 sentence-transformers：{e}")
-            sys.exit(1)
+            vector_model = SentenceTransformer(VECTOR_MODEL_NAME)
+            cross_model = CrossEncoder(CROSS_MODEL_NAME)
+        except Exception as error:
+            raise RuntimeError("無法載入本機語意相關度模型") from error
+        _vector_model, _cross_model = vector_model, cross_model
+        log.info("Relevance models loaded.")
     return _vector_model, _cross_model
 
 

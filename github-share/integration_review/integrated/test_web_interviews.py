@@ -6,6 +6,32 @@ import web_interviews as web
 from test_text_pipeline import topics, Services
 
 class VoiceWebTests(unittest.TestCase):
+    def test_silence_timeout_and_saved_retry_do_not_load_analysis_services(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            with patch.object(web, 'session_root', return_value=root / 'sessions'), patch.object(web, 'path_for', return_value=root):
+                first = web.start({'school':'Test','department':'Test','noPortfolio':True})
+                blank = {'requestId':'silence-1','text':'','duration':90,'mode':'voice','timedOut':True}
+                with patch.object(web, 'services') as analysis:
+                    response = web.turn(first['id'], blank)
+                    self.assertFalse(response['awaitingRetry'])
+                    self.assertEqual(response['pending']['question_kind'], 'restate')
+                    self.assertEqual(response['answers'][0]['text'], '')
+                    self.assertTrue(response['answers'][0]['timedOut'])
+                    analysis.assert_not_called()
+
+                failure = UnicodeEncodeError('ascii', '測', 0, 1, 'cannot encode')
+                with patch.object(web.WebSession, 'process_answer', side_effect=failure):
+                    paused = web.turn(first['id'], {**blank, 'requestId':'silence-2'})
+                self.assertTrue(paused['awaitingRetry'])
+                with patch.object(web, 'services') as analysis:
+                    resumed = web.turn(first['id'], {'retryOnly':True})
+                    self.assertFalse(resumed['awaitingRetry'])
+                    self.assertIsNone(resumed['error'])
+                    self.assertEqual(resumed['topicIndex'], 1)
+                    self.assertEqual(len(resumed['answers']), 2)
+                    analysis.assert_not_called()
+
     def test_saved_before_analysis_and_idempotent_retry(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
@@ -13,14 +39,14 @@ class VoiceWebTests(unittest.TestCase):
             folder.mkdir()
             web.write_json(folder / 'topics.json', topics())
             web.write_json(root / 'submission.json', {})
-            with patch.object(web, 'ROOT', root / 'sessions'), patch.object(web, 'path_for', return_value=root), patch.object(web, 'portfolio_record', return_value={'status':'ready'}):
+            with patch.object(web, 'session_root', return_value=root / 'sessions'), patch.object(web, 'path_for', return_value=root), patch.object(web, 'portfolio_record', return_value={'status':'ready'}):
                 first = web.start({'school':'Test','department':'Test'})
                 payload = {'requestId':'test-1','text':'a meaningful answer','duration':10,'mode':'voice','metrics':{'rate':120}}
                 with patch.object(web, 'services', side_effect=RuntimeError('offline')):
                     retry = web.turn(first['id'], payload)
                 self.assertTrue(retry['awaitingRetry'])
                 self.assertEqual(len(retry['answers']), 1)
-                self.assertEqual(web.active_sessions()[0]['id'], first['id'])
+                self.assertEqual(web.saved_sessions(False)[0]['id'], first['id'])
                 self.assertEqual(web.resume_or_start({'school':'Test','department':'Test'})['id'], first['id'])
                 with patch.object(web, 'services', return_value=Services(outside=True)):
                     result = web.turn(first['id'], {})
@@ -34,7 +60,7 @@ class VoiceWebTests(unittest.TestCase):
     def test_no_portfolio_requires_confirmation_and_uses_common_questions(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
-            with patch.object(web, 'ROOT', root / 'sessions'), patch.object(web, 'path_for', return_value=root):
+            with patch.object(web, 'session_root', return_value=root / 'sessions'), patch.object(web, 'path_for', return_value=root):
                 payload = {'school':'Test','department':'資訊管理','mode':'text'}
                 with self.assertRaises(ValueError):
                     web.start(payload)

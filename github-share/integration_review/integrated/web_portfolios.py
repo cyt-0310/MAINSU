@@ -6,7 +6,6 @@ from hashlib import sha256
 from io import BytesIO
 import json
 import logging
-import os
 from pathlib import Path
 import re
 import subprocess
@@ -26,10 +25,10 @@ from ai_services import prepare
 from bridge import load_portfolio_events
 from evidence import SentenceEmbedder
 from interview_gap_detection.llm_client import get_client, get_model
+from web_accounts import workspace
+import web_postgres as pg
 
 ROOT = Path(__file__).resolve().parents[2]
-ARCHIVE = ROOT.parent / 'MAINSU-upload' / 'github-share'
-DATA = Path(os.environ.get('MAINSU_WEB_DATA', ARCHIVE / 'web_data')).resolve()
 LIMIT = 5 * 1024 * 1024
 SLOTS = {'statement': 1, 'activities': 10, 'coursework': 3}
 MAX_FILES = sum(SLOTS.values())
@@ -67,7 +66,7 @@ def school_id(school, department):
 def path_for(key):
     if not re.fullmatch(r'[a-f0-9]{64}', key):
         raise FileNotFoundError(key)
-    return DATA / 'portfolios' / key
+    return workspace.get() / 'portfolios' / key
 
 
 def read_json(path):
@@ -87,7 +86,7 @@ def write_json(path, payload):
 def portfolio_record(directory):
     record = read_json(directory / 'submission.json')
     with LOCK:
-        job = JOBS.get(record['id'])
+        job = JOBS.get(directory)
         running = job is not None and not job.done()
         status = get_status(directory)
         if status['status'] in ('queued', 'parsing', 'analyzing') and not running:
@@ -98,7 +97,7 @@ def portfolio_record(directory):
 def document_path(directory, document):
     source = document.get('source')
     if source:
-        return path_for(source['portfolio']) / (source['file'] + '.pdf')
+        return directory.parent / source['portfolio'] / (source['file'] + '.pdf')
     return directory / (document['id'] + '.pdf')
 
 
@@ -147,19 +146,25 @@ def save_submission(school, department, documents):
             'submittedAt': datetime.now(timezone.utc).isoformat(),
         })
         set_status(staged, 'queued', '等待分析')
+        pg.persist_portfolio(staged, school_key=key, create=True)
         try:
             staged.rename(directory)
         except OSError:
-            if directory.exists():
+            if not directory.exists():
+                raise
+            if pg.owner.get() is None:
                 raise FileExistsError(directory) from None
-            raise
     queue_analysis(directory)
     return portfolio_record(directory)
 
 
-def set_status(directory, status, message):
+def set_status(directory, status, message, user_id=None):
+    path = directory / 'status.json'
+    status_data = {'status': status, 'message': message}
     with STATUS_LOCK:
-        write_json(directory / 'status.json', {'status': status, 'message': message})
+        write_json(path, status_data)
+        if user_id is not None:
+            pg.persist_portfolio(directory, [path], user_id)
 
 
 def get_status(directory):
@@ -168,23 +173,24 @@ def get_status(directory):
 
 
 def queue_analysis(directory):
+    user_id = pg.owner.get()
     with LOCK:
-        current = JOBS.get(directory.name)
+        current = JOBS.get(directory)
         if current is not None and not current.done():
             return
         if get_status(directory)['status'] == 'ready':
             return
-        set_status(directory, 'queued', '等待分析')
-        JOBS[directory.name] = POOL.submit(analyze, directory)
+        set_status(directory, 'queued', '等待分析', user_id)
+        JOBS[directory] = POOL.submit(analyze, directory, user_id)
 
 
-def analyze(directory):
+def analyze(directory, user_id=None):
     record = read_json(directory / 'submission.json')
     parsed = []
     try:
         for number, document in enumerate(record['files'], 1):
             name = document['name']
-            set_status(directory, 'parsing', f'解析 PDF（{number}/{len(record["files"])}）')
+            set_status(directory, 'parsing', f'解析 PDF（{number}/{len(record["files"])}）', user_id)
             original = document_path(directory, document)
             destination = original.parent / f'parsed-{original.stem}'
             if not destination.exists():
@@ -196,6 +202,8 @@ def analyze(directory):
                     ], check=True, timeout=600, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                     load_portfolio_events(next(output.glob('*.events.json')))
                     output.rename(destination)
+            if user_id is not None:
+                pg.persist_portfolio(original.parent, pg.files_in(destination), user_id)
             portfolio = load_portfolio_events(next(destination.glob('*.events.json')))
             portfolio['pdf_name'] = f'{document["id"]} · {name}' if sum(
                 entry['name'] == name for entry in record['files']
@@ -203,14 +211,14 @@ def analyze(directory):
             parsed.append(portfolio)
     except Exception:
         log.exception('Portfolio PDF parsing failed')
-        set_status(directory, 'failed', f'無法解析「{name}」。請確認這份 PDF 有可辨識的文字，再試一次。')
+        set_status(directory, 'failed', f'無法解析「{name}」。請確認這份 PDF 有可辨識的文字，再試一次。', user_id)
         return
-    set_status(directory, 'analyzing', '整理事件、建立檢索資料與面試題目')
+    set_status(directory, 'analyzing', '整理事件、建立檢索資料與面試題目', user_id)
     try:
         get_model()
         get_client()
     except RuntimeError as error:
-        set_status(directory, 'failed', f'PDF 已解析。{error}')
+        set_status(directory, 'failed', f'PDF 已解析。{error}', user_id)
         return
     try:
         prepared = directory / 'prepared'
@@ -219,18 +227,20 @@ def analyze(directory):
                 output = Path(temp) / 'prepared'
                 prepare(parsed, embedding_model(), output, department=record['department'])
                 output.rename(prepared)
+        if user_id is not None:
+            pg.persist_portfolio(directory, pg.files_in(prepared), user_id)
     except Exception:
         log.exception('Portfolio event analysis failed')
-        set_status(directory, 'failed', 'PDF 已解析，無法完成事件整理或出題。請確認 AI 服務及模型設定後重試。')
+        set_status(directory, 'failed', 'PDF 已解析，無法完成事件整理或出題。請確認 AI 服務及模型設定後重試。', user_id)
         return
-    set_status(directory, 'ready', '分析完成')
+    set_status(directory, 'ready', '分析完成', user_id)
 
 
 async def portfolios(request):
     if request.headers.get('sec-fetch-site') == 'cross-site':
         return response({'error': '請從 MAINSU 網頁操作。'}, 403)
     if request.method in ('GET', 'HEAD'):
-        records = [portfolio_record(path.parent) for path in (DATA / 'portfolios').glob('*/submission.json')]
+        records = [portfolio_record(path.parent) for path in (workspace.get() / 'portfolios').glob('*/submission.json')]
         return response(sorted(records, key=lambda record: record['submittedAt'], reverse=True))
     try:
         if int(request.headers.get('content-length', '0')) > MAX_FILES * LIMIT + 65536:

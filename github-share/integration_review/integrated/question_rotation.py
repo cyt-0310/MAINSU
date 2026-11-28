@@ -48,11 +48,10 @@ def angle_of(topic):
     return next((angle for angle, hints in LEGACY_HINTS.items()
                  if any(hint in question for hint in hints)), None)
 
-def recent_sessions(root, target, identity, directory_for):
+def recent_sessions(records, target, identity, directory_for):
     candidates = []
-    for path in root.glob('*.json'):
+    for record, modified in records:
         try:
-            record = read_json(path)
             if record.get('noPortfolio'):
                 continue
             prior_target = record['target']
@@ -61,7 +60,7 @@ def recent_sessions(root, target, identity, directory_for):
                 prior_identity = portfolio_identity(directory_for(prior_target))
             same = (prior_identity == identity) if identity and prior_identity else prior_target == target
             if same:
-                candidates.append((record.get('createdAt') or '', path.stat().st_mtime, record))
+                candidates.append((record.get('createdAt') or '', modified, record))
         except (OSError, ValueError, KeyError, TypeError):
             continue
     # Legacy files lack createdAt; their file timestamp gives the known record order.

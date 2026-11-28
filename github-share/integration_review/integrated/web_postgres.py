@@ -1,6 +1,8 @@
 """PostgreSQL storage for the MAINSU web app."""
 from contextvars import ContextVar
 import gzip
+from datetime import datetime, timezone
+from hashlib import md5
 from pathlib import Path, PurePosixPath
 import os
 from tempfile import NamedTemporaryFile
@@ -34,7 +36,8 @@ def targets(conn, user_id):
     return conn.execute(
         'SELECT d.school_name AS school, d.department_name AS department '
         'FROM public.applications a JOIN public.departments d ON d.id = a.department_id '
-        'WHERE a.user_id = %s ORDER BY a.position NULLS LAST, a.created_at, a.id', (user_id,),
+        "WHERE a.user_id = %s AND (d.school_name,d.department_name) <> ('免費練習','通用面試') "
+        'ORDER BY a.position NULLS LAST, a.created_at, a.id', (user_id,),
     ).fetchall()
 
 
@@ -64,6 +67,77 @@ def interview_id(key):
 
 
 def save_interview(conn, user_id, record, updated_at=None, *, import_only=False):
+    from postgres_interview_details import milliseconds, save_details
+
+    session_id = interview_id(record['id'])
+    snapshot = record.get('snapshot', {})
+    runtime = snapshot.get('runtime', {})
+    finished = bool(runtime.get('finished', record.get('finished')))
+    existing = conn.execute(
+        'SELECT user_id,application_id,portfolio_id,mode,web_record,ended_at FROM public.interview_sessions '
+        'WHERE id=%s FOR UPDATE', (session_id,),
+    ).fetchone()
+    if existing and (existing['user_id'] != UUID(str(user_id))
+                     or not existing['web_record'] or existing['web_record']['id'] != record['id']):
+        raise ValueError('面試紀錄識別碼已被使用。')
+    if import_only and existing:
+        return
+    if existing:
+        application_id, portfolio_id, mode = (existing[key] for key in ('application_id', 'portfolio_id', 'mode'))
+    else:
+        target = record['target'] if snapshot else {'school': '免費練習', 'department': '通用面試'}
+        conn.execute(
+            'INSERT INTO public.departments (school_name,department_name) VALUES (%s,%s) '
+            'ON CONFLICT (school_name,department_name) DO NOTHING',
+            (target['school'], target['department']),
+        )
+        conn.execute(
+            'INSERT INTO public.applications (user_id,department_id) SELECT %s,id FROM public.departments '
+            'WHERE school_name=%s AND department_name=%s ON CONFLICT (user_id,department_id) DO NOTHING',
+            (user_id, target['school'], target['department']),
+        )
+        application_id = conn.execute(
+            'SELECT a.id FROM public.applications a JOIN public.departments d ON d.id=a.department_id '
+            'WHERE a.user_id=%s AND d.school_name=%s AND d.department_name=%s',
+            (user_id, target['school'], target['department']),
+        ).fetchone()['id']
+        mode = 'free' if not snapshot or record.get('noPortfolio') else 'personalized'
+        portfolio_id = None
+        if mode == 'personalized':
+            identity = record.get('portfolioIdentity')
+            if not identity:
+                if import_only:
+                    return save_legacy_interview(conn, user_id, record, updated_at, import_only=True)
+                raise ValueError('無法辨識本場使用的備審版本。')
+            portfolio_id = UUID(md5(f'{UUID(str(user_id))}:portfolio:{identity}'.encode()).hexdigest())
+            conn.execute(
+                'INSERT INTO public.portfolios (id,user_id,name,parse_status,storage_key) '
+                'VALUES (%s,%s,%s,%s,%s) ON CONFLICT (id) DO NOTHING',
+                (portfolio_id, user_id, f"{target['school']} {target['department']}", 'completed', identity),
+            )
+    modified = updated_at or datetime.now(timezone.utc)
+    summary = snapshot.get('summary') or {}
+    result = conn.execute(
+        'INSERT INTO public.interview_sessions AS saved '
+        '(id,user_id,application_id,portfolio_id,mode,started_at,ended_at,elapsed_ms,status,'
+        'question_count,termination_reason,web_record) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) '
+        'ON CONFLICT (id) DO UPDATE SET ended_at=EXCLUDED.ended_at,elapsed_ms=EXCLUDED.elapsed_ms,'
+        'status=EXCLUDED.status,question_count=EXCLUDED.question_count,'
+        'termination_reason=EXCLUDED.termination_reason,web_record=EXCLUDED.web_record '
+        "WHERE saved.user_id=EXCLUDED.user_id AND saved.web_record->>'id'=EXCLUDED.web_record->>'id'",
+        (session_id, user_id, application_id, portfolio_id, mode, record.get('createdAt'),
+         (record.get('completedAt') or (existing and existing['ended_at']) or modified) if finished else None,
+         milliseconds(snapshot.get('elapsed', sum(answer['duration'] for answer in record['answers']))),
+         'completed' if finished else 'paused' if record.get('error') else 'active',
+         snapshot.get('total_questions', len(record['answers'])), summary.get('termination_reason'),
+         jsonb({**record, 'storageUpdatedAt': modified.isoformat()})),
+    )
+    if result.rowcount != 1:
+        raise ValueError('面試紀錄識別碼已被使用。')
+    save_details(conn, session_id, record, jsonb)
+
+
+def save_legacy_interview(conn, user_id, record, updated_at, *, import_only):
     finished = bool(record.get('snapshot', {}).get('runtime', {}).get('finished', record.get('finished')))
     statement = (
         'INSERT INTO public.web_interview_records AS saved (id, owner, finished, record, updated_at) '
@@ -83,20 +157,35 @@ def save_interview(conn, user_id, record, updated_at=None, *, import_only=False)
 
 def load_interview(user_id, key):
     with connect() as conn:
-        row = conn.execute(
-            'SELECT record, updated_at FROM public.web_interview_records WHERE owner=%s AND id=%s',
-            (user_id, interview_id(key)),
-        ).fetchone()
+        row = conn.execute(INTERVIEW_ROWS + ' WHERE id=%s', (user_id, user_id, interview_id(key))).fetchone()
     if row is None or row['record']['id'] != key:
         raise FileNotFoundError(key)
     return row
 
 
+INTERVIEW_ROWS = (
+    "WITH records AS (SELECT id, jsonb_set(web_record::jsonb,'{answers}',COALESCE(("
+    "SELECT jsonb_agg(item || CASE WHEN a.id IS NULL THEN '{}'::jsonb ELSE "
+    "jsonb_build_object('question',q.question_text,'text',a.transcript) END ORDER BY n) "
+    "FROM jsonb_array_elements(web_record::jsonb->'answers') WITH ORDINALITY AS entries(item,n) "
+    "LEFT JOIN public.answers a ON a.id=md5(s.id::text || ':answer:' || n)::uuid "
+    "LEFT JOIN public.interview_questions q ON q.id=a.question_id),'[]'::jsonb)) AS record, "
+    "status='completed' AS finished, "
+    "COALESCE((web_record->>'storageUpdatedAt')::timestamptz,ended_at,started_at, "
+    "'epoch'::timestamptz) AS updated_at FROM public.interview_sessions s "
+    "WHERE user_id=%s AND web_record IS NOT NULL UNION ALL "
+    "SELECT old.id,old.record,old.finished,old.updated_at FROM public.web_interview_records old "
+    "WHERE old.owner=%s AND NOT EXISTS (SELECT 1 FROM public.interview_sessions s "
+    "WHERE s.id=old.id AND s.user_id=old.owner AND s.web_record IS NOT NULL)) "
+    "SELECT id, record, finished, updated_at FROM records"
+)
+
+
 def interviews(user_id, finished=None):
-    query = 'SELECT record, updated_at FROM public.web_interview_records WHERE owner=%s'
-    params = (user_id,)
+    query = INTERVIEW_ROWS
+    params = (user_id, user_id)
     if finished is not None:
-        query += ' AND finished=%s'
+        query += ' WHERE finished=%s'
         params += (finished,)
     with connect() as conn:
         return conn.execute(query + ' ORDER BY updated_at DESC, id', params).fetchall()
@@ -183,7 +272,12 @@ def verify_schema():
     with connect() as conn:
         tables = conn.execute(
             "SELECT to_regclass('public.web_login_sessions') AS logins, "
-            "to_regclass('public.web_interview_records') AS interviews, "
+            "to_regclass('public.interview_sessions') AS interviews, "
+            "to_regclass('public.interview_units') AS units, "
+            "to_regclass('public.interview_questions') AS questions, "
+            "to_regclass('public.answers') AS answers, "
+            "to_regclass('public.reports') AS reports, "
+            "to_regclass('public.web_interview_records') AS legacy_interviews, "
             "to_regclass('public.web_portfolio_files') AS portfolios, "
             "to_regclass('public.point_transactions') AS points, EXISTS("
             "SELECT 1 FROM information_schema.columns WHERE table_schema='public' "

@@ -66,6 +66,20 @@ def interview_id(key):
     return UUID(str(key).removeprefix('free-'))
 
 
+def portfolio_key(user_id, identity):
+    return UUID(md5(f'{UUID(str(user_id))}:portfolio:{identity}'.encode()).hexdigest())
+
+
+def ensure_portfolio(conn, user_id, target, identity):
+    key = portfolio_key(user_id, identity)
+    conn.execute(
+        'INSERT INTO public.portfolios (id,user_id,name,parse_status,storage_key) '
+        'VALUES (%s,%s,%s,%s,%s) ON CONFLICT (id) DO NOTHING',
+        (key, user_id, f"{target['school']} {target['department']}", 'completed', identity),
+    )
+    return key
+
+
 def save_interview(conn, user_id, record, updated_at=None, *, import_only=False):
     from postgres_interview_details import milliseconds, save_details
 
@@ -109,12 +123,7 @@ def save_interview(conn, user_id, record, updated_at=None, *, import_only=False)
                 if import_only:
                     return save_legacy_interview(conn, user_id, record, updated_at, import_only=True)
                 raise ValueError('無法辨識本場使用的備審版本。')
-            portfolio_id = UUID(md5(f'{UUID(str(user_id))}:portfolio:{identity}'.encode()).hexdigest())
-            conn.execute(
-                'INSERT INTO public.portfolios (id,user_id,name,parse_status,storage_key) '
-                'VALUES (%s,%s,%s,%s,%s) ON CONFLICT (id) DO NOTHING',
-                (portfolio_id, user_id, f"{target['school']} {target['department']}", 'completed', identity),
-            )
+            portfolio_id = ensure_portfolio(conn, user_id, target, identity)
     modified = updated_at or datetime.now(timezone.utc)
     summary = snapshot.get('summary') or {}
     result = conn.execute(
@@ -134,7 +143,7 @@ def save_interview(conn, user_id, record, updated_at=None, *, import_only=False)
     )
     if result.rowcount != 1:
         raise ValueError('面試紀錄識別碼已被使用。')
-    save_details(conn, session_id, record, jsonb)
+    save_details(conn, session_id, record, jsonb, portfolio_id)
 
 
 def save_legacy_interview(conn, user_id, record, updated_at, *, import_only):
@@ -277,6 +286,15 @@ def verify_schema():
             "to_regclass('public.interview_questions') AS questions, "
             "to_regclass('public.answers') AS answers, "
             "to_regclass('public.reports') AS reports, "
+            "to_regclass('public.completeness_items') AS completeness, "
+            "to_regclass('public.consistency_findings') AS consistency, "
+            "to_regclass('public.documents') AS documents, "
+            "to_regclass('public.document_blocks') AS blocks, "
+            "to_regclass('public.events') AS events, "
+            "to_regclass('public.event_sources') AS event_sources, "
+            "to_regclass('public.retrieval_chunks') AS retrieval, "
+            "to_regclass('public.question_bank') AS question_bank, "
+            "to_regtype('vector') AS vector_type, "
             "to_regclass('public.web_interview_records') AS legacy_interviews, "
             "to_regclass('public.web_portfolio_files') AS portfolios, "
             "to_regclass('public.point_transactions') AS points, EXISTS("

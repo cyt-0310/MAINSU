@@ -229,6 +229,15 @@ def analyze(directory, user_id=None):
                 output.rename(prepared)
         if user_id is not None:
             pg.persist_portfolio(directory, pg.files_in(prepared), user_id)
+            from question_rotation import portfolio_identity
+            from postgres_portfolio import save_parsed_portfolio
+
+            identity = portfolio_identity(directory)
+            if not identity:
+                raise ValueError('Unable to identify the parsed portfolio')
+            with pg.connect() as conn:
+                portfolio_id = pg.ensure_portfolio(conn, user_id, record, identity)
+                save_parsed_portfolio(conn, user_id, portfolio_id, record, parsed, prepared, pg.jsonb)
     except Exception:
         log.exception('Portfolio event analysis failed')
         set_status(directory, 'failed', 'PDF 已解析，無法完成事件整理或出題。請確認 AI 服務及模型設定後重試。', user_id)

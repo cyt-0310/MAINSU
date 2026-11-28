@@ -23,8 +23,8 @@
   "relevance": {
     "relevant_threshold": 0.6,
     "off_topic_threshold": 0.4,
-    "vector_weight": 0.7,
-    "cross_weight": 0.3,
+    "vector_weight": 0.5,
+    "cross_weight": 0.5,
     "vector_model": "shibing624/text2vec-base-chinese",
     "cross_model": "BAAI/bge-reranker-base"
   },

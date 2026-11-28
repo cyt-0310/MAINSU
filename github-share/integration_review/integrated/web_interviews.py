@@ -71,8 +71,24 @@ def services(folder):
                 return []
         return LiveServices(EmptyEvidence(), {'pdf_name': '無備審資料'})
     meta = read_json(folder / 'evidence.index.json')
-    index = EvidenceIndex.load(folder / 'evidence.index.json', SentenceEmbedder(meta['model']))
-    return LiveServices(index, {'pdf_name': '、'.join(dict.fromkeys(c['source_file'] for c in index.chunks))})
+    embedder = SentenceEmbedder(meta['model'])
+    index = None
+    user_id = pg.owner.get()
+    if user_id is not None:
+        from postgres_portfolio import PostgresEvidence
+
+        identity = portfolio_identity(folder.parent)
+        if identity:
+            portfolio_id = pg.portfolio_key(user_id, identity)
+            with pg.connect() as conn:
+                has_chunks = conn.execute(
+                    'SELECT 1 FROM public.retrieval_chunks WHERE portfolio_id=%s LIMIT 1', (portfolio_id,),
+                ).fetchone()
+            if has_chunks:
+                index = PostgresEvidence(pg.connect, portfolio_id, embedder)
+    if index is None:
+        index = EvidenceIndex.load(folder / 'evidence.index.json', embedder)
+    return LiveServices(index, {'pdf_name': '、'.join(dict.fromkeys(c['source_file'] for c in meta['chunks']))})
 
 def view(record):
     runtime = record['snapshot']['runtime']
@@ -140,6 +156,26 @@ def start(payload):
             for item in QUESTION_BANK_CONFIG['common_questions']
             for title, question in [(item['title'], item['question'].format(department=department))]
         ]
+        user_id = pg.owner.get()
+        if user_id is not None:
+            with pg.connect() as conn:
+                bank = conn.execute(
+                    'SELECT q.id,q.question_text,q.question_type,q.evaluation_focus '
+                    'FROM public.question_bank q LEFT JOIN public.departments d ON d.id=q.department_id '
+                    'WHERE (d.school_name=%s AND d.department_name=%s) OR '
+                    '(q.department_id IS NULL AND q.discipline_group IS NULL) '
+                    'ORDER BY (q.department_id IS NULL),q.id LIMIT 2',
+                    (target['school'], department),
+                ).fetchall()
+            if bank:
+                topics = [intro] + [
+                    {'type': '常見問題', 'event': row['question_type'], 'event_id': None,
+                     'question_bank_id': str(row['id']), 'source': '校系常見題庫',
+                     'portfolio_role': '未提及', 'question': row['question_text'],
+                     'check_aspects': row['evaluation_focus'] or ['具體說明', '理由', '反思'],
+                     'max_followups': 2, 'answer_limit': 120}
+                    for row in bank
+                ]
     else:
         if portfolio_record(directory)['status'] != 'ready' or not (folder / 'topics.json').is_file():
             raise ValueError('此校系尚未完成備審分析，請先完成備審分析。')

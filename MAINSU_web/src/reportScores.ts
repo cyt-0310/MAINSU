@@ -19,8 +19,16 @@ export function oralParts(a:Answer) {
   return {rate,filler,pause,time,total:rate*.3+filler*.3+pause*.2+time*.2};
 }
 export const grade=(n:number|null)=>n===null?'未評定':n>=90?'A':n>=80?'B':n>=70?'C':n>=60?'D':'E';
+export function scoreWeights(textMode:boolean) {
+  return textMode
+    ? {completeness:45/90,relevance:25/90,consistency:20/90,oral:0}
+    : {completeness:.45,relevance:.25,consistency:.20,oral:.10};
+}
+
 export function scores(session:Session) {
   if(session.id.startsWith('free-'))return {total:null,completeness:null,relevance:null,consistency:null,oral:null};
+  const textMode=isTextSession(session);
+  const weights=scoreWeights(textMode);
   const topics=session.summary?.topics??[];
   const rows=session.reportReview?.questions??[];
   const groups=topics.map((t,i)=>{
@@ -28,8 +36,8 @@ export function scores(session:Session) {
     const c=mean(['trait','depth','exp'].map(k=>t.scores?.[k]));
     const r=mean(answers.map(({j})=>rows.find(x=>x.number===j+1)?.relevance));
     const consistency=mean(answers.map(({j})=>rows.find(x=>x.number===j+1)?.consistency));
-    const oral=mean(answers.map(({a})=>oralParts(a)?.total));
-    const valid=[[c,.45],[r,.25],[consistency,.20],[oral,.10]].filter(([v])=>v!==null) as number[][];
+    const oral=textMode?null:mean(answers.map(({a})=>oralParts(a)?.total));
+    const valid=[[c,weights.completeness],[r,weights.relevance],[consistency,weights.consistency],[oral,weights.oral]].filter(([v])=>v!==null) as number[][];
     const total=valid.length?valid.reduce((sum,[v,w])=>sum+v*w,0)/valid.reduce((sum,[,w])=>sum+w,0):null;
     return {completeness:c,relevance:r,consistency,oral,total};
   });
@@ -39,7 +47,7 @@ export function scores(session:Session) {
   const oral=mean(groups.map(g=>g.oral));
   // Do not silently treat a failed or unfinished AI assessment as not applicable.
   const total=session.reportReview?.complete&&relevance!==null?mean(groups.map(g=>g.total)):null;
-  return {total:isTextSession(session)?null:total,completeness,relevance,consistency,oral:isTextSession(session)?null:oral};
+  return {total,completeness,relevance,consistency,oral};
 }
 export function isTextSession(session:Session) {
   return session.mode==="text" || (session.answers.length>0&&session.answers.every(a=>a.mode==="text"));

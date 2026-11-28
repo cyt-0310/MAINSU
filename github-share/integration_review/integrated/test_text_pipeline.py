@@ -34,9 +34,11 @@ class Services:
         self.value, self.outside = value, outside
         self.histories = []
         self.questions = []
+        self.relevance_answers = []
 
     def relevance(self, question, answer):
         self.questions.append(question)
+        self.relevance_answers.append(answer)
         return {'relevance_score': next(self.scores, .7)}
 
     def assess(self, topic, history):
@@ -120,7 +122,8 @@ class SessionTests(unittest.TestCase):
         self.assertEqual(s.submit('主問回答')['question_kind'], 'followup')
         self.assertEqual(s.submit('追問一回答')['question_kind'], 'followup')
         self.assertEqual(s.submit('追問二回答')['topic_index'], 2)
-        self.assertTrue(all(q == '問題1' for q in services.questions[1:]))
+        self.assertEqual(services.questions[1:], ['問題1', '請具體說明你的行動？', '請具體說明你的行動？'])
+        self.assertEqual(services.relevance_answers[1:], [answer for _, answer in services.histories[-1]])
 
     def timed_general(self):
         services = TimedServices()

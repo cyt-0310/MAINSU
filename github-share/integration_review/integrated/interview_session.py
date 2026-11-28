@@ -2,6 +2,7 @@
 import math
 import time
 import copy
+from datetime import datetime, timezone
 from interview_gap_detection.api_retry import retry_clock
 from interview_gap_detection.answer_content import no_content_reason
 from bridge import validate_details
@@ -136,7 +137,7 @@ class InterviewSession:
         self.pending = {'kind': 'question', 'question_kind': kind, 'text': text,
                         'topic_index': self.index, 'asked_at': self.clock()}
         self._log('question', question_kind=kind, text=text, topic_index=self.index,
-                  total_questions=self.total_questions)
+                  total_questions=self.total_questions, asked_at=datetime.now(timezone.utc).isoformat())
         return self.pending
 
     def start(self):
@@ -195,8 +196,7 @@ class InterviewSession:
             return self._ask(self.pending['text'], 'restate')
         # Placeholder attempts stay in the raw log but never enter model context.
         self.active['qa_history'].append((self.pending['text'], answer))
-        # Relevance is against the main topic question, using every answer in this topic.
-        relevance = self.services.relevance(topic['question'], '\n'.join(a for _, a in self.active['qa_history']))
+        relevance = self.services.relevance(self.pending['text'], answer)
         score = relevance['relevance_score']
         if not isinstance(score, (int, float)) or not math.isfinite(score):
             raise ValueError('Invalid relevance score')
@@ -206,7 +206,7 @@ class InterviewSession:
                          self.active['followups'], 1 if self.index == 0 else 2,
                          self.total_questions, self.elapsed(), self.topic_elapsed())
         self.active['details'] = gap['details']
-        self._log('analysis', topic_index=self.index, relevance=relevance,
+        self._log('analysis', topic_index=self.index, relevance=relevance, relevance_scope='current_question',
                   relevance_status='切題' if score >= .6 else ('可能離題' if score >= .4 else '離題'),
                   assessment=assessment, gap=gap)
         # Overall/time limits precede relevance and completeness decisions.
@@ -217,7 +217,7 @@ class InterviewSession:
             return self._end_topic('本主題時間達 4 分鐘')
         if score < .4:
             if self.active['rephrased']:
-                return self._end_topic('重述一次後累積回答相關度仍低於 0.4')
+                return self._end_topic('重述一次後，本次回答相關度仍低於 0.4')
             self.active['rephrased'] = True
             return self._ask(self.pending['text'], 'restate')
         if gap['decision'] == 'switch_topic':

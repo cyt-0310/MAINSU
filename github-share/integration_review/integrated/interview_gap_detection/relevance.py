@@ -1,4 +1,4 @@
-"""九-①、雙軌語意相關度 (Vector 70% + Cross-Encoder 30%)。"""
+"""九-①、雙軌語意相關度 (Bi-Encoder 50% + Cross-Encoder 50%)。"""
 import logging
 
 import numpy as np
@@ -48,11 +48,13 @@ def compute_relevance(question: str, answer: str) -> dict:
     s_cross_raw = cross_model.predict([(question, answer)])[0]
     s_cross = float(1 / (1 + np.exp(-s_cross_raw)))
 
-    hybrid_score = round((VECTOR_WEIGHT * s_vec) + (CROSS_WEIGHT * s_cross), 4)
+    s_bi = (min(1.0, max(-1.0, s_vec)) + 1.0) / 2.0
+    hybrid_score = round((VECTOR_WEIGHT * s_bi) + (CROSS_WEIGHT * s_cross), 4)
     level, status = classify_relevance(hybrid_score)
 
     return {
         "vector_score": round(s_vec, 4),
+        "bi_encoder_score": round(s_bi, 4),
         "cross_score": round(s_cross, 4),
         "relevance_score": hybrid_score,
         "level": level,
